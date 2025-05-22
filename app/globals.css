@@ -1,0 +1,182 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Lighter cream background for better contrast */
+    --background: 40 25% 98%;
+    --foreground: 145 40% 12%;
+
+    /* Lighter cream card background */
+    --card: 40 20% 99%;
+    --card-foreground: 145 40% 12%;
+
+    /* Lighter cream popover */
+    --popover: 40 20% 99%;
+    --popover-foreground: 145 40% 12%;
+
+    /* Updated primary with increased contrast but medium brightness */
+    --primary: 145 80% 28%;
+    --primary-foreground: 40 30% 98%;
+
+    /* Warmer cream secondary with more contrast */
+    --secondary: 40 80% 92%;
+    --secondary-foreground: 145 40% 20%;
+
+    /* Higher contrast muted */
+    --muted: 40 25% 90%;
+    --muted-foreground: 145 20% 30%;
+
+    /* Higher contrast accent */
+    --accent: 145 50% 90%;
+    --accent-foreground: 145 70% 25%;
+
+    --destructive: 0 90% 50%;
+    --destructive-foreground: 40 30% 98%;
+
+    /* More visible border */
+    --border: 40 30% 85%;
+    --input: 40 30% 85%;
+    --ring: 145 70% 25%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 145 40% 8%;
+    --foreground: 40 30% 98%;
+
+    --card: 145 40% 10%;
+    --card-foreground: 40 30% 98%;
+
+    --popover: 145 40% 10%;
+    --popover-foreground: 40 30% 98%;
+
+    /* Updated primary with increased contrast but medium brightness */
+    --primary: 145 85% 38%;
+    --primary-foreground: 40 30% 98%;
+
+    --secondary: 40 60% 75%;
+    --secondary-foreground: 145 40% 10%;
+
+    --muted: 145 30% 15%;
+    --muted-foreground: 40 20% 85%;
+
+    --accent: 145 30% 15%;
+    --accent-foreground: 40 30% 98%;
+
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 40 30% 98%;
+
+    --border: 145 40% 15%;
+    --input: 145 40% 15%;
+    --ring: 145 70% 35%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-in-out forwards;
+  }
+
+  .animation-delay-100 {
+    animation-delay: 100ms;
+  }
+
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+
+  .animation-delay-300 {
+    animation-delay: 300ms;
+  }
+
+  .animation-delay-400 {
+    animation-delay: 400ms;
+  }
+
+  .animation-delay-500 {
+    animation-delay: 500ms;
+  }
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  /* Custom gradient backgrounds */
+  .bg-emerald-cream-gradient {
+    background: linear-gradient(135deg, #f9f7f1 0%, #e7f9f0 100%);
+  }
+
+  .bg-cream-gradient {
+    background: linear-gradient(135deg, #faf8f3 0%, #f7f2e4 100%);
+  }
+
+  .bg-emerald-gradient {
+    background: linear-gradient(135deg, #0cc671 0%, #078249 100%);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Badge variants */
+.badge-success {
+  @apply bg-emerald-100 text-emerald-800;
+}
+
+/* Custom button styles */
+.btn-eco-primary {
+  @apply bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-cream-50 shadow-md hover:shadow-lg transition-all duration-300;
+}
+
+.btn-eco-secondary {
+  @apply bg-gradient-to-r from-cream-200 to-cream-100 hover:from-cream-300 hover:to-cream-200 text-emerald-800 shadow-md hover:shadow-lg transition-all duration-300;
+}
+
+.btn-eco-outline {
+  @apply border-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 transition-all duration-300;
+}
+
+/* Card hover effects */
+.card-hover-effect {
+  @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+}
+
+/* Price tag styles */
+.price-tag {
+  @apply font-bold text-emerald-700;
+}
+
+.price-tag-sale {
+  @apply font-bold text-red-600;
+}
+
+.price-tag-original {
+  @apply line-through text-gray-500 text-sm;
+}

@@ -19,7 +19,7 @@ const products = [
     name: "Organic Plant Food",
     price: 12.99,
     category: "Agro Products",
-    image: "/placeholder.svg?height=400&width=400",
+    image: "/Organic Plant Food.webp",
     isNew: true,
   },
   {
@@ -27,7 +27,7 @@ const products = [
     name: "Bamboo Toothbrush Set",
     price: 8.49,
     category: "Eco-Friendly",
-    image: "/placeholder.svg?height=400&width=400",
+    image: "/bamboo toothbrush set.webp?height=400&width=400",
     isNew: false,
   },
   {
@@ -35,7 +35,7 @@ const products = [
     name: "Herbal Hair Oil",
     price: 15.99,
     category: "Herbal Products",
-    image: "/placeholder.svg?height=400&width=400",
+    image: "/herbal hair oil.webp?height=400&width=400",
     isNew: true,
   },
   {
@@ -43,7 +43,7 @@ const products = [
     name: "Aloe Vera Gel",
     price: 9.99,
     category: "Cosmetics",
-    image: "/placeholder.svg?height=400&width=400",
+    image: "/alovera-gel.jpg?height=400&width=400",
     isNew: false,
   },
   {
@@ -51,7 +51,7 @@ const products = [
     name: "Reusable Produce Bags",
     price: 6.99,
     category: "Eco-Friendly",
-    image: "/placeholder.svg?height=400&width=400",
+    image: "/reusable bags.jpg?height=400&width=400",
     isNew: true,
   },
   {
@@ -59,7 +59,7 @@ const products = [
     name: "Neem Face Wash",
     price: 11.49,
     category: "Cosmetics",
-    image: "/placeholder.svg?height=400&width=400",
+    image: "/neem face wash.webp?height=400&width=400",
     isNew: false,
   },
   {
@@ -67,7 +67,7 @@ const products = [
     name: "Organic Seeds Pack",
     price: 7.99,
     category: "Agro Products",
-    image: "/placeholder.svg?height=400&width=400",
+    image: "/seeds.jpg?height=400&width=400",
     isNew: true,
   },
   {
@@ -75,13 +75,13 @@ const products = [
     name: "Eco-Friendly Detergent",
     price: 14.99,
     category: "Home Care",
-    image: "/placeholder.svg?height=400&width=400",
+    image: "/detergent.webp?height=400&width=400",
     isNew: false,
   },
 ]
 
 export default function FeaturedProducts() {
-  const { addItem } = useCart()
+  const { addToCart } = useCart()
   const { toast } = useToast()
   const scrollRef = useRef<HTMLDivElement>(null)
   const [isPaused, setIsPaused] = useState(false)
@@ -91,7 +91,7 @@ export default function FeaturedProducts() {
     e.preventDefault()
     e.stopPropagation()
 
-    addItem({
+    addToCart({
       id: product.id,
       name: product.name,
       price: product.price,

@@ -59,30 +59,64 @@ export default function Hero() {
 
         {/* Animated nature elements */}
         <div className="absolute inset-0 opacity-10">
-          {Array.from({ length: 20 }).map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-              }}
-              animate={{
-                y: [0, -10, 0],
-                opacity: [0.5, 1, 0.5],
-              }}
-              transition={{
-                duration: 3 + Math.random() * 5,
-                repeat: Number.POSITIVE_INFINITY,
-                delay: Math.random() * 5,
-              }}
-            >
-              {i % 4 === 0 && <Leaf className="text-emerald-600" size={i % 2 === 0 ? 24 : 16} />}
-              {i % 4 === 1 && <Droplets className="text-blue-600" size={i % 2 === 0 ? 24 : 16} />}
-              {i % 4 === 2 && <Sun className="text-yellow-600" size={i % 2 === 0 ? 24 : 16} />}
-              {i % 4 === 3 && <Wind className="text-teal-600" size={i % 2 === 0 ? 24 : 16} />}
-            </motion.div>
-          ))}
+          {typeof window !== 'undefined' && Array.from({ length: 20 }).map((_, i) => {
+            // Use fixed positions based on index instead of random values
+            // This ensures server and client render the same positions
+            const fixedPositions = [
+              { left: "28.219281729595924%", top: "77.71235893773213%" },
+              { left: "34.16898822915944%", top: "52.434585400114116%" },
+              { left: "32.9223073855127%", top: "86.13010615980457%" },
+              { left: "25.23893642651779%", top: "6.938742423181621%" },
+              { left: "23.272624564642584%", top: "19.462188398989177%" },
+              { left: "69.92376370218828%", top: "87.74252005939204%" },
+              { left: "30.507450132436954%", top: "8.889666046405898%" },
+              { left: "10.567160859735491%", top: "25.114775313023085%" },
+              { left: "42.10871010711209%", top: "12.098063920053425%" },
+              { left: "54.65668988018662%", top: "75.86708626336299%" },
+              { left: "80.33039076564008%", top: "61.34422612852678%" },
+              { left: "80.61242544889612%", top: "64.9551270923341%" },
+              { left: "63.807885648627625%", top: "27.512361823416764%" },
+              { left: "88.59353393572586%", top: "7.902298937823405%" },
+              { left: "50.42961775420927%", top: "35.751021633363045%" },
+              { left: "27.44105796402554%", top: "41.90080637217467%" },
+              { left: "57.517943306496186%", top: "25.354818465207018%" },
+              { left: "39.14566114048911%", top: "20.754959717937737%" },
+              { left: "52.54229217739198%", top: "78.22657793091152%" },
+              { left: "84.44781138482696%", top: "79.36980062833896%" }
+            ];
+            
+            // Get the position for this element from our fixed positions array
+            const position = fixedPositions[i];
+            
+            // Use fixed durations and delays based on index
+            const fixedDuration = 3 + (i % 5);
+            const fixedDelay = i % 5;
+            
+            return (
+              <motion.div
+                key={i}
+                className="absolute"
+                style={{
+                  left: position.left,
+                  top: position.top
+                }}
+                animate={{
+                  y: [0, -10, 0],
+                  opacity: [0.5, 1, 0.5],
+                }}
+                transition={{
+                  duration: fixedDuration,
+                  repeat: Number.POSITIVE_INFINITY,
+                  delay: fixedDelay,
+                }}
+              >
+                {i % 4 === 0 && <Leaf className="text-emerald-600" size={i % 2 === 0 ? 24 : 16} />}
+                {i % 4 === 1 && <Droplets className="text-blue-600" size={i % 2 === 0 ? 24 : 16} />}
+                {i % 4 === 2 && <Sun className="text-yellow-600" size={i % 2 === 0 ? 24 : 16} />}
+                {i % 4 === 3 && <Wind className="text-teal-600" size={i % 2 === 0 ? 24 : 16} />}
+              </motion.div>
+            );
+          })}
         </div>
       </div>
 

@@ -13,7 +13,7 @@ const communityPosts = [
     id: "1",
     title: "My urban garden transformation",
     excerpt: "I transformed my small balcony into a thriving urban garden. Here's how I did it...",
-    image: "/placeholder.svg?height=300&width=400&text=Urban+Garden",
+    image: "/balcony.jpg?height=300&width=400&text=Urban+Garden",
     author: {
       name: "Priya Sharma",
       avatar: "/placeholder.svg?height=40&width=40",
@@ -27,7 +27,7 @@ const communityPosts = [
     id: "2",
     title: "DIY compost bin from recycled materials",
     excerpt: "Check out my weekend project - a compost bin made entirely from recycled materials!",
-    image: "/placeholder.svg?height=300&width=400&text=DIY+Compost",
+    image: "/DIY-compost-bin-ideas.jpg?height=300&width=400&text=DIY+Compost",
     author: {
       name: "Rahul Patel",
       avatar: "/placeholder.svg?height=40&width=40",
@@ -41,7 +41,7 @@ const communityPosts = [
     id: "3",
     title: "Harvested my first batch of organic tomatoes",
     excerpt: "After months of care, I finally harvested my first batch of organic tomatoes. The taste is incredible!",
-    image: "/placeholder.svg?height=300&width=400&text=Organic+Tomatoes",
+    image: "/tomato harvest.jpg?height=300&width=400&text=Organic+Tomatoes",
     author: {
       name: "Ananya Gupta",
       avatar: "/placeholder.svg?height=40&width=40",

@@ -10,19 +10,19 @@ const resources = [
     id: "1",
     title: "Guide to Organic Gardening",
     category: "Gardening Tips",
-    image: "/placeholder.svg?height=300&width=500",
+    image: "/organic guide.jpg?height=300&width=500",
   },
   {
     id: "2",
     title: "Identifying Common Plant Diseases",
     category: "Plant Care",
-    image: "/placeholder.svg?height=300&width=500",
+    image: "/plant diseasses.png?height=300&width=500",
   },
   {
     id: "3",
     title: "Home Composting 101",
     category: "Waste Management",
-    image: "/placeholder.svg?height=300&width=500",
+    image: "/home composting.webp?height=300&width=500",
   },
 ]
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
@@ -38,7 +38,8 @@ interface ServiceBooking {
   status: string
 }
 
-export default function ServiceBookingConfirmationPage() {
+// Client component that uses useSearchParams
+function BookingContent() {
   const searchParams = useSearchParams()
   const bookingId = searchParams.get("bookingId")
   
@@ -235,5 +236,21 @@ export default function ServiceBookingConfirmationPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+// Wrapper component with Suspense boundary
+export default function ServiceBookingConfirmationPage() {
+  return (
+    <Suspense fallback={
+      <div className="container py-12 max-w-3xl mx-auto">
+        <div className="text-center">
+          <div className="animate-pulse h-8 w-60 bg-gray-200 rounded mx-auto mb-4"></div>
+          <div className="animate-pulse h-4 w-40 bg-gray-200 rounded mx-auto"></div>
+        </div>
+      </div>
+    }>
+      <BookingContent />
+    </Suspense>
   )
 }

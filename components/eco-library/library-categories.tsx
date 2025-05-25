@@ -65,7 +65,7 @@ export default function LibraryCategories() {
                 <p className="text-gray-600 mb-4">{category.description}</p>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-500">{category.count} articles</span>
-                  <Link href={category.link} className="flex items-center text-primary hover:underline">
+                  <Link href={category.link} className="inline-flex items-center justify-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors">
                     Explore <ArrowRight className="ml-1 h-4 w-4" />
                   </Link>
                 </div>

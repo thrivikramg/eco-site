@@ -5,7 +5,21 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ArrowRight } from "lucide-react"
 
-const featuredArticles = [
+// Define the article type to include all required properties
+interface Article {
+  id: string
+  title: string
+  excerpt: string
+  category: string
+  image: string
+  author: string
+  date: string
+  readTime: string
+  link?: string // Optional internal link property
+  externalLink?: string // Optional external link property
+}
+
+const featuredArticles: Article[] = [
   {
     id: "1",
     title: "10 Endangered Species Making a Comeback",
@@ -15,6 +29,7 @@ const featuredArticles = [
     author: "Dr. Maya Patel",
     date: "May 15, 2025",
     readTime: "8 min read",
+    externalLink: "https://www.worldwildlife.org/stories/10-species-with-remarkable-conservation-successes"
   },
   {
     id: "2",
@@ -25,6 +40,7 @@ const featuredArticles = [
     author: "Prof. James Chen",
     date: "May 10, 2025",
     readTime: "12 min read",
+    externalLink: "https://www.noaa.gov/education/resource-collections/ocean-coasts/ocean-acidification"
   },
   {
     id: "3",
@@ -35,6 +51,7 @@ const featuredArticles = [
     author: "Aisha Johnson",
     date: "May 5, 2025",
     readTime: "6 min read",
+    externalLink: "https://www.epa.gov/recycle/composting-home"
   },
   {
     id: "4",
@@ -45,6 +62,7 @@ const featuredArticles = [
     author: "Miguel Rodriguez",
     date: "April 28, 2025",
     readTime: "10 min read",
+    externalLink: "https://savvygardening.com/companion-planting-chart/"
   },
   {
     id: "5",
@@ -55,6 +73,7 @@ const featuredArticles = [
     author: "Dr. Sarah Williams",
     date: "April 22, 2025",
     readTime: "7 min read",
+    externalLink: "https://www.gardeningknowhow.com/edible/vegetables/tomato/tomato-blight-treatment.htm"
   },
   {
     id: "6",
@@ -65,10 +84,16 @@ const featuredArticles = [
     author: "Rahul Sharma",
     date: "April 18, 2025",
     readTime: "15 min read",
+    externalLink: "https://www.bandipurtigerreserve.in/"
   },
 ]
 
 export default function FeaturedArticles() {
+  // Process articles to add link property if needed
+  const articlesWithLinks = featuredArticles.map(article => ({
+    ...article,
+    link: article.externalLink || `/eco-library/article/${article.id}` // Use external link if available, otherwise use internal link
+  }))
   return (
     <section className="py-16 bg-gray-50">
       <div className="container px-4 md:px-6">
@@ -85,7 +110,7 @@ export default function FeaturedArticles() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {featuredArticles.map((article) => (
+          {articlesWithLinks.map((article) => (
             <Card key={article.id} className="overflow-hidden h-full hover:shadow-md transition-shadow">
               <div className="relative h-48 w-full">
                 <Image src={article.image || "/placeholder.svg"} alt={article.title} fill className="object-cover" />
@@ -101,12 +126,14 @@ export default function FeaturedArticles() {
                 <p className="text-gray-600 mb-4">{article.excerpt}</p>
                 <div className="flex items-center justify-between mt-auto">
                   <span className="text-sm font-medium">By {article.author}</span>
-                  <Link
-                    href={`/eco-library/article/${article.id}`}
-                    className="flex items-center text-primary hover:underline"
+                  <a
+                    href={article.externalLink || article.link}
+                    target={article.externalLink ? "_blank" : "_self"}
+                    rel={article.externalLink ? "noopener noreferrer" : undefined}
+                    className="inline-flex items-center justify-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
                   >
                     Read More <ArrowRight className="ml-1 h-4 w-4" />
-                  </Link>
+                  </a>
                 </div>
               </CardContent>
             </Card>

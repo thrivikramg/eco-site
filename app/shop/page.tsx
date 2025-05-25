@@ -1,8 +1,8 @@
 import { Suspense } from "react"
 import type { Metadata } from "next"
-import CategoryShowcase from "@/components/shop/category-showcase"
-import ProductsLayout from "@/components/shop/products-layout"
-import { Skeleton } from "@/components/ui/skeleton"
+import CategoryShowcase from "../../components/shop/category-showcase"
+import ProductsLayout from "../../components/shop/products-layout"
+import { Skeleton } from "../../components/ui/skeleton"
 
 export const metadata: Metadata = {
   title: "Shop All Products | EcoGrow",

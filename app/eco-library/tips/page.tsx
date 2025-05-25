@@ -1,6 +1,11 @@
 import type { Metadata } from "next"
-import { Leaf, Droplets, Recycle, Home, Sun, Car, ShoppingBag, Utensils, Sprout } from "lucide-react"
-import { Separator } from "@/components/ui/separator"
+import Link from "next/link"
+import Image from "next/image"
+import { Leaf, Droplets, Recycle, Home, Sun, Car, ShoppingBag, Utensils, Sprout, ArrowUpRight } from "lucide-react"
+import { Separator } from "../../../components/ui/separator"
+import { Card, CardContent } from "../../../components/ui/card"
+import { Badge } from "../../../components/ui/badge"
+import { Button } from "../../../components/ui/button"
 
 export const metadata: Metadata = {
   title: "Eco Tips & Tutorials | EcoGrow",
@@ -520,6 +525,131 @@ export default function TipsPage() {
           <button className="px-8 py-3 rounded-full bg-white text-emerald-700 font-medium hover:bg-transparent hover:text-white transition-colors">
             Take The Eco Pledge
           </button>
+        </div>
+      </section>
+
+      {/* Related Articles Section */}
+      <section className="py-16 container px-4 md:px-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10">
+          <div>
+            <h2 className="text-3xl font-bold mb-2 text-emerald-800">Related Articles</h2>
+            <p className="text-gray-600 max-w-2xl">
+              Dive deeper into sustainable living with our curated collection of articles and resources.
+            </p>
+          </div>
+          <div className="mt-4 md:mt-0">
+            <Link 
+              href="/eco-library/tips/all" 
+              className="inline-flex items-center text-emerald-700 font-medium hover:text-emerald-800"
+            >
+              View all articles
+              <ArrowUpRight className="ml-1 h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <Card className="overflow-hidden h-full hover:shadow-lg transition-shadow">
+            <div className="relative h-48">
+              <Image 
+                src="/placeholder.svg?height=300&width=500&text=Water+Conservation"
+                alt="Water Conservation" 
+                fill 
+                className="object-cover" 
+              />
+              <Badge className="absolute top-3 left-3 bg-blue-600 hover:bg-blue-700 text-white">Conservation</Badge>
+            </div>
+            <CardContent className="p-5">
+              <div className="flex items-center text-sm text-gray-500 mb-2">
+                <span>May 18, 2025</span>
+                <span className="mx-2">•</span>
+                <span>5 min read</span>
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Water Conservation During Drought Season</h3>
+              <p className="text-gray-600 mb-4 text-sm line-clamp-2">
+                Learn effective techniques to conserve water during the ongoing drought conditions affecting many regions.
+              </p>
+              <a 
+                href="https://www.epa.gov/watersense/start-saving" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center text-blue-600 hover:text-blue-700 text-sm font-medium"
+              >
+                Read more <ArrowUpRight className="ml-1 h-3 w-3" />
+              </a>
+            </CardContent>
+          </Card>
+
+          <Card className="overflow-hidden h-full hover:shadow-lg transition-shadow">
+            <div className="relative h-48">
+              <Image 
+                src="/placeholder.svg?height=300&width=500&text=Plastic+Alternatives"
+                alt="Plastic Alternatives" 
+                fill 
+                className="object-cover" 
+              />
+              <Badge className="absolute top-3 left-3 bg-green-600 hover:bg-green-700 text-white">Sustainability</Badge>
+            </div>
+            <CardContent className="p-5">
+              <div className="flex items-center text-sm text-gray-500 mb-2">
+                <span>May 15, 2025</span>
+                <span className="mx-2">•</span>
+                <span>7 min read</span>
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Sustainable Alternatives to Single-Use Plastics</h3>
+              <p className="text-gray-600 mb-4 text-sm line-clamp-2">
+                Discover eco-friendly alternatives to common single-use plastic items in your daily life.
+              </p>
+              <a 
+                href="https://www.nationalgeographic.com/environment/article/how-to-reduce-plastic-use" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center text-green-600 hover:text-green-700 text-sm font-medium"
+              >
+                Read more <ArrowUpRight className="ml-1 h-3 w-3" />
+              </a>
+            </CardContent>
+          </Card>
+
+          <Card className="overflow-hidden h-full hover:shadow-lg transition-shadow">
+            <div className="relative h-48">
+              <Image 
+                src="/placeholder.svg?height=300&width=500&text=Urban+Gardening"
+                alt="Urban Gardening" 
+                fill 
+                className="object-cover" 
+              />
+              <Badge className="absolute top-3 left-3 bg-amber-600 hover:bg-amber-700 text-white">Gardening</Badge>
+            </div>
+            <CardContent className="p-5">
+              <div className="flex items-center text-sm text-gray-500 mb-2">
+                <span>May 10, 2025</span>
+                <span className="mx-2">•</span>
+                <span>6 min read</span>
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Urban Gardening in Small Spaces</h3>
+              <p className="text-gray-600 mb-4 text-sm line-clamp-2">
+                Transform your balcony or windowsill into a thriving garden with these space-saving techniques.
+              </p>
+              <a 
+                href="https://www.gardeningknowhow.com/special/urban/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center text-amber-600 hover:text-amber-700 text-sm font-medium"
+              >
+                Read more <ArrowUpRight className="ml-1 h-3 w-3" />
+              </a>
+            </CardContent>
+          </Card>
+        </div>
+        
+        <div className="mt-10 text-center">
+          <Button 
+            className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2" 
+            asChild
+          >
+            <Link href="/eco-library">Explore Our Full Eco-Library</Link>
+          </Button>
         </div>
       </section>
     </main>

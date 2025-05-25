@@ -1,6 +1,6 @@
 import Link from "next/link"
 import Image from "next/image"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent } from "../../components/ui/card"
 import { Bug, Flower2, Trees, Droplets, Home, Recycle, ArrowRight } from "lucide-react"
 
 const serviceCategories = [
@@ -85,7 +85,7 @@ export default function ServiceCategories() {
                 <p className="text-gray-600 mb-4">{category.description}</p>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-500">{category.count} services</span>
-                  <Link href={category.link} className="flex items-center text-primary hover:underline">
+                  <Link href={category.link} className="inline-flex items-center justify-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors">
                     View Services <ArrowRight className="ml-1 h-4 w-4" />
                   </Link>
                 </div>

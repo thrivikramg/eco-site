@@ -2,102 +2,96 @@
 
 import { useRouter } from "next/navigation"
 import Image from "next/image"
-import { Button } from "../../../components/ui/button"
-import { Card, CardContent, CardFooter } from "../../../components/ui/card"
-import { Badge } from "../../../components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardFooter } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import { Calendar, Star } from "lucide-react"
-import { bookService } from "../../../lib/service-utils"
 
 // Mock services data
 const services = [
   {
     id: "1",
-    name: "Basic Pest Inspection",
-    description: "Comprehensive inspection of your property to identify pest issues and recommend solutions.",
-    image: "/placeholder.svg?height=400&width=400&text=Pest+Inspection",
-    price: "₹999",
-    duration: "1-2 hours",
-    rating: 4.8,
-    reviewCount: 124,
+    name: "Rainwater Harvesting Systems",
+    description: "Custom rainwater collection and storage systems to reduce water bills and provide irrigation during dry periods.",
+    image: "/placeholder.svg?height=400&width=400&text=Rainwater+Harvesting",
+    price: "₹14,999",
+    duration: "2-3 days",
+    rating: 4.9,
+    reviewCount: 87,
     popular: true,
   },
   {
     id: "2",
-    name: "Organic Pest Control Treatment",
-    description: "Complete treatment using organic solutions to eliminate pests without harmful chemicals.",
-    image: "/placeholder.svg?height=400&width=400&text=Organic+Treatment",
-    price: "₹2,499",
-    duration: "3-4 hours",
-    rating: 4.9,
-    reviewCount: 98,
+    name: "Smart Irrigation Installation",
+    description: "Water-efficient irrigation systems with smart controllers, sensors, and precision delivery to minimize waste.",
+    image: "/placeholder.svg?height=400&width=400&text=Smart+Irrigation",
+    price: "₹8,499",
+    duration: "1-2 days",
+    rating: 4.8,
+    reviewCount: 112,
     popular: true,
   },
   {
     id: "3",
-    name: "Preventive Pest Control",
-    description: "Regular preventive treatments to keep your property pest-free throughout the year.",
-    image: "/placeholder.svg?height=400&width=400&text=Preventive+Control",
-    price: "₹1,499/month",
-    duration: "Monthly visits",
+    name: "Greywater Recycling Systems",
+    description: "Systems to safely capture and reuse water from sinks, showers, and washing machines for irrigation.",
+    image: "/placeholder.svg?height=400&width=400&text=Greywater+Recycling",
+    price: "₹18,999",
+    duration: "3-4 days",
     rating: 4.7,
-    reviewCount: 76,
+    reviewCount: 64,
     popular: false,
   },
   {
     id: "4",
-    name: "Termite Control",
-    description: "Specialized organic treatment for termite infestations with long-term protection.",
-    image: "/placeholder.svg?height=400&width=400&text=Termite+Control",
-    price: "₹4,999",
+    name: "Water Efficiency Audit",
+    description: "Comprehensive assessment of your property's water usage with detailed recommendations for improvement.",
+    image: "/placeholder.svg?height=400&width=400&text=Water+Audit",
+    price: "₹3,999",
     duration: "4-6 hours",
     rating: 4.9,
-    reviewCount: 52,
+    reviewCount: 93,
     popular: false,
   },
   {
     id: "5",
-    name: "Rodent Control",
-    description: "Humane and effective solutions for rodent problems using eco-friendly methods.",
-    image: "/placeholder.svg?height=400&width=400&text=Rodent+Control",
-    price: "₹1,999",
-    duration: "2-3 hours",
-    rating: 4.6,
-    reviewCount: 68,
-    popular: false,
+    name: "Permeable Hardscaping",
+    description: "Installation of permeable driveways, patios, and walkways that allow rainwater to infiltrate rather than run off.",
+    image: "/placeholder.svg?height=400&width=400&text=Permeable+Surfaces",
+    price: "₹11,999",
+    duration: "2-3 days",
+    rating: 4.8,
+    reviewCount: 76,
+    popular: true,
   },
   {
     id: "6",
-    name: "Garden Pest Management",
-    description:
-      "Specialized treatment for garden pests using organic solutions safe for plants and beneficial insects.",
-    image: "/placeholder.svg?height=400&width=400&text=Garden+Pest+Management",
-    price: "₹1,799",
-    duration: "2-3 hours",
+    name: "Stormwater Management",
+    description: "Solutions to manage stormwater runoff including rain gardens, bioswales, and retention systems to prevent flooding and erosion.",
+    image: "/placeholder.svg?height=400&width=400&text=Stormwater+Management",
+    price: "₹9,499",
+    duration: "2-3 days",
     rating: 4.8,
-    reviewCount: 45,
-    popular: true,
+    reviewCount: 58,
+    popular: false,
   },
 ]
 
-export default function PestControlServices() {
+export default function WaterManagementServices() {
   const router = useRouter()
 
-  const handleBookService = (service: any) => {
-    // Use the utility function to book a service
-    bookService({
-      ...service,
-      category: "Pest Control" // Ensure category is set
-    }, router)
+  const handleBookService = () => {
+    router.push("/checkout")
   }
 
   return (
     <section id="services" className="py-16 bg-white">
       <div className="container px-4 md:px-6">
         <div className="max-w-3xl mx-auto text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">Our Pest Control Services</h2>
+          <h2 className="text-3xl font-bold mb-4">Our Water Management Services</h2>
           <p className="text-gray-600">
-            We offer a range of eco-friendly pest control services using organic solutions that are safe for your
-            family, pets, and the environment.
+            We offer comprehensive water management solutions that help conserve this precious resource,
+            reduce your environmental footprint, and lower your utility bills.
           </p>
         </div>
 
@@ -141,7 +135,7 @@ export default function PestControlServices() {
               </CardContent>
 
               <CardFooter className="border-t p-4">
-                <Button className="w-full" onClick={() => handleBookService(service)}>
+                <Button className="w-full" onClick={handleBookService}>
                   <Calendar className="h-4 w-4 mr-2" />
                   Book Service
                 </Button>

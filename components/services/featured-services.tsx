@@ -3,10 +3,11 @@
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Button } from "../../components/ui/button"
+import { Card, CardContent, CardFooter } from "../../components/ui/card"
+import { Badge } from "../../components/ui/badge"
 import { Calendar, Star } from "lucide-react"
+import { bookService } from "../../lib/service-utils"
 
 // Mock services data
 const services = [
@@ -81,8 +82,9 @@ const services = [
 export default function FeaturedServices() {
   const router = useRouter()
 
-  const handleBookService = () => {
-    router.push("/checkout")
+  const handleBookService = (service: any) => {
+    // Use the utility function to book a service
+    bookService(service, router)
   }
 
   return (
@@ -140,7 +142,7 @@ export default function FeaturedServices() {
               </CardContent>
 
               <CardFooter className="border-t p-4">
-                <Button className="w-full" onClick={handleBookService}>
+                <Button className="w-full" onClick={() => handleBookService(service)}>
                   <Calendar className="h-4 w-4 mr-2" />
                   Book Service
                 </Button>

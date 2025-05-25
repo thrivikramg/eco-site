@@ -2,102 +2,96 @@
 
 import { useRouter } from "next/navigation"
 import Image from "next/image"
-import { Button } from "../../../components/ui/button"
-import { Card, CardContent, CardFooter } from "../../../components/ui/card"
-import { Badge } from "../../../components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardFooter } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import { Calendar, Star } from "lucide-react"
-import { bookService } from "../../../lib/service-utils"
 
 // Mock services data
 const services = [
   {
     id: "1",
-    name: "Basic Pest Inspection",
-    description: "Comprehensive inspection of your property to identify pest issues and recommend solutions.",
-    image: "/placeholder.svg?height=400&width=400&text=Pest+Inspection",
-    price: "₹999",
-    duration: "1-2 hours",
-    rating: 4.8,
+    name: "Home Energy Audit",
+    description: "Comprehensive assessment of your home's energy efficiency with detailed recommendations for improvements.",
+    image: "/placeholder.svg?height=400&width=400&text=Energy+Audit",
+    price: "₹4,999",
+    duration: "3-4 hours",
+    rating: 4.9,
     reviewCount: 124,
     popular: true,
   },
   {
     id: "2",
-    name: "Organic Pest Control Treatment",
-    description: "Complete treatment using organic solutions to eliminate pests without harmful chemicals.",
-    image: "/placeholder.svg?height=400&width=400&text=Organic+Treatment",
-    price: "₹2,499",
-    duration: "3-4 hours",
-    rating: 4.9,
-    reviewCount: 98,
+    name: "Solar Panel Installation",
+    description: "Custom solar power solutions designed and installed to reduce your reliance on grid electricity.",
+    image: "/placeholder.svg?height=400&width=400&text=Solar+Panels",
+    price: "₹75,000+",
+    duration: "2-3 days",
+    rating: 4.8,
+    reviewCount: 97,
     popular: true,
   },
   {
     id: "3",
-    name: "Preventive Pest Control",
-    description: "Regular preventive treatments to keep your property pest-free throughout the year.",
-    image: "/placeholder.svg?height=400&width=400&text=Preventive+Control",
-    price: "₹1,499/month",
-    duration: "Monthly visits",
+    name: "Home Composting Setup",
+    description: "Installation of composting systems that turn kitchen and garden waste into valuable soil amendments.",
+    image: "/placeholder.svg?height=400&width=400&text=Home+Composting",
+    price: "₹5,999",
+    duration: "3-4 hours",
     rating: 4.7,
-    reviewCount: 76,
+    reviewCount: 82,
     popular: false,
   },
   {
     id: "4",
-    name: "Termite Control",
-    description: "Specialized organic treatment for termite infestations with long-term protection.",
-    image: "/placeholder.svg?height=400&width=400&text=Termite+Control",
-    price: "₹4,999",
-    duration: "4-6 hours",
-    rating: 4.9,
-    reviewCount: 52,
+    name: "Energy-Efficient Appliance Upgrade",
+    description: "Consultation and installation of energy-efficient appliances to reduce electricity consumption and costs.",
+    image: "/placeholder.svg?height=400&width=400&text=Efficient+Appliances",
+    price: "₹2,499",
+    duration: "1-2 hours",
+    rating: 4.8,
+    reviewCount: 64,
     popular: false,
   },
   {
     id: "5",
-    name: "Rodent Control",
-    description: "Humane and effective solutions for rodent problems using eco-friendly methods.",
-    image: "/placeholder.svg?height=400&width=400&text=Rodent+Control",
-    price: "₹1,999",
-    duration: "2-3 hours",
-    rating: 4.6,
-    reviewCount: 68,
-    popular: false,
+    name: "Home Insulation Services",
+    description: "Installation of eco-friendly insulation to improve your home's energy efficiency and comfort.",
+    image: "/placeholder.svg?height=400&width=400&text=Home+Insulation",
+    price: "₹12,999+",
+    duration: "1-2 days",
+    rating: 4.9,
+    reviewCount: 78,
+    popular: true,
   },
   {
     id: "6",
-    name: "Garden Pest Management",
-    description:
-      "Specialized treatment for garden pests using organic solutions safe for plants and beneficial insects.",
-    image: "/placeholder.svg?height=400&width=400&text=Garden+Pest+Management",
-    price: "₹1,799",
-    duration: "2-3 hours",
+    name: "Indoor Air Quality Improvement",
+    description: "Solutions to enhance indoor air quality through natural ventilation, air purifying plants, and non-toxic materials.",
+    image: "/placeholder.svg?height=400&width=400&text=Air+Quality",
+    price: "₹7,999",
+    duration: "1 day",
     rating: 4.8,
-    reviewCount: 45,
-    popular: true,
+    reviewCount: 56,
+    popular: false,
   },
 ]
 
-export default function PestControlServices() {
+export default function HomeSustainabilityServices() {
   const router = useRouter()
 
-  const handleBookService = (service: any) => {
-    // Use the utility function to book a service
-    bookService({
-      ...service,
-      category: "Pest Control" // Ensure category is set
-    }, router)
+  const handleBookService = () => {
+    router.push("/checkout")
   }
 
   return (
     <section id="services" className="py-16 bg-white">
       <div className="container px-4 md:px-6">
         <div className="max-w-3xl mx-auto text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">Our Pest Control Services</h2>
+          <h2 className="text-3xl font-bold mb-4">Our Home Sustainability Services</h2>
           <p className="text-gray-600">
-            We offer a range of eco-friendly pest control services using organic solutions that are safe for your
-            family, pets, and the environment.
+            We offer comprehensive solutions to make your home more environmentally friendly, energy-efficient, and healthy
+            while reducing your utility costs and carbon footprint.
           </p>
         </div>
 
@@ -141,7 +135,7 @@ export default function PestControlServices() {
               </CardContent>
 
               <CardFooter className="border-t p-4">
-                <Button className="w-full" onClick={() => handleBookService(service)}>
+                <Button className="w-full" onClick={handleBookService}>
                   <Calendar className="h-4 w-4 mr-2" />
                   Book Service
                 </Button>

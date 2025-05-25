@@ -1,16 +1,31 @@
-import Link from "next/link"
+"use client"
+
+import { useRouter, usePathname } from "next/navigation"
 import Image from "next/image"
-import { Card, CardContent } from "@/components/ui/card"
-import { productCategories } from "@/lib/products"
+import { Card, CardContent } from "../../components/ui/card"
+import { productCategories } from "../../lib/products"
 
 export default function CategoryShowcase() {
+  const router = useRouter()
+  const pathname = usePathname()
+
+  const handleCategoryClick = (categoryValue: string) => {
+    const searchParams = new URLSearchParams()
+    searchParams.set("category", categoryValue)
+    router.push(`${pathname}?${searchParams.toString()}`)
+  }
+
   return (
     <section className="py-12 bg-gray-50">
       <div className="container">
         <h2 className="text-3xl font-bold text-center mb-8">Shop by Category</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {productCategories.map((category) => (
-            <Link key={category.value} href={`/shop/category/${category.value}`}>
+            <div 
+              key={category.value} 
+              onClick={() => handleCategoryClick(category.value)}
+              className="cursor-pointer"
+            >
               <Card className="overflow-hidden h-full hover:shadow-md transition-shadow group">
                 <div className="relative h-48 w-full bg-green-100">
                   <Image
@@ -25,7 +40,7 @@ export default function CategoryShowcase() {
                   <p className="text-sm text-muted-foreground mt-1">{category.count} products</p>
                 </CardContent>
               </Card>
-            </Link>
+            </div>
           ))}
         </div>
       </div>

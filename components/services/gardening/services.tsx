@@ -12,81 +12,80 @@ import { bookService } from "../../../lib/service-utils"
 const services = [
   {
     id: "1",
-    name: "Basic Pest Inspection",
-    description: "Comprehensive inspection of your property to identify pest issues and recommend solutions.",
-    image: "/placeholder.svg?height=400&width=400&text=Pest+Inspection",
-    price: "₹999",
-    duration: "1-2 hours",
-    rating: 4.8,
-    reviewCount: 124,
+    name: "Garden Design & Planning",
+    description: "Professional garden design services to transform your outdoor space using sustainable principles.",
+    image: "/placeholder.svg?height=400&width=400&text=Garden+Design",
+    price: "₹4,999",
+    duration: "1-2 days",
+    rating: 4.9,
+    reviewCount: 138,
     popular: true,
   },
   {
     id: "2",
-    name: "Organic Pest Control Treatment",
-    description: "Complete treatment using organic solutions to eliminate pests without harmful chemicals.",
-    image: "/placeholder.svg?height=400&width=400&text=Organic+Treatment",
-    price: "₹2,499",
-    duration: "3-4 hours",
-    rating: 4.9,
-    reviewCount: 98,
+    name: "Organic Vegetable Garden Setup",
+    description: "Setup of raised beds or in-ground vegetable gardens using organic soil and sustainable methods.",
+    image: "/placeholder.svg?height=400&width=400&text=Vegetable+Garden",
+    price: "₹3,499",
+    duration: "1 day",
+    rating: 4.8,
+    reviewCount: 112,
     popular: true,
   },
   {
     id: "3",
-    name: "Preventive Pest Control",
-    description: "Regular preventive treatments to keep your property pest-free throughout the year.",
-    image: "/placeholder.svg?height=400&width=400&text=Preventive+Control",
-    price: "₹1,499/month",
-    duration: "Monthly visits",
+    name: "Native Plant Installation",
+    description: "Selection and installation of native plants that thrive in local conditions and support biodiversity.",
+    image: "/placeholder.svg?height=400&width=400&text=Native+Plants",
+    price: "₹2,999",
+    duration: "4-6 hours",
     rating: 4.7,
-    reviewCount: 76,
+    reviewCount: 89,
     popular: false,
   },
   {
     id: "4",
-    name: "Termite Control",
-    description: "Specialized organic treatment for termite infestations with long-term protection.",
-    image: "/placeholder.svg?height=400&width=400&text=Termite+Control",
-    price: "₹4,999",
-    duration: "4-6 hours",
+    name: "Garden Maintenance",
+    description: "Regular maintenance including pruning, weeding, and organic fertilization to keep your garden thriving.",
+    image: "/placeholder.svg?height=400&width=400&text=Garden+Maintenance",
+    price: "₹1,499/month",
+    duration: "Bi-weekly visits",
     rating: 4.9,
-    reviewCount: 52,
-    popular: false,
+    reviewCount: 156,
+    popular: true,
   },
   {
     id: "5",
-    name: "Rodent Control",
-    description: "Humane and effective solutions for rodent problems using eco-friendly methods.",
-    image: "/placeholder.svg?height=400&width=400&text=Rodent+Control",
+    name: "Sustainable Lawn Care",
+    description: "Eco-friendly lawn care services using organic fertilizers and water-efficient practices.",
+    image: "/placeholder.svg?height=400&width=400&text=Lawn+Care",
     price: "₹1,999",
-    duration: "2-3 hours",
+    duration: "3-4 hours",
     rating: 4.6,
-    reviewCount: 68,
+    reviewCount: 72,
     popular: false,
   },
   {
     id: "6",
-    name: "Garden Pest Management",
-    description:
-      "Specialized treatment for garden pests using organic solutions safe for plants and beneficial insects.",
-    image: "/placeholder.svg?height=400&width=400&text=Garden+Pest+Management",
-    price: "₹1,799",
-    duration: "2-3 hours",
+    name: "Herb & Medicinal Garden",
+    description: "Creation of specialized herb gardens with culinary and medicinal plants for your kitchen and health needs.",
+    image: "/placeholder.svg?height=400&width=400&text=Herb+Garden",
+    price: "₹2,499",
+    duration: "5-6 hours",
     rating: 4.8,
-    reviewCount: 45,
-    popular: true,
+    reviewCount: 64,
+    popular: false,
   },
 ]
 
-export default function PestControlServices() {
+export default function GardeningServices() {
   const router = useRouter()
 
   const handleBookService = (service: any) => {
     // Use the utility function to book a service
     bookService({
       ...service,
-      category: "Pest Control" // Ensure category is set
+      category: "Gardening" // Ensure category is set
     }, router)
   }
 
@@ -94,10 +93,10 @@ export default function PestControlServices() {
     <section id="services" className="py-16 bg-white">
       <div className="container px-4 md:px-6">
         <div className="max-w-3xl mx-auto text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">Our Pest Control Services</h2>
+          <h2 className="text-3xl font-bold mb-4">Our Gardening Services</h2>
           <p className="text-gray-600">
-            We offer a range of eco-friendly pest control services using organic solutions that are safe for your
-            family, pets, and the environment.
+            We offer a range of sustainable gardening services that promote biodiversity, water conservation, and healthy plants
+            without harmful chemicals.
           </p>
         </div>
 

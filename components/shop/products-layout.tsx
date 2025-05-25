@@ -2,16 +2,16 @@
 
 import { useState, useEffect } from "react"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
-import ProductGrid from "@/components/shop/product-grid"
-import ProductFilters from "@/components/shop/product-filters"
-import ProductsHeader from "@/components/shop/products-header"
-import { Button } from "@/components/ui/button"
+import ProductGrid from "./product-grid"
+import ProductFilters from "./product-filters"
+import ProductsHeader from "./products-header"
+import { Button } from "../../components/ui/button"
 import { SlidersHorizontal, X } from "lucide-react"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { useToast } from "@/hooks/use-toast"
-import { useMobile } from "@/hooks/use-mobile"
-import { type Product, getProducts } from "@/lib/products"
+import { Sheet, SheetContent, SheetTrigger } from "../../components/ui/sheet"
+import { ScrollArea } from "../../components/ui/scroll-area"
+import { useToast } from "../../hooks/use-toast"
+import { useMobile } from "../../hooks/use-mobile"
+import { type Product, type Category, productCategories, getProducts } from "../../lib/products"
 
 export default function ProductsLayout() {
   const searchParams = useSearchParams()
@@ -31,6 +31,9 @@ export default function ProductsLayout() {
   const searchQuery = searchParams.get("q") || ""
   const sortOption = searchParams.get("sort") || "featured"
 
+  // State for tracking if products are initially loaded
+  const [initialLoad, setInitialLoad] = useState(true)
+
   // Fetch products
   useEffect(() => {
     const fetchProducts = async () => {
@@ -47,6 +50,7 @@ export default function ProductsLayout() {
         })
       } finally {
         setIsLoading(false)
+        setInitialLoad(false)
       }
     }
 
@@ -56,17 +60,53 @@ export default function ProductsLayout() {
   // Filter and sort products
   useEffect(() => {
     if (products.length === 0) return
+    
+    console.log('Filtering products with params:', { 
+      categoryParam, 
+      subcategoryParam,
+      productsCount: products.length 
+    })
 
     let result = [...products]
-
-    // Filter by category
+    
+    // Filter by category - make sure to normalize case
     if (categoryParam) {
-      result = result.filter((product) => product.category.toLowerCase() === categoryParam.toLowerCase())
+      // Get the actual category label based on the value in URL param
+      const selectedCategory = productCategories.find(
+        cat => cat.value.toLowerCase() === categoryParam.toLowerCase()
+      )
+      
+      if (selectedCategory) {
+        console.log(`Filtering by category: ${selectedCategory.label}`)
+        result = result.filter((product) => 
+          product.category.toLowerCase() === selectedCategory.label.toLowerCase()
+        )
+        console.log(`Found ${result.length} products after category filtering`)
+      }
     }
 
-    // Filter by subcategory
+    // Filter by subcategory only if subcategory is selected
     if (subcategoryParam) {
-      result = result.filter((product) => product.subcategory.toLowerCase() === subcategoryParam.toLowerCase())
+      // Get all categories and find the matching subcategory
+      let subcategoryLabel = ''
+      
+      for (const category of productCategories) {
+        const foundSubcategory = category.subcategories.find(
+          sub => sub.value.toLowerCase() === subcategoryParam.toLowerCase()
+        )
+        if (foundSubcategory) {
+          subcategoryLabel = foundSubcategory.label
+          break
+        }
+      }
+      
+      if (subcategoryLabel) {
+        console.log(`Filtering by subcategory: ${subcategoryLabel}`)
+        result = result.filter((product) => 
+          product.subcategory.toLowerCase() === subcategoryLabel.toLowerCase()
+        )
+        console.log(`Found ${result.length} products after subcategory filtering`)
+      }
     }
 
     // Filter by search query
@@ -122,13 +162,24 @@ export default function ProductsLayout() {
   // Clear all filters
   const clearFilters = () => {
     router.push(pathname)
+    setMobileFiltersOpen(false)
   }
 
   // Check if any filters are applied
   const hasFilters = categoryParam || subcategoryParam || searchQuery || sortOption !== "featured"
 
+  // Get page title based on filters
+  const getPageTitle = () => {
+    if (categoryParam) {
+      const category = productCategories.find((c: Category) => c.value === categoryParam)
+      return category ? `${category.label} Products` : "All Products"
+    }
+    return "All Products"
+  }
+
   return (
     <div className="container py-8 md:py-12">
+      <h1 className="text-2xl font-bold mb-6">{getPageTitle()}</h1>
       <ProductsHeader
         totalProducts={filteredProducts.length}
         searchQuery={searchQuery}

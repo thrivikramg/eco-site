@@ -1,8 +1,8 @@
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
-import { productCategories } from "@/lib/products"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../components/ui/accordion"
+import { Checkbox } from "../../components/ui/checkbox"
+import { Label } from "../../components/ui/label"
+import { Badge } from "../../components/ui/badge"
+import { productCategories } from "../../lib/products"
 
 interface ProductFiltersProps {
   selectedCategory: string
@@ -21,6 +21,23 @@ export default function ProductFilters({
   const subcategories = selectedCategory
     ? productCategories.find((cat) => cat.value === selectedCategory)?.subcategories || []
     : []
+    
+  // Function to handle category selection
+  const handleCategoryChange = (category: string) => {
+    if (selectedCategory === category) {
+      // If clicking the already selected category, clear the filter
+      onCategoryChange("")
+      if (selectedSubcategory) {
+        onSubcategoryChange("") // Clear subcategory when category is cleared
+      }
+    } else {
+      // Select new category and clear subcategory
+      onCategoryChange(category)
+      if (selectedSubcategory) {
+        onSubcategoryChange("") // Clear subcategory when changing categories
+      }
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -32,13 +49,7 @@ export default function ProductFilters({
               <Checkbox
                 id={`category-${category.value}`}
                 checked={selectedCategory === category.value}
-                onCheckedChange={() => {
-                  if (selectedCategory === category.value) {
-                    onCategoryChange("")
-                  } else {
-                    onCategoryChange(category.value)
-                  }
-                }}
+                onCheckedChange={() => handleCategoryChange(category.value)}
               />
               <Label
                 htmlFor={`category-${category.value}`}
@@ -65,9 +76,9 @@ export default function ProductFilters({
                   checked={selectedSubcategory === subcategory.value}
                   onCheckedChange={() => {
                     if (selectedSubcategory === subcategory.value) {
-                      onSubcategoryChange("")
+                      onSubcategoryChange("") // Deselect if clicked again
                     } else {
-                      onSubcategoryChange(subcategory.value)
+                      onSubcategoryChange(subcategory.value) // Select new subcategory
                     }
                   }}
                 />

@@ -70,13 +70,27 @@ export default function CartPage() {
   }
 
   const handlePlaceOrder = () => {
+    setIsProcessing(true)
+    
     if (!isAuthenticated) {
+      setIsProcessing(false)
       setShowAuthModalState(true)
       return
     }
 
-    // Navigate to checkout page
-    router.push("/checkout")
+    try {
+      // Add a small delay to ensure all state updates are processed
+      // Navigate to checkout page
+      window.location.href = "/checkout"
+    } catch (error) {
+      console.error("Navigation error:", error)
+      toast({
+        title: "Navigation error",
+        description: "Could not proceed to checkout. Please try again.",
+        variant: "destructive",
+      })
+      setIsProcessing(false)
+    }
   }
 
   // Don't render until client-side to avoid hydration mismatch
@@ -92,8 +106,8 @@ export default function CartPage() {
     <div className="container px-4 py-10 mx-auto max-w-7xl">
       {showAuthModalState && (
         <AuthModal
-          isOpen={showAuthModalState}
-          onClose={() => setShowAuthModalState(false)}
+          open={showAuthModalState}
+          onOpenChange={(open) => setShowAuthModalState(open)}
           onSuccess={() => {
             setShowAuthModalState(false)
             handlePlaceOrder()
@@ -243,21 +257,12 @@ export default function CartPage() {
                   </Button>
                 </div>
 
-                <Button
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-white"
-                  size="lg"
-                  onClick={handlePlaceOrder}
-                  disabled={isProcessing}
+                <a 
+                  href="/checkout" 
+                  className="w-full block text-center py-3 px-4 rounded-md font-medium text-white bg-orange-500 hover:bg-orange-600"
                 >
-                  {isProcessing ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Processing...
-                    </>
-                  ) : (
-                    "PLACE ORDER"
-                  )}
-                </Button>
+                  PLACE ORDER
+                </a>
               </div>
 
               <div className="mt-6 flex items-center gap-2 text-sm text-muted-foreground">

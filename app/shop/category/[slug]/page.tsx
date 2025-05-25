@@ -9,10 +9,13 @@ interface CategoryPageProps {
 }
 
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
-  const category = productCategories.find((cat) => cat.value === params.slug)
+  // Ensure params is properly awaited before accessing properties
+  const slug = params?.slug || ''
+  
+  const category = productCategories.find((cat) => cat.value === slug)
   const categoryName =
     category?.label ||
-    params.slug
+    slug
       .split("-")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ")

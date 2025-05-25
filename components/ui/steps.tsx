@@ -5,14 +5,26 @@ import { cn } from "@/lib/utils"
 type StepStatus = "incomplete" | "current" | "complete"
 
 interface StepsProps {
-  steps: {
+  steps?: {
     label: string
     status: StepStatus
   }[]
   className?: string
+  children?: React.ReactNode
 }
 
-export function Steps({ steps, className }: StepsProps) {
+export function Steps({ steps, className, children }: StepsProps) {
+  // If children are provided, use them instead of steps prop
+  if (children) {
+    return <div className={cn("flex w-full", className)}>{children}</div>
+  }
+  
+  // If no steps and no children, return empty div
+  if (!steps || steps.length === 0) {
+    return <div className={cn("flex w-full", className)} />
+  }
+  
+  // Otherwise, render using steps prop
   return (
     <div className={cn("flex w-full", className)}>
       {steps.map((step, index) => (

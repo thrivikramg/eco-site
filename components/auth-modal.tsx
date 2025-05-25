@@ -17,9 +17,10 @@ interface AuthModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   defaultTab?: "login" | "register"
+  onSuccess?: () => void
 }
 
-export default function AuthModal({ open, onOpenChange, defaultTab = "login" }: AuthModalProps) {
+export default function AuthModal({ open, onOpenChange, defaultTab = "login", onSuccess }: AuthModalProps) {
   const [activeTab, setActiveTab] = useState<string>(defaultTab)
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
@@ -153,6 +154,10 @@ export default function AuthModal({ open, onOpenChange, defaultTab = "login" }: 
           description: "Welcome back to EcoGrow!",
         })
         onOpenChange(false)
+        // Call onSuccess callback if provided
+        if (onSuccess) {
+          onSuccess()
+        }
       } else {
         toast({
           title: "Login failed",
@@ -187,6 +192,10 @@ export default function AuthModal({ open, onOpenChange, defaultTab = "login" }: 
           description: "Welcome to EcoGrow!",
         })
         onOpenChange(false)
+        // Call onSuccess callback if provided
+        if (onSuccess) {
+          onSuccess()
+        }
       } else {
         toast({
           title: "Registration failed",

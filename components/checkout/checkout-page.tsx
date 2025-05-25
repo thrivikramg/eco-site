@@ -494,10 +494,9 @@ export default function CheckoutPageClient() {
       )}
 
       <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
+        open={isAuthModalOpen}
+        onOpenChange={(open) => setIsAuthModalOpen(open)}
         onSuccess={() => {
-          setIsAuthModalOpen(false)
           // After successful login, try placing order again
           setTimeout(() => handlePlaceOrder(), 500)
         }}

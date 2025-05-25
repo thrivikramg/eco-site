@@ -143,19 +143,29 @@ export default function OrderDetails() {
           <CardContent>
             <Steps className="mb-8">
               <Step
-                icon={CheckCircle}
-                title="Order Placed"
-                description="Your order has been placed"
+                label="Order Placed"
                 status="complete"
-              />
+              >
+                <CheckCircle className="h-4 w-4" />
+              </Step>
               <Step
-                icon={Package}
-                title="Processing"
-                description="Your order is being processed"
-                status="in-progress"
-              />
-              <Step icon={Truck} title="Shipped" description="Your order is on the way" status="upcoming" />
-              <Step icon={Home} title="Delivered" description="Your order has been delivered" status="upcoming" />
+                label="Processing"
+                status="current"
+              >
+                <Package className="h-4 w-4" />
+              </Step>
+              <Step 
+                label="Shipped"
+                status="incomplete"
+              >
+                <Truck className="h-4 w-4" />
+              </Step>
+              <Step 
+                label="Delivered"
+                status="incomplete"
+              >
+                <Home className="h-4 w-4" />
+              </Step>
             </Steps>
 
             <div className="grid md:grid-cols-2 gap-6">

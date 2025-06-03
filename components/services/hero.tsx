@@ -47,21 +47,11 @@ export default function ServicesHero() {
           <div className="relative">
             <div className="relative h-[400px] w-full rounded-lg overflow-hidden shadow-xl">
               <div className="absolute inset-0 bg-gradient-to-br from-green-600/20 to-green-600/0 z-10" />
-              <video
+              <img
+                src={`https://res.cloudinary.com/dc2mzcoqr/image/upload/v1748886048/Eco-Friendly_Services_for_Your_Home_Garden_rbsbc6.avif`}
+                alt="Sustainable products"
                 className="absolute inset-0 w-full h-full object-cover"
-                autoPlay
-                muted
-                loop
-                poster="/placeholder.svg?height=400&width=600&text=Eco+Services"
-              >
-                <source src="#" type="video/mp4" />
-                {/* Fallback image */}
-                <img
-                  src="/placeholder.svg?height=400&width=600&text=Eco+Services"
-                  alt="Eco-friendly services"
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-              </video>
+              />
             </div>
 
             {/* Decorative elements */}

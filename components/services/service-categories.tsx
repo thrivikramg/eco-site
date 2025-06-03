@@ -8,7 +8,7 @@ const serviceCategories = [
     title: "Pest Control",
     description: "Eco-friendly pest management solutions using natural ingredients.",
     icon: Bug,
-    image: "/placeholder.svg?height=300&width=400&text=Pest+Control",
+    image: "https://res.cloudinary.com/dc2mzcoqr/image/upload/v1748886589/garden-pest-control-service_a23tpy.webp",
     link: "/services/pest-control",
     count: 8,
   },

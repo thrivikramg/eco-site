@@ -7,6 +7,7 @@ type User = {
   name: string
   email: string
   avatar?: string
+  role?: 'buyer' | 'vendor'
 }
 
 type AuthContextType = {
@@ -50,11 +51,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Mock successful login for demo purposes
     if (email && password) {
+      // Simulate a vendor user for test@vendor.com, buyer for all others
+      const isVendor = email.toLowerCase() === 'test@vendor.com'
       const mockUser = {
         id: "user-123",
         name: "Rahul Sharma",
         email: email,
         avatar: "/placeholder.svg?height=100&width=100&text=RS",
+        role: isVendor ? 'vendor' as const : 'buyer' as const
       }
 
       setUser(mockUser)
@@ -84,6 +88,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Mock successful registration for demo purposes
     if (name && email && password) {
+      // For demo, we'll set any email with 'vendor' in it as a vendor role
+      const isVendor = email.toLowerCase().includes('vendor')
       const mockUser = {
         id: "user-" + Math.floor(Math.random() * 1000),
         name: name,
@@ -94,6 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             .split(" ")
             .map((n) => n[0])
             .join(""),
+        role: isVendor ? 'vendor' as const : 'buyer' as const
       }
 
       setUser(mockUser)

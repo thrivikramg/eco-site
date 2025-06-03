@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { ShoppingCart, LogIn } from "lucide-react"
+import { ShoppingCart, LogIn, Store } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -32,6 +32,9 @@ export default function Header() {
   const [mounted, setMounted] = useState(false)
   const pathname = usePathname()
   const { isAuthenticated, user, logout } = useAuth()
+  
+  // Check if user is a vendor (in a real app, this would come from user data)
+  const isVendor = user?.role === 'vendor' || false
 
   // Initialize cart with a safe default
   const cart = useCart()
@@ -81,6 +84,31 @@ export default function Header() {
               )}
             </Link>
           ))}
+          
+          {/* Show appropriate button based on user role */}
+          {isVendor ? (
+            <Link href="/dashboard">
+              <Button
+                variant="default"
+                size="sm"
+                className="bg-green-600 hover:bg-green-700 text-white font-medium rounded-md border-2 border-green-500 flex items-center gap-1.5 px-4 py-2 transform hover:scale-105 transition-all shadow-sm hover:shadow-md"
+              >
+                <Store className="h-4 w-4" />
+                Vendor Dashboard
+              </Button>
+            </Link>
+          ) : (
+            <Link href="/sell">
+              <Button
+                variant="default"
+                size="sm"
+                className="bg-green-600 hover:bg-green-700 text-white font-medium rounded-md border-2 border-green-500 flex items-center gap-1.5 px-4 py-2 transform hover:scale-105 transition-all shadow-sm hover:shadow-md"
+              >
+                <Store className="h-4 w-4" />
+                Sell on EcoGrow
+              </Button>
+            </Link>
+          )}
         </nav>
 
         <div className="flex items-center gap-2 animate-fade-in">
@@ -146,6 +174,13 @@ export default function Header() {
                     Settings
                   </Link>
                 </DropdownMenuItem>
+                {isVendor && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard" className="cursor-pointer w-full text-green-600 font-medium">
+                      Vendor Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-red-500 focus:text-red-500 cursor-pointer" onClick={() => logout()}>
                   Logout

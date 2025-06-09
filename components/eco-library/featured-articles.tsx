@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { ArrowRight } from "lucide-react"
 
 // Define the article type to include all required properties
-interface Article {
+export interface Article {
   id: string
   title: string
   excerpt: string
@@ -19,7 +19,7 @@ interface Article {
   externalLink?: string // Optional external link property
 }
 
-const featuredArticles: Article[] = [
+export const featuredArticles: Article[] = [
   {
     id: "1",
     title: "10 Endangered Species Making a Comeback",
@@ -102,9 +102,9 @@ export default function FeaturedArticles() {
             <h2 className="text-3xl font-bold">Featured Articles</h2>
             <p className="text-gray-600 mt-2">Curated content to enhance your eco-knowledge</p>
           </div>
-          <Link href="/eco-library/all-articles">
-            <Button variant="outline" className="mt-4 md:mt-0">
-              View All Articles
+          <Link href="/eco-library/all-articles" passHref legacyBehavior>
+            <Button asChild variant="outline" className="mt-4 md:mt-0">
+              <a>View All Articles</a>
             </Button>
           </Link>
         </div>

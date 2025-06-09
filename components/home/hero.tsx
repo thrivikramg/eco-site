@@ -13,7 +13,7 @@ export default function Hero() {
   const router = useRouter()
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const heroRef = useRef(null)
-  const isInView = useInView(heroRef, { once: false })
+  const isInView = useInView(heroRef, { once: false, amount: 0.1 })
   const mainControls = useAnimation()
 
   // Handle mouse movement for parallax effect
@@ -28,8 +28,18 @@ export default function Hero() {
   useEffect(() => {
     if (isInView) {
       mainControls.start("visible")
+    } else {
+      mainControls.start("hidden")
     }
   }, [isInView, mainControls])
+
+  // Initialize animations on mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      mainControls.start("visible")
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [mainControls])
 
   return (
     <section
@@ -96,18 +106,24 @@ export default function Hero() {
               <motion.div
                 key={i}
                 className="absolute"
-                style={{
-                  left: position.left,
-                  top: position.top
-                }}
+                initial={{ y: 0, opacity: 0.5 }}
                 animate={{
-                  y: [0, -10, 0],
+                  y: [0, -15, 0],
                   opacity: [0.5, 1, 0.5],
                 }}
                 transition={{
                   duration: fixedDuration,
-                  repeat: Number.POSITIVE_INFINITY,
-                  delay: fixedDelay,
+                  repeat: Infinity,
+                  repeatType: 'loop',
+                  ease: 'easeInOut',
+                  delay: fixedDelay * 0.3,
+                  times: [0, 0.5, 1]
+                }}
+                style={{
+                  position: 'absolute',
+                  left: position.left,
+                  top: position.top,
+                  willChange: 'transform, opacity'
                 }}
               >
                 {i % 4 === 0 && <Leaf className="text-emerald-600" size={i % 2 === 0 ? 24 : 16} />}
@@ -129,7 +145,14 @@ export default function Hero() {
             animate={mainControls}
             variants={{
               hidden: { opacity: 0 },
-              visible: { opacity: 1, transition: { staggerChildren: 0.2 } },
+              visible: { 
+                opacity: 1, 
+                transition: { 
+                  staggerChildren: 0.2,
+                  when: "beforeChildren",
+                  staggerDirection: 1
+                } 
+              },
             }}
           >
             <motion.div
@@ -160,7 +183,7 @@ export default function Hero() {
                     className="absolute -bottom-2 left-0 h-3 w-full bg-emerald-200 rounded-full"
                     initial={{ width: 0 }}
                     animate={{ width: "100%" }}
-                    transition={{ delay: 1.2, duration: 0.8 }}
+                    transition={{ delay: 0.8, duration: 0.8, ease: "easeOut" }}
                   />
                 </span>
               </h1>

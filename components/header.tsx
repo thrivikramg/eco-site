@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { ShoppingCart, LogIn, Store } from "lucide-react"
+import { ShoppingCart, LogIn, Store, Sparkles, Bot } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -69,12 +69,12 @@ export default function Header() {
           </span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-6 animate-fade-in">
+        <nav className="hidden md:flex items-center gap-4 animate-fade-in">
           {navigation.map((item) => (
             <Link
               key={item.name}
               href={item.href}
-              className={`text-sm hover:text-primary transition-colors relative ${
+              className={`text-sm hover:text-primary transition-colors ${
                 pathname === item.href ? "font-medium text-primary" : "text-muted-foreground"
               }`}
             >
@@ -84,6 +84,23 @@ export default function Header() {
               )}
             </Link>
           ))}
+          
+          {/* AI Learning Assistant Button */}
+          <Link href="/ai-learning" className="relative group">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-purple-500 to-indigo-600 text-white text-sm font-medium hover:shadow-lg hover:shadow-purple-200 transition-all duration-300 transform hover:scale-105">
+              <Bot className="h-4 w-4" />
+              <span>Learn with AI</span>
+              <div className="absolute -top-1 -right-1">
+                <div className="relative">
+                  <span className="absolute inline-flex h-3 w-3 rounded-full bg-yellow-400 opacity-75 animate-ping"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-400"></span>
+                </div>
+              </div>
+            </div>
+            <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+              Ask me anything about sustainability! ✨
+            </div>
+          </Link>
           
           {/* Show appropriate button based on user role */}
           {isVendor ? (

@@ -22,20 +22,21 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange forcedTheme="light">
-          <AuthProvider>
-            <CartProvider>
-              <div className="flex min-h-screen flex-col">
-                <Header />
-                <main className="flex-1">{children}</main>
-                <Footer />
-              </div>
-            </CartProvider>
-          </AuthProvider>
-        </ThemeProvider>
-      </body>
-    </html>
+<html lang="en" suppressHydrationWarning>
+  <body className={inter.className}>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+      <AuthProvider>
+        <CartProvider>
+          <div className="flex min-h-screen flex-col">
+            <Header />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </div>
+        </CartProvider>
+      </AuthProvider>
+    </ThemeProvider>
+  </body>
+</html>
+
   )
 }

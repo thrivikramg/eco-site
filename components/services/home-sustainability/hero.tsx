@@ -70,7 +70,7 @@ export default function HomeSustainabilityHero() {
           <div className="relative">
             <div className="relative h-[400px] w-full rounded-lg overflow-hidden shadow-xl">
               <Image
-                src="/placeholder.svg?height=400&width=600&text=Home+Sustainability"
+                src={`https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750003665/Home_Sustainability_gw4wtd.jpg`}
                 alt="Home Sustainability"
                 fill
                 className="object-cover"

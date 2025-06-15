@@ -52,29 +52,146 @@ export default function PlantDiseaseDetector() {
     reader.readAsDataURL(file)
   }
 
-  const analyzeImage = () => {
-    if (!image) return
+  const analyzeImage = async () => {
+    if (!image) {
+      toast({
+        title: 'Error',
+        description: 'No image selected for analysis',
+        variant: 'destructive',
+      })
+      return
+    }
 
     setIsAnalyzing(true)
 
-    // Simulate API call with timeout
-    setTimeout(() => {
-      // Mock result - in a real app, this would come from an AI service
-      setResult({
-        disease: "Tomato Late Blight",
-        confidence: 92.5,
-        description:
-          "Late blight is a fungal disease that affects tomatoes and potatoes. It appears as dark, water-soaked spots on leaves that quickly enlarge and turn brown. White fungal growth may appear on the undersides of leaves in humid conditions.",
-        treatment:
-          "Remove and destroy infected plants. Apply copper-based fungicide to healthy plants as a preventative measure. Ensure good air circulation and avoid overhead watering. Plant resistant varieties in future seasons.",
+    try {
+      console.log('Starting image analysis...')
+      
+      // Debug: Log all environment variables (in development only)
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Environment variables:', Object.keys(process.env).filter(key => key.includes('OPENROUTER') || key.includes('NEXT_PUBLIC')));
+      }
+      
+      // Check if API key is available
+      const apiKey = process.env.OPENROUTER_API_KEY;
+      console.log('API Key found:', !!apiKey);
+      
+      if (!apiKey) {
+        console.error('API Key not found in environment variables. Make sure to set OPENROUTER_API_KEY in your .env.local file.');
+        throw new Error('OpenRouter API key is not configured. Please check your environment variables.');
+      }
+
+      // Verify image format
+      if (!image.startsWith('data:image/')) {
+        throw new Error('Invalid image format. Please upload a valid image file.')
+      }
+
+      console.log('Sending request to OpenRouter API...')
+      
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': window.location.href,
+          'X-Title': 'EcoGrow Plant Disease Detector',
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-pro-vision',
+          messages: [
+            {
+              role: 'user',
+              content: [
+                {
+                  type: 'text',
+                  text: 'Analyze this plant image for any diseases. Provide the response in valid JSON format with these exact fields: {\"disease\": string, \"confidence\": number, \"description\": string, \"treatment\": string}. Only include the JSON object in your response.'
+                },
+                {
+                  type: 'image_url',
+                  image_url: {
+                    url: image
+                  }
+                }
+              ]
+            }
+          ],
+          temperature: 0.2,
+          max_tokens: 1000
+        })
       })
-      setIsAnalyzing(false)
+
+      console.log('API Response Status:', response.status)
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        console.error('API Error:', errorData)
+        throw new Error(`API request failed with status ${response.status}`)
+      }
+
+      const data = await response.json()
+      console.log('API Response Data:', data)
+      
+      const content = data.choices?.[0]?.message?.content
+      
+      if (!content) {
+        throw new Error('No content in API response')
+      }
+
+      // Try to extract JSON from the response
+      let resultData
+      try {
+        // Try to parse as direct JSON first
+        resultData = JSON.parse(content)
+        
+        // If the response is a string that contains JSON, try to extract it
+        if (typeof resultData === 'string') {
+          const jsonMatch = resultData.match(/\{[\s\S]*\}/)
+          if (jsonMatch) {
+            resultData = JSON.parse(jsonMatch[0])
+          }
+        }
+      } catch (parseError) {
+        console.error('Error parsing API response:', parseError)
+        throw new Error('Could not parse the analysis results. Please try again.')
+      }
+      
+      setResult({
+        disease: resultData.disease || 'Unknown Disease',
+        confidence: resultData.confidence || 0,
+        description: resultData.description || 'No description available.',
+        treatment: resultData.treatment || 'No specific treatment information available.',
+      })
 
       toast({
-        title: "Analysis complete",
-        description: "We've identified the plant disease in your image.",
+        title: 'Analysis complete',
+        description: 'We\'ve analyzed your plant image.',
       })
-    }, 2000)
+    } catch (error) {
+      console.error('Error analyzing image:', error)
+      let errorMessage = 'Failed to analyze the image. Please try again.'
+      
+      if (error instanceof Error) {
+        if (error.message.includes('API key')) {
+          errorMessage = 'API key is not configured. Please check your environment variables.'
+        } else if (error.message.includes('network')) {
+          errorMessage = 'Network error. Please check your internet connection.'
+        } else if (error.message.includes('parse') || error.message.includes('JSON')) {
+          errorMessage = 'Error processing the analysis results. The image might be unclear or not a plant.'
+        } else if (error.message.includes('status')) {
+          errorMessage = `API request failed: ${error.message}`
+        } else {
+          errorMessage = error.message || errorMessage
+        }
+      }
+      
+      toast({
+        title: 'Error',
+        description: errorMessage,
+        variant: 'destructive',
+      })
+    } finally {
+      setIsAnalyzing(false)
+    }
   }
 
   const resetDetector = () => {

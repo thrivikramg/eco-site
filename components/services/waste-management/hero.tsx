@@ -70,7 +70,7 @@ export default function WasteManagementHero() {
           <div className="relative">
             <div className="relative h-[400px] w-full rounded-lg overflow-hidden shadow-xl">
               <Image
-                src="/placeholder.svg?height=400&width=600&text=Waste+Management"
+                src={`https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750003634/Waste_Management_vsu5lb.jpg`}
                 alt="Waste Management"
                 fill
                 className="object-cover"

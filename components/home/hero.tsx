@@ -408,13 +408,7 @@ export default function Hero() {
                   transform: "translateZ(40px)",
                 }}
               >
-                <motion.div
-                  animate={{
-                    rotateY: mousePosition.x * 15,
-                    rotateX: mousePosition.y * -15,
-                  }}
-                  transition={{ type: "spring", damping: 10 }}
-                >
+                <motion.div>
                   <p className="text-xs text-emerald-800 font-medium">Impact</p>
                   <p className="text-2xl font-bold text-emerald-700">10K+</p>
                   <p className="text-xs text-emerald-800">Trees Planted</p>

@@ -55,7 +55,7 @@ export default function PlantDiseaseBanner() {
 
             <div className="relative h-[300px] md:h-[400px] rounded-lg overflow-hidden">
               <Image
-                src="/placeholder.svg?height=400&width=600&text=Plant+Disease+Detector"
+                src={`https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750010589/Plant-disease-classifier-with-ai-blog-banner_ffbbx0.jpg`}
                 alt="Plant Disease Detector"
                 fill
                 className="object-cover"

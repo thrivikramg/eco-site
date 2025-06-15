@@ -6,27 +6,27 @@ const steps = [
     title: "Inspection",
     description:
       "Our technicians thoroughly inspect your property to identify pest species, infestation levels, and entry points.",
-    image: "/placeholder.svg?height=300&width=400&text=Inspection",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1748886589/garden-pest-control-service_a23tpy.webp`,
   },
   {
     number: "02",
     title: "Customized Plan",
     description:
       "We develop a tailored treatment plan using organic solutions specific to your pest issues and property needs.",
-    image: "/placeholder.svg?height=300&width=400&text=Planning",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750004270/pestcont_kglz1q.webp`,
   },
   {
     number: "03",
     title: "Treatment",
     description: "Our team applies organic treatments targeting active pests while setting up preventive barriers.",
-    image: "/placeholder.svg?height=300&width=400&text=Treatment",
+    image:`https://res.cloudinary.com/dc2mzcoqr/image/upload/v1748886589/garden-pest-control-service_a23tpy.webp`,
   },
   {
     number: "04",
     title: "Follow-up",
     description:
       "We conduct follow-up visits to ensure complete pest elimination and provide additional treatments if needed.",
-    image: "/placeholder.svg?height=300&width=400&text=Follow-up",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750004270/pestcont_kglz1q.webp`,
   },
 ]
 

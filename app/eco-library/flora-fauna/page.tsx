@@ -12,7 +12,7 @@ const floraFaunaArticles = [
     title: "10 Rare Animal Species Making a Comeback",
     excerpt: "Thanks to conservation efforts, these endangered species are showing promising signs of recovery.",
     category: "Conservation",
-    image: "/placeholder.svg?height=300&width=500&text=Rare+Species+Comeback",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750015104/hq720_sv2zwd.jpg`,
     author: "Dr. Maya Patel",
     date: "May 23, 2025",
     readTime: "8 min read",
@@ -23,7 +23,7 @@ const floraFaunaArticles = [
     title: "The Hidden World of Mycorrhizal Networks",
     excerpt: "How underground fungal networks help trees communicate and share resources.",
     category: "Plant Biology",
-    image: "/placeholder.svg?height=300&width=500&text=Mycorrhizal+Networks",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750015102/826760c4-5f79-4a56-b01c-bec5673f42a0_dzlrdz.jpg`,
     author: "Prof. Suzanne Simard",
     date: "May 20, 2025",
     readTime: "12 min read",
@@ -34,7 +34,7 @@ const floraFaunaArticles = [
     title: "Monarch Butterfly Migration: A Spectacular Journey",
     excerpt: "Following the 3,000-mile journey of one of nature's most impressive migrations.",
     category: "Wildlife",
-    image: "/placeholder.svg?height=300&width=500&text=Monarch+Migration",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750015102/826760c4-5f79-4a56-b01c-bec5673f42a0_dzlrdz.jpg`,
     author: "Carlos Gutierrez",
     date: "May 18, 2025",
     readTime: "10 min read",
@@ -45,7 +45,7 @@ const floraFaunaArticles = [
     title: "Keystone Species: The Architects of Ecosystems",
     excerpt: "How certain species have disproportionate effects on their environments.",
     category: "Ecology",
-    image: "/placeholder.svg?height=300&width=500&text=Keystone+Species",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750015104/hq720_sv2zwd.jpg`,
     author: "Dr. Jane Goodall",
     date: "May 15, 2025",
     readTime: "11 min read",
@@ -56,7 +56,7 @@ const floraFaunaArticles = [
     title: "The Remarkable Resilience of Mangrove Forests",
     excerpt: "How these unique coastal ecosystems protect shorelines and support biodiversity.",
     category: "Ecosystems",
-    image: "/placeholder.svg?height=300&width=500&text=Mangrove+Forests",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750015029/intricate-line-art-earth-surrounded-diverse-flora-fauna-drawing-save-366564860_rinsr9.jpg`,
     author: "Lin Wei Chen",
     date: "May 12, 2025",
     readTime: "9 min read",
@@ -67,7 +67,7 @@ const floraFaunaArticles = [
     title: "Urban Wildlife: Adapting to City Life",
     excerpt: "How animals are evolving to thrive in our concrete jungles.",
     category: "Urban Ecology",
-    image: "/placeholder.svg?height=300&width=500&text=Urban+Wildlife",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750015029/intricate-line-art-earth-surrounded-diverse-flora-fauna-drawing-save-366564860_rinsr9.jpg`,
     author: "Dr. Mark Johnson",
     date: "May 9, 2025",
     readTime: "7 min read",
@@ -78,7 +78,7 @@ const floraFaunaArticles = [
     title: "Pollinator Decline: Causes and Solutions",
     excerpt: "Understanding why bees and other pollinators are disappearing and how to help.",
     category: "Conservation",
-    image: "/placeholder.svg?height=300&width=500&text=Pollinator+Decline",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750015102/826760c4-5f79-4a56-b01c-bec5673f42a0_dzlrdz.jpg`,
     author: "Dr. Elizabeth Warren",
     date: "May 6, 2025",
     readTime: "13 min read",
@@ -89,7 +89,7 @@ const floraFaunaArticles = [
     title: "Invasive Species: Ecological Disruptors",
     excerpt: "How non-native species can transform ecosystems and threaten biodiversity.",
     category: "Ecology",
-    image: "/placeholder.svg?height=300&width=500&text=Invasive+Species",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750015104/hq720_sv2zwd.jpg`,
     author: "Prof. Daniel Smith",
     date: "May 3, 2025",
     readTime: "10 min read",
@@ -151,7 +151,7 @@ const generateMoreArticles = () => {
         title: modifiedTitle,
         excerpt: `Continued exploration of ${title.toLowerCase()}.`,
         category: ["Conservation", "Ecology", "Wildlife", "Plant Biology", "Ecosystems"][Math.floor(Math.random() * 5)],
-        image: `/placeholder.svg?height=300&width=500&text=${title.replace(/ /g, '+')}`,
+        image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750015102/826760c4-5f79-4a56-b01c-bec5673f42a0_dzlrdz.jpg`,
         author: baseArticles[i % baseArticles.length].author,
         date: `May ${Math.floor(Math.random() * 25) + 1}, 2025`,
         readTime: `${Math.floor(Math.random() * 10) + 5} min read`,
@@ -163,7 +163,7 @@ const generateMoreArticles = () => {
         title: title,
         excerpt: `Exploring the fascinating world of ${title.toLowerCase()}.`,
         category: ["Conservation", "Ecology", "Wildlife", "Plant Biology", "Ecosystems"][Math.floor(Math.random() * 5)],
-        image: `/placeholder.svg?height=300&width=500&text=${title.replace(/ /g, '+')}`,
+        image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750015108/boersch-2_hvmigf.jpg`,
         author: baseArticles[i % baseArticles.length].author,
         date: `May ${Math.floor(Math.random() * 25) + 1}, 2025`,
         readTime: `${Math.floor(Math.random() * 10) + 5} min read`,
@@ -181,7 +181,7 @@ export default function FloraFaunaPage() {
   return (
     <div className="bg-[#f8faf5] min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-80 bg-cover bg-center" style={{ backgroundImage: "url('/placeholder.svg?height=800&width=1600&text=Flora+and+Fauna')" }}>
+      <section className="relative h-80 bg-cover bg-center" style={{ backgroundImage: 'url(https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750015108/boersch-2_hvmigf.jpg)' }}>
         <div className="absolute inset-0 bg-black bg-opacity-50" />
         <div className="relative container mx-auto px-4 h-full flex items-center z-10">
           <div className="max-w-3xl">

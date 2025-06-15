@@ -70,7 +70,7 @@ export default function LandscapingHero() {
           <div className="relative">
             <div className="relative h-[400px] w-full rounded-lg overflow-hidden shadow-xl">
               <Image
-                src="/placeholder.svg?height=400&width=600&text=Sustainable+Landscaping"
+                src={`https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750003728/Landscaping_wklbnf.jpg`}
                 alt="Sustainable Landscaping"
                 fill
                 className="object-cover"

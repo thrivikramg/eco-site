@@ -69,6 +69,7 @@ export default function SellHero() {
               <div className="absolute inset-0 bg-gradient-to-br from-green-600/20 to-green-600/0 z-10" />
               <img
                 src={`https://res.cloudinary.com/dc2mzcoqr/image/upload/c_fill,q_90/Grow-Your-Business_lxpd01`}
+                
                 alt="Sustainable products"
                 className="absolute inset-0 w-full h-full object-cover"
               />

@@ -12,7 +12,7 @@ const oceanographyArticles = [
     title: "Ocean Acidification: The Silent Crisis",
     excerpt: "How rising carbon dioxide levels are changing the chemistry of our oceans and threatening marine life.",
     category: "Climate Impact",
-    image: "/placeholder.svg?height=300&width=500&text=Ocean+Acidification",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750015821/6253e8d4f091b0062a75b345_francesco-ungaro-MJ1Q7hHeGlA-unsplash-2_nn7oke.jpg`,
     author: "Dr. Richard Feely",
     date: "May 22, 2025",
     readTime: "11 min read",
@@ -23,7 +23,7 @@ const oceanographyArticles = [
     title: "The Great Barrier Reef: Fighting for Survival",
     excerpt: "Current conservation efforts to protect the world's largest coral reef system.",
     category: "Coral Reefs",
-    image: "/placeholder.svg?height=300&width=500&text=Great+Barrier+Reef",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750015821/6253e8d4f091b0062a75b345_francesco-ungaro-MJ1Q7hHeGlA-unsplash-2_nn7oke.jpg`,
     author: "Dr. Ove Hoegh-Guldberg",
     date: "May 19, 2025",
     readTime: "14 min read",
@@ -34,7 +34,7 @@ const oceanographyArticles = [
     title: "Deep Sea Hydrothermal Vents: Oases of Life",
     excerpt: "Exploring the unique ecosystems thriving in the most extreme environments on Earth.",
     category: "Marine Biology",
-    image: "/placeholder.svg?height=300&width=500&text=Hydrothermal+Vents",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750015821/6253e8d4f091b0062a75b345_francesco-ungaro-MJ1Q7hHeGlA-unsplash-2_nn7oke.jpg`,
     author: "Dr. Cindy Van Dover",
     date: "May 16, 2025",
     readTime: "9 min read",
@@ -45,7 +45,7 @@ const oceanographyArticles = [
     title: "Plastic Pollution in Our Oceans: A Global Crisis",
     excerpt: "The devastating impact of plastic waste on marine ecosystems and what we can do about it.",
     category: "Pollution",
-    image: "/placeholder.svg?height=300&width=500&text=Ocean+Plastic+Pollution",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750015821/6253e8d4f091b0062a75b345_francesco-ungaro-MJ1Q7hHeGlA-unsplash-2_nn7oke.jpg`,
     author: "Dr. Marcus Eriksen",
     date: "May 13, 2025",
     readTime: "12 min read",
@@ -56,7 +56,7 @@ const oceanographyArticles = [
     title: "The Mysterious World of Cephalopods",
     excerpt: "Octopuses, squids, and cuttlefish: The intelligent aliens of our oceans.",
     category: "Marine Life",
-    image: "/placeholder.svg?height=300&width=500&text=Cephalopods",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750015821/6253e8d4f091b0062a75b345_francesco-ungaro-MJ1Q7hHeGlA-unsplash-2_nn7oke.jpg`,
     author: "Dr. Jennifer Mather",
     date: "May 10, 2025",
     readTime: "8 min read",
@@ -67,7 +67,7 @@ const oceanographyArticles = [
     title: "Ocean Currents and Climate Regulation",
     excerpt: "How ocean circulation patterns help regulate Earth's climate system.",
     category: "Oceanography",
-    image: "/placeholder.svg?height=300&width=500&text=Ocean+Currents",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750015821/6253e8d4f091b0062a75b345_francesco-ungaro-MJ1Q7hHeGlA-unsplash-2_nn7oke.jpg`,
     author: "Dr. Stefan Rahmstorf",
     date: "May 7, 2025",
     readTime: "10 min read",
@@ -78,7 +78,7 @@ const oceanographyArticles = [
     title: "Bioluminescence: Living Light in the Deep",
     excerpt: "The science behind glowing marine organisms and their evolutionary advantages.",
     category: "Marine Biology",
-    image: "/placeholder.svg?height=300&width=500&text=Bioluminescence",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750015821/6253e8d4f091b0062a75b345_francesco-ungaro-MJ1Q7hHeGlA-unsplash-2_nn7oke.jpg`,
     author: "Dr. Edith Widder",
     date: "May 4, 2025",
     readTime: "7 min read",
@@ -89,7 +89,7 @@ const oceanographyArticles = [
     title: "Seagrass Meadows: The Forgotten Carbon Sinks",
     excerpt: "How underwater grasslands capture carbon and support marine biodiversity.",
     category: "Ecosystems",
-    image: "/placeholder.svg?height=300&width=500&text=Seagrass+Meadows",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750015821/6253e8d4f091b0062a75b345_francesco-ungaro-MJ1Q7hHeGlA-unsplash-2_nn7oke.jpg`,
     author: "Dr. Carlos Duarte",
     date: "May 1, 2025",
     readTime: "9 min read",
@@ -133,7 +133,7 @@ const generateMoreArticles = () => {
       title: title,
       excerpt: `Exploring the fascinating aspects of ${title.toLowerCase()}.`,
       category: ["Oceanography", "Marine Biology", "Conservation", "Climate Impact", "Ecosystems"][Math.floor(Math.random() * 5)],
-      image: `/placeholder.svg?height=300&width=500&text=${title.replace(/ /g, '+')}`,
+      image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750015821/6253e8d4f091b0062a75b345_francesco-ungaro-MJ1Q7hHeGlA-unsplash-2_nn7oke.jpg`,
       author: baseArticles[i % baseArticles.length].author,
       date: `May ${Math.floor(Math.random() * 25) + 1}, 2025`,
       readTime: `${Math.floor(Math.random() * 10) + 5} min read`,
@@ -150,7 +150,7 @@ export default function OceanographyPage() {
   return (
     <div className="bg-[#f0f7fa] min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-80 bg-cover bg-center" style={{ backgroundImage: "url('/placeholder.svg?height=800&width=1600&text=Ocean+Wonders')" }}>
+      <section className="relative h-80 bg-cover bg-center" style={{ backgroundImage: 'url(https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750015831/90_mtxx8f.png)' }}>
         <div className="absolute inset-0 bg-blue-900/60" />
         <div className="relative container mx-auto px-4 h-full flex items-center z-10">
           <div className="max-w-3xl">

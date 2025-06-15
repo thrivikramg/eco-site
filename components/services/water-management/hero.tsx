@@ -70,7 +70,7 @@ export default function WaterManagementHero() {
           <div className="relative">
             <div className="relative h-[400px] w-full rounded-lg overflow-hidden shadow-xl">
               <Image
-                src="/placeholder.svg?height=400&width=600&text=Water+Management"
+                src={`https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750003704/Water_Management_qkc0wk.jpg`}
                 alt="Water Management"
                 fill
                 className="object-cover"

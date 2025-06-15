@@ -12,7 +12,7 @@ const gardeningArticles = [
     title: "Companion Planting: Nature's Pest Control",
     excerpt: "Which plants work well together to boost growth and naturally deter pests.",
     category: "Organic Gardening",
-    image: "/placeholder.svg?height=300&width=500&text=Companion+Planting",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750016659/Container-Garden-1024x1024_gkeb6g.jpg`,
     author: "Jessica Walliser",
     date: "May 24, 2025",
     readTime: "10 min read",
@@ -23,7 +23,7 @@ const gardeningArticles = [
     title: "No-Dig Gardening: Better Results with Less Work",
     excerpt: "How to build fertile soil and grow healthier plants by disturbing the soil less.",
     category: "Sustainable Techniques",
-    image: "/placeholder.svg?height=300&width=500&text=No-Dig+Gardening",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750016659/Container-Garden-1024x1024_gkeb6g.jpg`,
     author: "Charles Dowding",
     date: "May 22, 2025",
     readTime: "8 min read",
@@ -34,7 +34,7 @@ const gardeningArticles = [
     title: "Composting Masterclass: From Kitchen Scraps to Garden Gold",
     excerpt: "A comprehensive guide to creating nutrient-rich compost for your garden.",
     category: "Composting",
-    image: "/placeholder.svg?height=300&width=500&text=Composting+Masterclass",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750016659/Container-Garden-1024x1024_gkeb6g.jpg`,
     author: "Dr. Elaine Ingham",
     date: "May 20, 2025",
     readTime: "12 min read",
@@ -45,7 +45,7 @@ const gardeningArticles = [
     title: "Rainwater Harvesting for Garden Irrigation",
     excerpt: "Simple systems to collect and use rainwater in your garden.",
     category: "Water Conservation",
-    image: "/placeholder.svg?height=300&width=500&text=Rainwater+Harvesting",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750016659/Container-Garden-1024x1024_gkeb6g.jpg`,
     author: "Brad Lancaster",
     date: "May 18, 2025",
     readTime: "9 min read",
@@ -56,7 +56,7 @@ const gardeningArticles = [
     title: "Permaculture Principles for Home Gardens",
     excerpt: "How to apply permaculture ethics and principles to create a sustainable garden ecosystem.",
     category: "Permaculture",
-    image: "/placeholder.svg?height=300&width=500&text=Permaculture+Principles",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750016659/Container-Garden-1024x1024_gkeb6g.jpg`,
     author: "Geoff Lawton",
     date: "May 16, 2025",
     readTime: "14 min read",
@@ -67,7 +67,7 @@ const gardeningArticles = [
     title: "Growing Food in Small Spaces: Urban Gardening Solutions",
     excerpt: "Innovative techniques for growing vegetables in limited spaces.",
     category: "Urban Gardening",
-    image: "/placeholder.svg?height=300&width=500&text=Urban+Gardening",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750016659/Container-Garden-1024x1024_gkeb6g.jpg`,
     author: "Kevin Lee Jacobs",
     date: "May 14, 2025",
     readTime: "7 min read",
@@ -78,7 +78,7 @@ const gardeningArticles = [
     title: "Natural Pest Management: Beyond Chemicals",
     excerpt: "Effective strategies to manage garden pests without synthetic pesticides.",
     category: "Pest Control",
-    image: "/placeholder.svg?height=300&width=500&text=Natural+Pest+Management",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750016659/Container-Garden-1024x1024_gkeb6g.jpg`,
     author: "Dr. Jessica Shade",
     date: "May 12, 2025",
     readTime: "11 min read",
@@ -89,7 +89,7 @@ const gardeningArticles = [
     title: "Seed Saving: Preserving Biodiversity in Your Garden",
     excerpt: "How to collect, process, and store seeds from your garden for future planting.",
     category: "Seed Saving",
-    image: "/placeholder.svg?height=300&width=500&text=Seed+Saving",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750016659/Container-Garden-1024x1024_gkeb6g.jpg`,
     author: "Vandana Shiva",
     date: "May 10, 2025",
     readTime: "9 min read",
@@ -161,7 +161,7 @@ const generateMoreArticles = () => {
       title: title,
       excerpt: `Expert advice on ${title.toLowerCase()} for your sustainable garden.`,
       category: ["Organic Gardening", "Sustainable Techniques", "Water Conservation", "Permaculture", "Urban Gardening", "Pest Control", "Soil Health"][Math.floor(Math.random() * 7)],
-      image: `/placeholder.svg?height=300&width=500&text=${title.replace(/ /g, '+')}`,
+      image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750016659/Container-Garden-1024x1024_gkeb6g.jpg`,
       author: baseArticles[i % baseArticles.length].author,
       date: `May ${Math.floor(Math.random() * 25) + 1}, 2025`,
       readTime: `${Math.floor(Math.random() * 10) + 5} min read`,
@@ -178,7 +178,7 @@ export default function GardeningTipsPage() {
   return (
     <div className="bg-[#f7f9f7] min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-80 bg-cover bg-center" style={{ backgroundImage: "url('/placeholder.svg?height=800&width=1600&text=Gardening+Tips')" }}>
+      <section className="relative h-80 bg-cover bg-center" style={{ backgroundImage: 'url(https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750016659/Container-Garden-1024x1024_gkeb6g.jpg)' }}>
         <div className="absolute inset-0 bg-gradient-to-r from-green-800/70 to-green-600/70" />
         <div className="relative container mx-auto px-4 h-full flex items-center z-10">
           <div className="max-w-3xl">
@@ -229,7 +229,7 @@ export default function GardeningTipsPage() {
           <Card className="overflow-hidden flex flex-col md:flex-row h-full hover:shadow-xl transition-all duration-300">
             <div className="md:w-2/5 relative">
               <Image
-                src="/placeholder.svg?height=400&width=600&text=Permaculture+Principles"
+                src="https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750016659/Container-Garden-1024x1024_gkeb6g.jpg"
                 alt="Permaculture Principles"
                 fill
                 className="object-cover"
@@ -263,7 +263,7 @@ export default function GardeningTipsPage() {
           <Card className="overflow-hidden flex flex-col md:flex-row h-full hover:shadow-xl transition-all duration-300">
             <div className="md:w-2/5 relative">
               <Image
-                src="/placeholder.svg?height=400&width=600&text=Companion+Planting"
+                src="https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750016659/Container-Garden-1024x1024_gkeb6g.jpg"
                 alt="Companion Planting"
                 fill
                 className="object-cover"

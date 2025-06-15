@@ -70,7 +70,7 @@ export default function PestControlHero() {
           <div className="relative">
             <div className="relative h-[400px] w-full rounded-lg overflow-hidden shadow-xl">
               <Image
-                src="/placeholder.svg?height=400&width=600&text=Organic+Pest+Control"
+                src={`https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750004271/pestcontrolbanner_bzp7zd.webp`}
                 alt="Organic Pest Control"
                 fill
                 className="object-cover"

@@ -10,7 +10,7 @@ const sanctuaries = [
     id: "1",
     name: "Bandipur Tiger Reserve",
     location: "Karnataka, India",
-    image: "/placeholder.svg?height=300&width=500&text=Bandipur",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750011125/6b_tbxzbz.jpg`,
     description:
       "Home to a significant tiger population and diverse wildlife in the Western Ghats. The sanctuary is known for its dry deciduous forests and varied wildlife.",
     established: "1974",
@@ -22,7 +22,7 @@ const sanctuaries = [
     id: "2",
     name: "Periyar Wildlife Sanctuary",
     location: "Kerala, India",
-    image: "/placeholder.svg?height=300&width=500&text=Periyar",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750010842/nationalgeographic_2764597-4f1f37faa9a5ecf0cc8e5b662e07c324f5e8fa3a_c2turg.jpg`,
     description:
       "Famous for its elephant and tiger reserves in the Western Ghats. The sanctuary is centered around an artificial lake formed by the Mullaperiyar Dam.",
     established: "1950",
@@ -34,7 +34,7 @@ const sanctuaries = [
     id: "3",
     name: "Sundarbans National Park",
     location: "West Bengal, India",
-    image: "/placeholder.svg?height=300&width=500&text=Sundarbans",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750013753/1725031216118_xxs6ad.jpg`,
     description:
       "The largest mangrove forest in the world and home to the Bengal tiger. This UNESCO World Heritage Site is known for its unique ecosystem.",
     established: "1984",
@@ -46,7 +46,7 @@ const sanctuaries = [
     id: "4",
     name: "Jim Corbett National Park",
     location: "Uttarakhand, India",
-    image: "/placeholder.svg?height=300&width=500&text=Jim+Corbett",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750013952/Master_q6wqeb.jpg`,
     description:
       "India's oldest national park known for its Bengal tiger population. The park is named after the famous hunter-turned-conservationist Jim Corbett.",
     established: "1936",
@@ -58,7 +58,7 @@ const sanctuaries = [
     id: "5",
     name: "Ranthambore National Park",
     location: "Rajasthan, India",
-    image: "/placeholder.svg?height=300&width=500&text=Ranthambore",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750013977/jungle-safari-in-jim-corbett-national-park-1200x900_hdgqr9.webp`,
     description:
       "Famous for diurnal tigers and ancient ruins within the park. The park features steep rocky hills, grassy valleys, and lakes.",
     established: "1980",
@@ -70,7 +70,7 @@ const sanctuaries = [
     id: "6",
     name: "Kaziranga National Park",
     location: "Assam, India",
-    image: "/placeholder.svg?height=300&width=500&text=Kaziranga",
+    image:`https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750013980/jim-corbett-national_wwtfqp.jpg`,
     description:
       "Home to two-thirds of the world's one-horned rhinoceros. The park is a UNESCO World Heritage Site and hosts diverse wildlife.",
     established: "1974",

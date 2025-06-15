@@ -206,14 +206,14 @@ export default function FeaturedProducts() {
                     className="w-full group text-emerald-700 hover:text-emerald-900 hover:bg-emerald-50"
                   >
                     <span>View Details</span>
-                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    <ArrowRight className="ml-0 h-4 w-2 transition-transform group-hover:translate-x-1" />
                   </Button>
                   <Button
                     size="sm"
                     className="w-full bg-emerald-700 hover:bg-emerald-800 text-white"
                     onClick={(e) => handleAddToCart(product, e)}
                   >
-                    <ShoppingCart className="h-4 w-4 mr-2" />
+                    <ShoppingCart className="h-4 w-2 mr-0" />
                     Add to Cart
                   </Button>
                 </CardFooter>

@@ -6,7 +6,7 @@ const commonDiseases = {
   vegetables: [
     {
       name: "Tomato Late Blight",
-      image: "/placeholder.svg?height=200&width=300&text=Tomato+Late+Blight",
+      image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750011054/8_Common_Tomato_Diseases_xuhdnb.jpg`,
       symptoms:
         "Dark, water-soaked spots on leaves that quickly enlarge and turn brown. White fungal growth may appear on the undersides of leaves in humid conditions.",
       treatment:
@@ -14,7 +14,7 @@ const commonDiseases = {
     },
     {
       name: "Powdery Mildew",
-      image: "/placeholder.svg?height=200&width=300&text=Powdery+Mildew",
+      image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750012174/powdery-mildew-powdery-mildew-on-squash-leaf-shutterstock-com_13365_tykont.jpg`,
       symptoms:
         "White powdery spots on leaves, stems, and sometimes fruit. Leaves may yellow, curl, or drop prematurely.",
       treatment:
@@ -22,7 +22,7 @@ const commonDiseases = {
     },
     {
       name: "Cucumber Mosaic Virus",
-      image: "/placeholder.svg?height=200&width=300&text=Cucumber+Mosaic+Virus",
+      image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750012344/W-01612-01-Cucumber-Mosaic-Virus-CMV-Symptoms-Fuit_oewawd.jpg`,
       symptoms: "Mottled yellow and green pattern on leaves. Stunted growth and deformed fruits.",
       treatment:
         "No cure available. Remove and destroy infected plants. Control aphids which spread the virus. Plant resistant varieties.",
@@ -31,21 +31,21 @@ const commonDiseases = {
   fruits: [
     {
       name: "Apple Scab",
-      image: "/placeholder.svg?height=200&width=300&text=Apple+Scab",
+      image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750012434/500_vlb6xa.png`,
       symptoms: "Olive-green to brown spots on leaves and fruit. Severely infected leaves may drop prematurely.",
       treatment:
         "Apply fungicide early in the growing season. Rake and destroy fallen leaves. Prune trees to improve air circulation.",
     },
     {
       name: "Citrus Greening",
-      image: "/placeholder.svg?height=200&width=300&text=Citrus+Greening",
+      image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750012578/Huanglongbing_ow6wwz.jpg`,
       symptoms: "Yellow mottling on leaves, misshapen and bitter fruit, and premature fruit drop.",
       treatment:
         "No cure available. Remove and destroy infected trees. Control Asian citrus psyllid which spreads the disease.",
     },
     {
       name: "Grape Black Rot",
-      image: "/placeholder.svg?height=200&width=300&text=Grape+Black+Rot",
+      image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750012552/PGFS4mSeAcKRKrkRZ4Wsr9_fmcokp.jpg`,
       symptoms:
         "Small, dark lesions on leaves that expand into brown spots with dark borders. Fruit shrivels and turns into black, mummified berries.",
       treatment:
@@ -55,14 +55,14 @@ const commonDiseases = {
   ornamentals: [
     {
       name: "Rose Black Spot",
-      image: "/placeholder.svg?height=200&width=300&text=Rose+Black+Spot",
+      image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750012671/191_0_ipgxs3.jpg`,
       symptoms: "Black or dark brown spots on leaves, often with yellow halos. Infected leaves may drop prematurely.",
       treatment:
         "Apply fungicide at first sign of disease. Remove and destroy infected leaves. Avoid wetting foliage when watering.",
     },
     {
       name: "Botrytis Blight",
-      image: "/placeholder.svg?height=200&width=300&text=Botrytis+Blight",
+      image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750012757/Botrytis_Blight_of_Peony1801_qf06wy.jpg`,
       symptoms:
         "Gray, fuzzy mold on flowers, leaves, and stems. Flowers may rot and leaves may develop water-soaked spots.",
       treatment:
@@ -70,7 +70,7 @@ const commonDiseases = {
     },
     {
       name: "Leaf Spot",
-      image: "/placeholder.svg?height=200&width=300&text=Leaf+Spot",
+      image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750012801/leaf-spots_jsttua.jpg`,
       symptoms: "Brown or black spots on leaves, often with yellow halos. Severe infections may cause leaf drop.",
       treatment:
         "Apply fungicide at first sign of disease. Remove and destroy infected leaves. Avoid overhead watering.",

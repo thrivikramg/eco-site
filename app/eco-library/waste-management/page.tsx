@@ -12,7 +12,7 @@ const wasteManagementArticles = [
     title: "Zero Waste Living: A Practical Guide",
     excerpt: "How to dramatically reduce your household waste with simple lifestyle changes.",
     category: "Lifestyle",
-    image: "/placeholder.svg?height=300&width=500&text=Zero+Waste+Living",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750003634/Waste_Management_vsu5lb.jpg`,
     author: "Lauren Singer",
     date: "May 24, 2025",
     readTime: "9 min read",
@@ -23,7 +23,7 @@ const wasteManagementArticles = [
     title: "Composting 101: Transform Your Food Waste",
     excerpt: "A beginner's guide to starting your own compost system at home.",
     category: "Composting",
-    image: "/placeholder.svg?height=300&width=500&text=Composting+101",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750003634/Waste_Management_vsu5lb.jpg`,
     author: "Dr. Elaine Ingham",
     date: "May 21, 2025",
     readTime: "8 min read",
@@ -34,7 +34,7 @@ const wasteManagementArticles = [
     title: "Plastic Recycling: Truth vs. Myth",
     excerpt: "What actually happens to your plastic waste and how to make better recycling choices.",
     category: "Recycling",
-    image: "/placeholder.svg?height=300&width=500&text=Plastic+Recycling",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750003634/Waste_Management_vsu5lb.jpg`,
     author: "Roland Geyer, Ph.D.",
     date: "May 18, 2025",
     readTime: "12 min read",
@@ -45,7 +45,7 @@ const wasteManagementArticles = [
     title: "Electronic Waste: The Growing Environmental Crisis",
     excerpt: "The environmental impact of discarded electronics and how to dispose of them responsibly.",
     category: "E-Waste",
-    image: "/placeholder.svg?height=300&width=500&text=Electronic+Waste",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750003634/Waste_Management_vsu5lb.jpg`,
     author: "Dr. Josh Lepawsky",
     date: "May 15, 2025",
     readTime: "10 min read",
@@ -56,7 +56,7 @@ const wasteManagementArticles = [
     title: "The Circular Economy: Reimagining Waste as a Resource",
     excerpt: "How businesses and communities are redesigning systems to eliminate waste.",
     category: "Sustainability",
-    image: "/placeholder.svg?height=300&width=500&text=Circular+Economy",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750003634/Waste_Management_vsu5lb.jpg`,
     author: "Kate Raworth",
     date: "May 12, 2025",
     readTime: "11 min read",
@@ -67,7 +67,7 @@ const wasteManagementArticles = [
     title: "Textile Waste: The Fast Fashion Problem",
     excerpt: "The environmental impact of clothing waste and sustainable alternatives.",
     category: "Fashion",
-    image: "/placeholder.svg?height=300&width=500&text=Textile+Waste",
+    image:  `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750003634/Waste_Management_vsu5lb.jpg`,
     author: "Dr. Linda Greer",
     date: "May 9, 2025",
     readTime: "8 min read",
@@ -78,7 +78,7 @@ const wasteManagementArticles = [
     title: "Bioplastics: Sustainable Solution or False Promise?",
     excerpt: "Examining the environmental impact of biodegradable and compostable plastics.",
     category: "Materials",
-    image: "/placeholder.svg?height=300&width=500&text=Bioplastics",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750003634/Waste_Management_vsu5lb.jpg`,
     author: "Dr. Ramani Narayan",
     date: "May 6, 2025",
     readTime: "13 min read",
@@ -89,7 +89,7 @@ const wasteManagementArticles = [
     title: "Waste-to-Energy: A Sustainable Solution?",
     excerpt: "Exploring the benefits and controversies of converting waste to renewable energy.",
     category: "Energy",
-    image: "/placeholder.svg?height=300&width=500&text=Waste+to+Energy",
+    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750003634/Waste_Management_vsu5lb.jpg`,
     author: "Dr. Marco Castaldi",
     date: "May 3, 2025",
     readTime: "10 min read",
@@ -140,7 +140,7 @@ const generateMoreArticles = () => {
       title: title,
       excerpt: `Exploring effective strategies for ${title.toLowerCase()}.`,
       category: ["Recycling", "Composting", "Sustainability", "Waste Reduction", "Circular Economy"][Math.floor(Math.random() * 5)],
-      image: `/placeholder.svg?height=300&width=500&text=${title.replace(/ /g, '+')}`,
+      image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750003634/Waste_Management_vsu5lb.jpg`,
       author: baseArticles[i % baseArticles.length].author,
       date: `May ${Math.floor(Math.random() * 25) + 1}, 2025`,
       readTime: `${Math.floor(Math.random() * 10) + 5} min read`,
@@ -157,7 +157,7 @@ export default function WasteManagementPage() {
   return (
     <div className="bg-[#f5fbf5] min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-80 bg-cover bg-center" style={{ backgroundImage: "url('/placeholder.svg?height=800&width=1600&text=Waste+Management')" }}>
+      <section className="relative h-80 bg-cover bg-center" style={{ backgroundImage: 'url(https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750016216/AdobeStock_573577614_428fd902f4247199467725e7eccf1673_ziujv0.jpg)' }}>
         <div className="absolute inset-0 bg-gradient-to-r from-green-900/70 to-emerald-800/70" />
         <div className="relative container mx-auto px-4 h-full flex items-center z-10">
           <div className="max-w-3xl">

@@ -15,9 +15,10 @@ import type { Product } from "../../lib/products"
 interface ProductGridProps {
   products: Product[]
   isLoading: boolean
+  initialLoad?: boolean
 }
 
-export default function ProductGrid({ products, isLoading }: ProductGridProps) {
+export default function ProductGrid({ products, isLoading, initialLoad = false }: ProductGridProps) {
   const [mounted, setMounted] = useState(false)
   const { addToCart } = useCart()
   const { toast } = useToast()
@@ -60,21 +61,11 @@ export default function ProductGrid({ products, isLoading }: ProductGridProps) {
     }
   }
 
-  if (!mounted) {
-    // Return skeleton during client-side rendering
+  // Show loading skeletons during initial load or when loading
+  if (isLoading || !mounted || initialLoad) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <ProductCardSkeleton key={i} />
-        ))}
-      </div>
-    )
-  }
-
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {Array.from({ length: 6 }).map((_, i) => (
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+        {Array.from({ length: 8 }).map((_, i) => (
           <ProductCardSkeleton key={i} />
         ))}
       </div>
@@ -93,7 +84,7 @@ export default function ProductGrid({ products, isLoading }: ProductGridProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
       {products.map((product) => (
         <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} />
       ))}
@@ -103,31 +94,43 @@ export default function ProductGrid({ products, isLoading }: ProductGridProps) {
 
 function ProductCard({ product, onAddToCart }: { product: Product; onAddToCart: (product: Product) => void }) {
   return (
-    <Card className="overflow-hidden group h-full flex flex-col">
+    <Card className="overflow-hidden group h-full flex flex-col border border-gray-100 hover:border-primary/20 transition-colors">
       <Link href={`/shop/product/${product.id}`} className="relative block">
-        <div className="relative h-64 w-full overflow-hidden bg-gray-100">
+        <div className="relative aspect-square w-full overflow-hidden bg-gray-50">
           <Image
             src={product.image || "/placeholder.svg"}
             alt={product.name}
             fill
-            className="object-cover transition-transform group-hover:scale-105"
+            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            priority={false}
           />
-          {product.isNew && <Badge className="absolute top-2 right-2 bg-primary">New</Badge>}
-          {product.discount > 0 && <Badge className="absolute top-2 left-2 bg-red-500">-{product.discount}%</Badge>}
+          {product.isNew && (
+            <Badge className="absolute top-2 right-2 bg-primary text-xs py-0.5 px-1.5">
+              New
+            </Badge>
+          )}
+          {product.discount > 0 && (
+            <Badge className="absolute top-2 left-2 bg-red-500 text-xs py-0.5 px-1.5">
+              -{product.discount}%
+            </Badge>
+          )}
         </div>
       </Link>
 
-      <CardContent className="pt-6 flex-grow">
-        <div className="text-sm text-primary mb-1">{product.category}</div>
-        <Link href={`/shop/product/${product.id}`}>
-          <h3 className="font-medium text-lg group-hover:text-primary transition-colors">{product.name}</h3>
+      <CardContent className="p-3 sm:p-4 flex-grow">
+        <div className="text-xs sm:text-sm text-primary mb-0.5 line-clamp-1">{product.category}</div>
+        <Link href={`/shop/product/${product.id}`} className="group-hover:text-primary transition-colors">
+          <h3 className="font-medium text-sm sm:text-base lg:text-lg leading-tight line-clamp-2 h-10 sm:h-12 overflow-hidden">
+            {product.name}
+          </h3>
         </Link>
-        <div className="flex items-center mt-2">
+        <div className="flex items-center mt-1 sm:mt-2">
           <div className="flex items-center">
-            {Array.from({ length: 5 }).map((_, i) => (
+            {[1, 2, 3, 4, 5].map((star) => (
               <svg
-                key={i}
-                className={`h-4 w-4 ${i < product.rating ? "text-yellow-400" : "text-gray-300"}`}
+                key={star}
+                className={`h-3 w-3 sm:h-4 sm:w-4 ${star <= Math.round(product.rating) ? "text-yellow-400" : "text-gray-300"}`}
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -139,28 +142,45 @@ function ProductCard({ product, onAddToCart }: { product: Product; onAddToCart: 
               </svg>
             ))}
           </div>
-          <span className="text-xs text-gray-500 ml-2">({product.reviewCount})</span>
+          <span className="text-[10px] sm:text-xs text-gray-500 ml-1">({product.reviewCount})</span>
         </div>
-        <div className="mt-2 space-y-1">
-          <div className="flex items-center">
+        <div className="mt-1 sm:mt-2 space-y-0.5">
+          <div className="flex items-center flex-wrap gap-x-2">
             {product.discount > 0 ? (
               <>
-                <p className="font-semibold text-lg">
-                  ₹{((product.price * (100 - product.discount)) / 100).toFixed(2)}
+                <p className="font-semibold text-base sm:text-lg text-primary">
+                  ₹{Math.round((product.price * (100 - product.discount)) / 100).toLocaleString()}
                 </p>
-                <p className="text-sm text-gray-500 line-through ml-2">₹{product.price.toFixed(2)}</p>
+                <p className="text-xs sm:text-sm text-gray-500 line-through">
+                  ₹{product.price.toLocaleString()}
+                </p>
+                <span className="bg-red-50 text-red-600 text-[10px] px-1.5 py-0.5 rounded-full ml-auto">
+                  {product.discount}% OFF
+                </span>
               </>
             ) : (
-              <p className="font-semibold text-lg">₹{product.price.toFixed(2)}</p>
+              <p className="font-semibold text-base sm:text-lg text-primary">
+                ₹{product.price.toLocaleString()}
+              </p>
             )}
           </div>
-          <p className="text-xs text-green-600">{product.inStock ? "In Stock" : "Out of Stock"}</p>
+          <p className={`text-[10px] sm:text-xs ${product.inStock ? 'text-green-600' : 'text-amber-600'}`}>
+            {product.inStock ? 'In Stock' : 'Out of Stock'}
+          </p>
         </div>
       </CardContent>
 
-      <CardFooter className="border-t p-4">
-        <Button className="w-full" disabled={!product.inStock} onClick={() => onAddToCart(product)}>
-          <ShoppingCart className="h-4 w-4 mr-2" />
+      <CardFooter className="border-t p-2 sm:p-3 mt-auto">
+        <Button 
+          className="w-full h-9 sm:h-10 text-xs sm:text-sm" 
+          disabled={!product.inStock} 
+          onClick={(e) => {
+            e.preventDefault();
+            onAddToCart(product);
+          }}
+          size="sm" 
+        >
+          <ShoppingCart className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5" />
           Add to Cart
         </Button>
       </CardFooter>
@@ -170,21 +190,22 @@ function ProductCard({ product, onAddToCart }: { product: Product; onAddToCart: 
 
 function ProductCardSkeleton() {
   return (
-    <Card className="overflow-hidden h-full flex flex-col">
-      <div className="relative h-64 w-full bg-gray-200 animate-pulse" />
-      <CardContent className="pt-6 flex-grow space-y-3">
-        <Skeleton className="h-4 w-24" />
-        <Skeleton className="h-6 w-full" />
+    <Card className="overflow-hidden h-full flex flex-col border border-gray-100">
+      <div className="relative aspect-square w-full bg-gray-100 animate-pulse" />
+      <CardContent className="p-3 sm:p-4 flex-grow space-y-2">
+        <Skeleton className="h-3 w-16" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-3/4" />
         <div className="flex items-center space-x-1">
           {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="h-4 w-4 rounded-full" />
+            <Skeleton key={i} className="h-3 w-3 rounded-full" />
           ))}
-          <Skeleton className="h-4 w-10 ml-2" />
+          <Skeleton className="h-3 w-6 ml-1" />
         </div>
-        <Skeleton className="h-6 w-24" />
+        <Skeleton className="h-5 w-20 mt-1" />
       </CardContent>
-      <CardFooter className="border-t p-4">
-        <Skeleton className="h-10 w-full" />
+      <CardFooter className="border-t p-2 sm:p-3 mt-auto">
+        <Skeleton className="h-9 w-full rounded-md" />
       </CardFooter>
     </Card>
   )

@@ -178,8 +178,8 @@ export default function ProductsLayout() {
   }
 
   return (
-    <div className="container py-8 md:py-12">
-      <h1 className="text-2xl font-bold mb-6">{getPageTitle()}</h1>
+    <div className="container px-4 py-6 sm:py-8 md:py-12">
+      <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">{getPageTitle()}</h1>
       <ProductsHeader
         totalProducts={filteredProducts.length}
         searchQuery={searchQuery}
@@ -188,73 +188,102 @@ export default function ProductsLayout() {
         onSortChange={(option) => updateFilters({ sort: option })}
       />
 
-      <div className="flex flex-col md:flex-row gap-8 mt-8">
+      <div className="flex flex-col md:flex-row gap-6 mt-6 sm:mt-8">
         {/* Mobile filters */}
         {isMobile && (
           <div className="flex items-center justify-between mb-4">
             <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
               <SheetTrigger asChild>
-                <Button variant="outline" className="flex items-center gap-2">
+                <Button variant="outline" className="flex items-center gap-2 text-sm">
                   <SlidersHorizontal className="h-4 w-4" />
                   Filters
+                  {hasFilters && (
+                    <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-white">
+                      {[categoryParam, subcategoryParam].filter(Boolean).length}
+                    </span>
+                  )}
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-[300px] sm:w-[350px]">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-lg font-semibold">Filters</h2>
-                  <Button variant="ghost" size="sm" onClick={clearFilters} disabled={!hasFilters}>
-                    Clear All
-                  </Button>
+              <SheetContent side="left" className="w-[85vw] max-w-sm p-0">
+                <div className="flex h-full flex-col">
+                  <div className="flex items-center justify-between border-b px-6 py-4">
+                    <h2 className="text-lg font-semibold">Filters</h2>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={clearFilters}
+                      disabled={!hasFilters}
+                      className="text-sm text-primary hover:bg-transparent hover:underline"
+                    >
+                      Clear all
+                    </Button>
+                  </div>
+                  <ScrollArea className="flex-1 px-6 py-4">
+                    <ProductFilters
+                      selectedCategory={categoryParam || ''}
+                      selectedSubcategory={subcategoryParam || ''}
+                      onCategoryChange={(category: string) => updateFilters({ category: category || null })}
+                      onSubcategoryChange={(subcategory: string) => updateFilters({ subcategory: subcategory || null })}
+                    />
+                  </ScrollArea>
+                  <div className="border-t p-4">
+                    <Button 
+                      className="w-full" 
+                      size="lg"
+                      onClick={() => setMobileFiltersOpen(false)}
+                    >
+                      Show {filteredProducts.length} products
+                    </Button>
+                  </div>
                 </div>
-                <ScrollArea className="h-[calc(100vh-10rem)]">
-                  <ProductFilters
-                    selectedCategory={categoryParam || ""}
-                    selectedSubcategory={subcategoryParam || ""}
-                    onCategoryChange={(category) => {
-                      updateFilters({ category, subcategory: null })
-                      setMobileFiltersOpen(false)
-                    }}
-                    onSubcategoryChange={(subcategory) => {
-                      updateFilters({ subcategory })
-                      setMobileFiltersOpen(false)
-                    }}
-                  />
-                </ScrollArea>
               </SheetContent>
             </Sheet>
 
             {hasFilters && (
-              <Button variant="ghost" size="sm" onClick={clearFilters} className="flex items-center gap-1">
-                <X className="h-4 w-4" />
-                Clear Filters
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearFilters}
+                className="text-sm text-primary hover:bg-transparent hover:underline"
+              >
+                Clear all
               </Button>
             )}
           </div>
         )}
 
         {/* Desktop filters */}
-        {!isMobile && (
-          <div className="w-full md:w-64 flex-shrink-0">
-            <div className="sticky top-24">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-semibold">Filters</h2>
-                <Button variant="ghost" size="sm" onClick={clearFilters} disabled={!hasFilters}>
-                  Clear All
+        <div className="hidden md:block w-64 flex-shrink-0">
+          <div className="sticky top-24 space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold">Filters</h2>
+              {hasFilters && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearFilters}
+                  className="text-sm text-primary hover:bg-transparent hover:underline"
+                >
+                  Clear all
                 </Button>
-              </div>
-              <ProductFilters
-                selectedCategory={categoryParam || ""}
-                selectedSubcategory={subcategoryParam || ""}
-                onCategoryChange={(category) => updateFilters({ category, subcategory: null })}
-                onSubcategoryChange={(subcategory) => updateFilters({ subcategory })}
-              />
+              )}
             </div>
+            <ProductFilters
+              selectedCategory={categoryParam || ''}
+              selectedSubcategory={subcategoryParam || ''}
+              onCategoryChange={(category: string) => updateFilters({ category: category || null })}
+              onSubcategoryChange={(subcategory: string) => updateFilters({ subcategory: subcategory || null })}
+            />
           </div>
-        )}
+        </div>
 
-        {/* Product grid */}
+        {/* Products grid */}
         <div className="flex-1">
-          <ProductGrid products={filteredProducts} isLoading={isLoading} />
+          <ProductGrid
+            products={filteredProducts}
+            isLoading={isLoading}
+            initialLoad={initialLoad}
+          />
         </div>
       </div>
     </div>

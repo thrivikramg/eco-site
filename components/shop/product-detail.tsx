@@ -19,10 +19,10 @@ interface ProductDetailProps {
 export default function ProductDetail({ product }: ProductDetailProps) {
   const [quantity, setQuantity] = useState(1)
   const { toast } = useToast()
-  const { addItem } = useCart()
+  const { addToCart } = useCart()
 
   const handleAddToCart = () => {
-    addItem({
+    addToCart({
       id: product.id,
       name: product.name,
       price: product.discount > 0 ? (product.price * (100 - product.discount)) / 100 : product.price,

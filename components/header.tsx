@@ -96,7 +96,7 @@ export default function Header() {
             aria-label="Toggle menu"
           >
             <Menu className={`h-6 w-6 text-gray-700 transition-transform duration-200 ${isMenuOpen ? 'rotate-90' : ''}`} />
-            <span className="ml-1 text-sm font-medium hidden md:inline-block">Menu</span>
+            <span className="ml-1 text-sm font-medium hidden md:inline-block"></span>
           </button>
           
           {/* Desktop Dropdown Menu */}

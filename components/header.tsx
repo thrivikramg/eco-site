@@ -86,7 +86,7 @@ export default function Header() {
           ))}
           
           {/* AI Learning Assistant Button */}
-          <Link href="/ai-learning" className="relative group">
+          <Link href="/chat" className="relative group">
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-purple-500 to-indigo-600 text-white text-sm font-medium hover:shadow-lg hover:shadow-purple-200 transition-all duration-300 transform hover:scale-105">
               <Bot className="h-4 w-4" />
               <span>Learn with AI</span>

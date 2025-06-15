@@ -25,7 +25,7 @@ const desktopMenuItems = [
   { name: "Services", href: "/services" },
   { name: "Eco Library", href: "/eco-library" },
   { name: "Community", href: "/community" },
-  { name: "Learn with AI", href: "/ai-assistant", icon: <Bot className="h-4 w-4" /> },
+  { name: "Learn with AI", href: "/chat", icon: <Bot className="h-4 w-4" /> },
   { name: "Me", href: "/profile", icon: <User className="h-4 w-4" /> },
 ]
 
@@ -36,7 +36,7 @@ const mobileMenuItems = [
   { name: "Services", href: "/services" },
   { name: "Eco Library", href: "/eco-library" },
   { name: "Community", href: "/community" },
-  { name: "Learn with AI", href: "/ai-assistant" },
+  { name: "Learn with AI", href: "/chat" },
   { name: "Sell on EcoGrow", href: "/sell" },
 ]
 
@@ -179,7 +179,7 @@ export default function Header() {
             </Button>
           </Link>
           
-          <Link href="/ai-assistant">
+          <Link href="/chat">
             <Button className="bg-purple-600 hover:bg-purple-700 text-white text-sm px-4 h-9 flex items-center gap-2">
               <Bot className="h-4 w-4" />
               Learn with AI

@@ -9,12 +9,18 @@ if (!MONGODB_URI) {
 
 let cached = (global as any).mongoose || { conn: null, promise: null }
 
-if (!cached.promise) {
-  cached.promise = mongoose.connect(MONGODB_URI, {
-    bufferCommands: false,
-  }).then((mongoose) => mongoose)
+async function db() {
+  if (cached.conn) return cached.conn
 
+  if (!cached.promise) {
+    cached.promise = mongoose.connect(MONGODB_URI, {
+      bufferCommands: false,
+    })
+  }
+
+  cached.conn = await cached.promise
   ;(global as any).mongoose = cached
+  return cached.conn
 }
 
-export default cached.promise
+export default db  // ✅ Now you're exporting a function

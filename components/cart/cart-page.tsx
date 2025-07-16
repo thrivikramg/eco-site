@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
@@ -18,24 +18,20 @@ export default function CartPage() {
   const router = useRouter()
   const { cart, removeFromCart, updateQuantity, clearCart } = useCart()
   const { toast } = useToast()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
   const [isProcessing, setIsProcessing] = useState(false)
   const [couponCode, setCouponCode] = useState("")
   const [couponApplied, setCouponApplied] = useState(false)
   const [showAuthModalState, setShowAuthModalState] = useState(false)
   const [mounted, setMounted] = useState(false)
 
-  // Set mounted state to true after component mounts
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  // Safely access cart items with fallback to empty array
   const cartItems = mounted ? cart || [] : []
-
-  // Calculate cart totals with safe access
   const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0)
-  const discount = couponApplied ? subtotal * 0.1 : 0 // 10% discount if coupon applied
+  const discount = couponApplied ? subtotal * 0.1 : 0
   const shipping = subtotal > 0 ? (subtotal > 1000 ? 0 : 100) : 0
   const tax = (subtotal - discount) * 0.05
   const total = subtotal - discount + shipping + tax
@@ -69,38 +65,66 @@ export default function CartPage() {
     }
   }
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async () => {
     setIsProcessing(true)
-    
-    if (!isAuthenticated) {
+
+    if (!isAuthenticated || !user) {
       setIsProcessing(false)
       setShowAuthModalState(true)
       return
     }
 
     try {
-      // Add a small delay to ensure all state updates are processed
-      // Navigate to checkout page
-      window.location.href = "/checkout"
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: user.id,
+          items: cartItems.map((item) => ({
+            productId: item.id,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            image: item.image || "",
+          })),
+          totalAmount: total,
+          shippingAddress: user.addresses?.[0] || {
+            street: "Unknown",
+            city: "Unknown",
+            state: "Unknown",
+            postalCode: "000000",
+            country: "India",
+          },
+          paymentMethod: "COD"
+        }),
+      })
+
+      const data = await res.json()
+
+      if (data.success) {
+        toast({
+          title: "Order Placed!",
+          description: "Your order has been placed successfully.",
+        })
+        clearCart()
+        router.push("/profile")
+      } else {
+        throw new Error(data.error || "Failed to place order")
+      }
     } catch (error) {
-      console.error("Navigation error:", error)
+      console.error("Order error:", error)
       toast({
-        title: "Navigation error",
-        description: "Could not proceed to checkout. Please try again.",
+        title: "Order Failed",
+        description: "There was a problem placing your order.",
         variant: "destructive",
       })
+    } finally {
       setIsProcessing(false)
     }
   }
 
-  // Don't render until client-side to avoid hydration mismatch
-  if (!mounted) {
-    return null
-  }
-
-  if (cartItems.length === 0) {
-    return <CartEmpty />
-  }
+  if (!mounted) return null
+  if (cartItems.length === 0) return <CartEmpty />
 
   return (
     <div className="container px-4 py-10 mx-auto max-w-7xl">
@@ -116,6 +140,7 @@ export default function CartPage() {
       )}
 
       <div className="flex flex-col md:flex-row gap-8">
+        {/* Left: Cart Items */}
         <div className="w-full md:w-3/4">
           <div className="rounded-lg border shadow-sm mb-6">
             <div className="bg-primary text-white p-4 rounded-t-lg">
@@ -126,7 +151,7 @@ export default function CartPage() {
               <div className="space-y-6">
                 {cartItems.map((item) => (
                   <div key={item.id} className="flex flex-col sm:flex-row gap-4 pb-4 border-b">
-                    <div className="flex-shrink-0 relative h-24 w-24 rounded-md overflow-hidden border bg-muted">
+                    <div className="relative h-24 w-24 rounded-md overflow-hidden border bg-muted">
                       <Image src={item.image || "/placeholder.svg"} alt={item.name} fill className="object-cover" />
                     </div>
 
@@ -136,12 +161,8 @@ export default function CartPage() {
 
                       <div className="flex items-center justify-between mt-auto">
                         <div className="flex items-center">
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8 rounded-r-none"
-                            onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
-                          >
+                          <Button variant="outline" size="icon" className="h-8 w-8 rounded-r-none"
+                            onClick={() => handleQuantityChange(item.id, item.quantity - 1)}>
                             -
                           </Button>
                           <Input
@@ -149,15 +170,13 @@ export default function CartPage() {
                             min="1"
                             max="10"
                             value={item.quantity}
-                            onChange={(e) => handleQuantityChange(item.id, Number.parseInt(e.target.value) || 1)}
+                            onChange={(e) =>
+                              handleQuantityChange(item.id, Number.parseInt(e.target.value) || 1)
+                            }
                             className="h-8 w-12 rounded-none text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           />
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8 rounded-l-none"
-                            onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
-                          >
+                          <Button variant="outline" size="icon" className="h-8 w-8 rounded-l-none"
+                            onClick={() => handleQuantityChange(item.id, item.quantity + 1)}>
                             +
                           </Button>
                         </div>
@@ -174,7 +193,9 @@ export default function CartPage() {
                       </div>
                     </div>
 
-                    <div className="text-right font-medium">₹{(item.price * item.quantity).toFixed(2)}</div>
+                    <div className="text-right font-medium">
+                      ₹{(item.price * item.quantity).toFixed(2)}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -195,75 +216,84 @@ export default function CartPage() {
           </div>
         </div>
 
+        {/* Right: Price Summary */}
         <div className="w-full md:w-1/4">
           <div className="rounded-lg border shadow-sm sticky top-24">
             <div className="bg-muted p-4 rounded-t-lg">
               <h2 className="text-lg font-semibold">Price Details</h2>
             </div>
 
-            <div className="p-4">
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span>Price ({cartItems.length} items)</span>
-                  <span>₹{subtotal.toFixed(2)}</span>
-                </div>
-
-                {couponApplied && (
-                  <div className="flex justify-between text-green-600">
-                    <span>Discount</span>
-                    <span>-₹{discount.toFixed(2)}</span>
-                  </div>
-                )}
-
-                <div className="flex justify-between">
-                  <span>Delivery Charges</span>
-                  <span className={shipping === 0 ? "text-green-600" : ""}>
-                    {shipping === 0 ? "FREE" : `₹${shipping.toFixed(2)}`}
-                  </span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>GST (5%)</span>
-                  <span>₹{tax.toFixed(2)}</span>
-                </div>
-
-                <Separator className="my-2" />
-
-                <div className="flex justify-between font-bold text-lg">
-                  <span>Total Amount</span>
-                  <span>₹{total.toFixed(2)}</span>
-                </div>
-
-                {couponApplied && (
-                  <div className="text-green-600 text-sm">You will save ₹{discount.toFixed(2)} on this order</div>
-                )}
+            <div className="p-4 space-y-3">
+              <div className="flex justify-between">
+                <span>Price ({cartItems.length} items)</span>
+                <span>₹{subtotal.toFixed(2)}</span>
               </div>
 
-              <div className="mt-4">
-                <div className="flex items-center gap-2 mb-4">
-                  <Input
-                    placeholder="Enter coupon code"
-                    value={couponCode}
-                    onChange={(e) => setCouponCode(e.target.value)}
-                    disabled={couponApplied}
-                  />
-                  <Button
-                    variant="outline"
-                    onClick={handleCouponApply}
-                    disabled={couponApplied || !couponCode}
-                    className="whitespace-nowrap"
-                  >
-                    Apply
-                  </Button>
+              {couponApplied && (
+                <div className="flex justify-between text-green-600">
+                  <span>Discount</span>
+                  <span>-₹{discount.toFixed(2)}</span>
                 </div>
+              )}
 
-                <a 
-                  href="/checkout" 
-                  className="w-full block text-center py-3 px-4 rounded-md font-medium text-white bg-orange-500 hover:bg-orange-600"
+              <div className="flex justify-between">
+                <span>Delivery Charges</span>
+                <span className={shipping === 0 ? "text-green-600" : ""}>
+                  {shipping === 0 ? "FREE" : `₹${shipping.toFixed(2)}`}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>GST (5%)</span>
+                <span>₹{tax.toFixed(2)}</span>
+              </div>
+
+              <Separator className="my-2" />
+
+              <div className="flex justify-between font-bold text-lg">
+                <span>Total Amount</span>
+                <span>₹{total.toFixed(2)}</span>
+              </div>
+
+              {couponApplied && (
+                <div className="text-green-600 text-sm">
+                  You will save ₹{discount.toFixed(2)} on this order
+                </div>
+              )}
+
+              {/* Coupon input */}
+              <div className="mt-4 flex items-center gap-2 mb-4">
+                <Input
+                  placeholder="Enter coupon code"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value)}
+                  disabled={couponApplied}
+                />
+                <Button
+                  variant="outline"
+                  onClick={handleCouponApply}
+                  disabled={couponApplied || !couponCode}
+                  className="whitespace-nowrap"
                 >
-                  PLACE ORDER
-                </a>
+                  Apply
+                </Button>
               </div>
+
+              {/* PLACE ORDER button */}
+              <Button
+                onClick={handlePlaceOrder}
+                disabled={isProcessing}
+                className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3"
+              >
+                {isProcessing ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    Processing...
+                  </>
+                ) : (
+                  "PLACE ORDER"
+                )}
+              </Button>
 
               <div className="mt-6 flex items-center gap-2 text-sm text-muted-foreground">
                 <ShieldCheck className="h-4 w-4 text-green-600" />

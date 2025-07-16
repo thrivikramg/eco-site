@@ -10,15 +10,16 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        // This is a mock implementation
-        // In a real app, you would verify credentials against your database
+        // 🔐 Mock login — Replace this with DB lookup in production
         if (credentials?.email === "user@example.com" && credentials?.password === "password") {
           return {
             id: "1",
             name: "Rahul Sharma",
             email: "user@example.com",
+            role: "buyer", // ✅ Added role here
           }
         }
+
         return null
       },
     }),
@@ -30,9 +31,17 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login",
   },
   callbacks: {
+    async jwt({ token, user }) {
+      // On login, attach user info to the token
+      if (user) {
+        token.role = (user as any).role // 👈 Explicit cast
+      }
+      return token
+    },
     async session({ session, token }) {
-      if (token && session.user) {
+      if (session.user && token) {
         session.user.id = token.sub as string
+        session.user.role = token.role as string // ✅ Add role to session
       }
       return session
     },

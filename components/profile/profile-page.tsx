@@ -41,15 +41,31 @@ type Address = {
   postalCode: string
   country: string
 }
-
+// order type
+type Order = {
+  _id: string
+  createdAt: string
+  totalAmount: number
+  status: string
+  items: {
+    productId: string
+    name: string
+    price: number
+    quantity: number
+    image?: string
+  }[]
+}
 export default function ProfilePage() {
+  
   const { user, logout, updateUser } = useAuth();
+  const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('overview');
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
   // Form states
+  const [orders, setOrders] = useState<Order[]>([])
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -63,6 +79,8 @@ export default function ProfilePage() {
   });
 
   // Initialize form data
+
+
   useEffect(() => {
   if (user) {
     setName(user.name || '');
@@ -164,6 +182,26 @@ export default function ProfilePage() {
     }
   }, [name, email, phone, profilePic, address, updateUser, toast]);
 
+  //fetch orders
+ useEffect(() => {
+    if (!user) return
+    const fetchOrders = async () => {
+      try {
+        const res = await fetch(`/api/orders?userId=${user.id}`)
+        const data = await res.json()
+        if (data.success) {
+          setOrders(data.orders)
+        }
+      } catch (error) {
+        console.error('Failed to fetch orders:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchOrders()
+  }, [user])
+
+  
   if (isLoading) {
     return (
       <div className="flex min-h-screen bg-gray-50">
@@ -319,41 +357,46 @@ export default function ProfilePage() {
                 </div>
                 
                 {/* Recent Orders */}
-                <div className="bg-white rounded-xl shadow-sm p-6">
-                  <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-lg font-bold">Recent Orders</h2>
-                    <Button variant="outline" className="text-green-600 border-green-200">
-                      View All Orders
-                    </Button>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    {ORDERS.slice(0, 2).map(order => (
-                      <div key={order.id} className="flex flex-col md:flex-row md:items-center justify-between border-b pb-4">
-                        <div>
-                          <p className="font-medium">Order #{order.id}</p>
-                          <p className="text-sm text-gray-500 mt-1">
-                            {format(order.date, 'dd MMM yyyy')} • {order.items} item{order.items > 1 ? 's' : ''}
-                          </p>
-                        </div>
-                        <div className="flex items-center mt-2 md:mt-0">
-                          <div className="mr-4">
-                            <p className="font-medium">₹{order.total.toLocaleString()}</p>
-                            <p className={`text-xs mt-1 ${
-                              order.status === 'Delivered' ? 'text-green-600' : 
-                              order.status === 'Processing' ? 'text-yellow-600' : 'text-gray-600'
-                            }`}>
-                              {order.status}
-                            </p>
-                          </div>
-                          <Button variant="outline" size="sm">
-                            View Details
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                 <div className="bg-white rounded-xl shadow-sm p-6">
+  <div className="flex justify-between items-center mb-6">
+    <h2 className="text-lg font-bold">Recent Orders</h2>
+    <Button variant="outline" className="text-green-600 border-green-200">
+      View All Orders
+    </Button>
+  </div>
+
+  {orders.length === 0 ? (
+    <p className="text-gray-500 text-sm">You haven’t placed any orders yet.</p>
+  ) : (
+    <div className="space-y-4">
+      {orders.slice(0, 2).map(order => (
+        <div key={order._id} className="flex flex-col md:flex-row md:items-center justify-between border-b pb-4">
+          <div>
+            <p className="font-medium">Order #{order._id.slice(-6).toUpperCase()}</p>
+            <p className="text-sm text-gray-500 mt-1">
+              {format(new Date(order.createdAt), 'dd MMM yyyy')} • {order.items.length} item{order.items.length > 1 ? 's' : ''}
+            </p>
+          </div>
+          <div className="flex items-center mt-2 md:mt-0">
+            <div className="mr-4">
+              <p className="font-medium">₹{order.totalAmount.toLocaleString()}</p>
+              <p className={`text-xs mt-1 ${
+                order.status === 'Delivered' ? 'text-green-600' : 
+                order.status === 'Processing' ? 'text-yellow-600' : 'text-gray-600'
+              }`}>
+                {order.status}
+              </p>
+            </div>
+            <Button variant="outline" size="sm">
+              View Details
+            </Button>
+          </div>
+        </div>
+      ))}
+    </div>
+  )}
+</div>
+
                 
                 {/* Recent Bookings */}
                 <div className="bg-white rounded-xl shadow-sm p-6">

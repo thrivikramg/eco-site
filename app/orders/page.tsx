@@ -1,42 +1,66 @@
-import db from '@/lib/mongodb'
-import { Order } from '@/models/order'
+// app/orders/page.tsx
+import db from "@/lib/mongodb"
+import { Order } from "@/models/order"
+import { format } from "date-fns"
 
 export default async function OrdersPage() {
   await db()
 
-  // Get all orders
-  const rawOrders = await Order.find().lean()
-
-  // Serialize _id and createdAt
-  const orders = rawOrders.map((order) => ({
-    _id: String(order._id),
-    status: order.status,
-    total: order.totalAmount || 0, // Adjust if your schema uses `total`
-    createdAt: new Date(order.createdAt).toISOString(),
-  }))
+  const orders = await Order.find().sort({ createdAt: -1 }).lean()
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-semibold mb-6">All Orders</h1>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">All Orders</h1>
+
       {orders.length === 0 ? (
-        <p className="text-gray-500">No orders found.</p>
+        <p>No orders found.</p>
       ) : (
-        <ul className="space-y-4">
-          {orders.map((order) => (
-            <li key={order._id} className="p-4 border rounded-md shadow-sm">
-              <div className="flex justify-between items-center">
+        <div className="space-y-6">
+          {orders.map((order: any) => (
+            <div
+              key={order._id.toString()}
+              className="border rounded-lg p-4 shadow-sm bg-white"
+            >
+              <div className="flex justify-between mb-2">
                 <div>
-                  <p className="text-lg font-medium">Order ID: {order._id}</p>
-                  <p className="text-sm text-gray-600">Status: {order.status}</p>
-                  <p className="text-sm text-gray-600">Total: ₹{order.total}</p>
+                  <h2 className="font-semibold">Order ID: {order._id.toString()}</h2>
                   <p className="text-sm text-gray-600">
-                    Date: {new Date(order.createdAt).toLocaleString()}
+                    Placed on {format(new Date(order.createdAt), "dd MMM yyyy, hh:mm a")}
                   </p>
                 </div>
+                <div>
+                  <span className="text-sm px-3 py-1 rounded-full bg-blue-100 text-blue-700">
+                    {order.status}
+                  </span>
+                </div>
               </div>
-            </li>
+
+              <div className="mb-2">
+                <h3 className="font-medium">Shipping Address</h3>
+                <p className="text-sm text-gray-700">
+                  {order.shippingAddress?.name}, {order.shippingAddress?.phone}<br />
+                  {order.shippingAddress?.street}, {order.shippingAddress?.city}, {order.shippingAddress?.state} - {order.shippingAddress?.pincode}, {order.shippingAddress?.country}
+                </p>
+              </div>
+
+              <div className="mb-2">
+                <h3 className="font-medium">Items</h3>
+                <ul className="text-sm text-gray-700 list-disc pl-5">
+                  {order.items?.map((item: any, index: number) => (
+                    <li key={index}>
+                      {item.name} x {item.quantity} — ₹{item.price * item.quantity}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="flex justify-between mt-4">
+                <span className="font-semibold">Total: ₹{order.totalAmount}</span>
+                <span className="text-sm text-gray-600">Payment: {order.paymentMethod}</span>
+              </div>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   )

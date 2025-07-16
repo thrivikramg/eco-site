@@ -13,19 +13,11 @@ import { format } from 'date-fns';
 import { useToast } from '@/components/ui/use-toast';
 import { Progress } from '@/components/ui/progress';
 
-// Mock data for orders and bookings
-const ORDERS = [
-  { id: 'ORD-123', date: new Date(2023, 5, 15), total: 1499, status: 'Delivered', items: 3 },
-  { id: 'ORD-456', date: new Date(2023, 6, 22), total: 2999, status: 'Processing', items: 2 },
-  { id: 'ORD-789', date: new Date(2023, 7, 5), total: 799, status: 'Delivered', items: 1 }
-];
-
 const BOOKINGS = [
   { id: 'BK-789', service: 'AC Repair', date: new Date(2023, 7, 5), status: 'Confirmed', duration: '2 hours' },
   { id: 'BK-012', service: 'Plumbing', date: new Date(2023, 7, 12), status: 'Completed', duration: '1.5 hours' },
   { id: 'BK-345', service: 'Electrical Wiring', date: new Date(2023, 8, 2), status: 'Scheduled', duration: '3 hours' }
 ];
-
 const SIDEBAR_ITEMS = [
   { key: 'overview', label: 'Overview', icon: User },
   { key: 'orders', label: 'My Orders', icon: Package },
@@ -436,68 +428,74 @@ export default function ProfilePage() {
               </div>
             )}
 
-            {activeTab === 'orders' && (
-              <div className="bg-white rounded-xl shadow-sm p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h1 className="text-xl font-bold">My Orders</h1>
-                  <div className="flex space-x-2">
-                    <Input placeholder="Search orders..." className="max-w-xs" />
-                    <Button variant="outline">Filter</Button>
-                  </div>
-                </div>
-                
-                {ORDERS.length === 0 ? (
-                  <div className="text-center py-12">
-                    <Package className="mx-auto h-12 w-12 text-gray-400" />
-                    <h3 className="mt-4 font-medium text-gray-900">No orders yet</h3>
-                    <p className="mt-1 text-gray-500">Your orders will appear here once you make a purchase</p>
-                    <Button className="mt-4 bg-green-600 hover:bg-green-700">Start Shopping</Button>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {ORDERS.map(order => (
-                      <div key={order.id} className="border rounded-lg p-4 hover:border-green-300 transition-colors">
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <p className="font-medium">Order #{order.id}</p>
-                            <p className="text-sm text-gray-500">
-                              {format(order.date, 'dd MMM yyyy')} • {order.items} item{order.items > 1 ? 's' : ''}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="font-medium">₹{order.total.toLocaleString()}</p>
-                            <p className={`text-xs text-right mt-1 ${
-                              order.status === 'Delivered' ? 'text-green-600' : 
-                              order.status === 'Processing' ? 'text-yellow-600' : 'text-gray-600'
-                            }`}>
-                              {order.status}
-                            </p>
-                          </div>
-                        </div>
-                        
-                        <div className="flex mt-4 justify-between">
-                          <div className="flex space-x-2">
-                            <Button variant="outline" size="sm">
-                              View Details
-                            </Button>
-                            {order.status === 'Delivered' && (
-                              <Button variant="outline" size="sm">
-                                Rate Product
-                              </Button>
-                            )}
-                          </div>
-                          {order.status === 'Processing' && (
-                            <Button size="sm" className="bg-green-600 hover:bg-green-700">
-                              Track Order
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+{activeTab === 'orders' && (
+  <div className="bg-white rounded-xl shadow-sm p-6">
+    <div className="flex justify-between items-center mb-6">
+      <h1 className="text-xl font-bold">My Orders</h1>
+      <div className="flex space-x-2">
+        <Input placeholder="Search orders..." className="max-w-xs" />
+        <Button variant="outline">Filter</Button>
+      </div>
+    </div>
+
+    {orders.length === 0 ? (
+      <div className="text-center py-12">
+        <Package className="mx-auto h-12 w-12 text-gray-400" />
+        <h3 className="mt-4 font-medium text-gray-900">No orders yet</h3>
+        <p className="mt-1 text-gray-500">Your orders will appear here once you make a purchase.</p>
+        <Button className="mt-4 bg-green-600 hover:bg-green-700">Start Shopping</Button>
+      </div>
+    ) : (
+      <div className="space-y-4">
+        {orders.map(order => (
+          <div key={order._id} className="border rounded-lg p-4 hover:border-green-300 transition-colors">
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="font-medium">Order #{order._id.slice(-6).toUpperCase()}</p>
+                <p className="text-sm text-gray-500">
+                  {format(new Date(order.createdAt), 'dd MMM yyyy')} • {order.items.length} item{order.items.length > 1 ? 's' : ''}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="font-medium">₹{order.totalAmount.toLocaleString()}</p>
+                <p
+                  className={`text-xs mt-1 ${
+                    order.status === 'Delivered'
+                      ? 'text-green-600'
+                      : order.status === 'Processing'
+                      ? 'text-yellow-600'
+                      : 'text-gray-600'
+                  }`}
+                >
+                  {order.status}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex mt-4 justify-between">
+              <div className="flex space-x-2">
+                <Button variant="outline" size="sm">
+                  View Details
+                </Button>
+                {order.status === 'Delivered' && (
+                  <Button variant="outline" size="sm">
+                    Rate Product
+                  </Button>
                 )}
               </div>
-            )}
+              {order.status === 'Processing' && (
+                <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                  Track Order
+                </Button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+)}
+
 
             {activeTab === 'bookings' && (
               <div className="bg-white rounded-xl shadow-sm p-6">

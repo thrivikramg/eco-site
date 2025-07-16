@@ -1,748 +1,734 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import Image from "next/image"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import {
-  Package,
-  Calendar,
-  Users,
-  Settings,
-  LogOut,
-  Copy,
-  Facebook,
-  Twitter,
-  Instagram,
-  PhoneIcon as WhatsApp,
-  Mail,
-  Eye,
-  Clock,
-} from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
-import { useAuth } from "@/components/auth-provider"
-import AuthModal from "@/components/auth-modal"
+import { useState, useEffect, useCallback } from 'react';
+import { useAuth } from '@/components/auth-provider';
+import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
+import { Calendar, Package, Settings as SettingsIcon, LogOut, User, MapPin, CreditCard, HelpCircle, Star, ChevronRight, Check } from 'lucide-react';
+import { format } from 'date-fns';
+import { useToast } from '@/components/ui/use-toast';
+import { Progress } from '@/components/ui/progress';
 
-// Mock user data
-const userData = {
-  name: "Rahul Sharma",
-  email: "rahul.sharma@example.com",
-  avatar: "/placeholder.svg?height=100&width=100&text=RS",
-  initials: "RS",
-  joinDate: "May 2023",
-  referralCode: "RAHUL25",
-  referralLink: "https://ecogrow.com/ref/RAHUL25",
-  referralCount: 5,
-  referralPoints: 250,
+// Mock data for orders and bookings
+const ORDERS = [
+  { id: 'ORD-123', date: new Date(2023, 5, 15), total: 1499, status: 'Delivered', items: 3 },
+  { id: 'ORD-456', date: new Date(2023, 6, 22), total: 2999, status: 'Processing', items: 2 },
+  { id: 'ORD-789', date: new Date(2023, 7, 5), total: 799, status: 'Delivered', items: 1 }
+];
+
+const BOOKINGS = [
+  { id: 'BK-789', service: 'AC Repair', date: new Date(2023, 7, 5), status: 'Confirmed', duration: '2 hours' },
+  { id: 'BK-012', service: 'Plumbing', date: new Date(2023, 7, 12), status: 'Completed', duration: '1.5 hours' },
+  { id: 'BK-345', service: 'Electrical Wiring', date: new Date(2023, 8, 2), status: 'Scheduled', duration: '3 hours' }
+];
+
+const SIDEBAR_ITEMS = [
+  { key: 'overview', label: 'Overview', icon: User },
+  { key: 'orders', label: 'My Orders', icon: Package },
+  { key: 'bookings', label: 'My Bookings', icon: Calendar },
+  { key: 'settings', label: 'Account Settings', icon: SettingsIcon },
+];
+
+// Define address type
+type Address = {
+  street: string
+  city: string
+  state: string
+  postalCode: string
+  country: string
 }
 
-// Mock orders data
-const orders = [
-  {
-    id: "ORD-2023-1234",
-    date: "May 15, 2025",
-    status: "Delivered",
-    total: "₹2,499",
-    items: [
-      {
-        name: "Organic Plant Food",
-        quantity: 2,
-        price: "₹599",
-        image: "/placeholder.svg?height=80&width=80&text=Plant+Food",
-      },
-      {
-        name: "Bamboo Toothbrush Set",
-        quantity: 1,
-        price: "₹349",
-        image: "/placeholder.svg?height=80&width=80&text=Toothbrush",
-      },
-      {
-        name: "Herbal Hair Oil",
-        quantity: 1,
-        price: "₹499",
-        image: "/placeholder.svg?height=80&width=80&text=Hair+Oil",
-      },
-    ],
-  },
-  {
-    id: "ORD-2023-1189",
-    date: "April 28, 2025",
-    status: "Delivered",
-    total: "₹1,899",
-    items: [
-      {
-        name: "Neem Soap - Pack of 3",
-        quantity: 1,
-        price: "₹299",
-        image: "/placeholder.svg?height=80&width=80&text=Neem+Soap",
-      },
-      {
-        name: "Vermicompost - 5kg",
-        quantity: 1,
-        price: "₹450",
-        image: "/placeholder.svg?height=80&width=80&text=Vermicompost",
-      },
-      {
-        name: "Clay Pots Set",
-        quantity: 1,
-        price: "₹1,150",
-        image: "/placeholder.svg?height=80&width=80&text=Clay+Pots",
-      },
-    ],
-  },
-]
-
-// Mock bookings data
-const bookings = [
-  {
-    id: "BKG-2023-5678",
-    service: "Organic Pest Control",
-    date: "May 20, 2025",
-    time: "10:00 AM - 12:00 PM",
-    status: "Confirmed",
-    amount: "₹1,499",
-    address: "123 Green Street, Chennai, Tamil Nadu",
-    professional: {
-      name: "Vijay Kumar",
-      rating: 4.8,
-      image: "/placeholder.svg?height=50&width=50&text=VK",
-    },
-  },
-  {
-    id: "BKG-2023-5432",
-    service: "Garden Setup & Maintenance",
-    date: "June 5, 2025",
-    time: "9:00 AM - 11:00 AM",
-    status: "Scheduled",
-    amount: "₹2,999",
-    address: "123 Green Street, Chennai, Tamil Nadu",
-    professional: {
-      name: "Priya Patel",
-      rating: 4.9,
-      image: "/placeholder.svg?height=50&width=50&text=PP",
-    },
-  },
-  {
-    id: "BKG-2023-4987",
-    service: "Home Energy Audit",
-    date: "April 10, 2025",
-    time: "2:00 PM - 4:00 PM",
-    status: "Completed",
-    amount: "₹1,999",
-    address: "123 Green Street, Chennai, Tamil Nadu",
-    professional: {
-      name: "Arjun Singh",
-      rating: 4.7,
-      image: "/placeholder.svg?height=50&width=50&text=AS",
-    },
-  },
-]
-
 export default function ProfilePage() {
-  const [activeTab, setActiveTab] = useState("orders")
-  const [savedOrders, setSavedOrders] = useState([]) // Moved before conditional return
-  const [showAuthModal, setShowAuthModal] = useState(false)
-  const { toast } = useToast()
-  const router = useRouter()
-  const { isAuthenticated, logout } = useAuth()
+  const { user, logout, updateUser } = useAuth();
+  const [activeTab, setActiveTab] = useState('overview');
+  const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
 
-  // In a real app, we would check authentication status and redirect if not authenticated
-  // For demo purposes, we'll show the auth modal
+  // Form states
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [profilePic, setProfilePic] = useState<string | null>(null);
+  const [address, setAddress] = useState<Address>({
+    street: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    country: 'India'
+  });
+
+  // Initialize form data
   useEffect(() => {
-    if (!isAuthenticated) {
-      setShowAuthModal(true)
-      router.push("/") // Redirect immediately
+  if (user) {
+    setName(user.name || '');
+    setEmail(user.email || '');
+    setPhone(user.phone || '');
+    setProfilePic(user.image || null);
+
+    const defaultAddress = user.addresses?.find(addr => addr.isDefault) || user.addresses?.[0];
+
+    const formattedAddress = defaultAddress
+      ? {
+          street: defaultAddress.street,
+          city: defaultAddress.city,
+          state: defaultAddress.state,
+          postalCode: defaultAddress.pincode || '', // map pincode → postalCode
+          country: defaultAddress.country,
+        }
+      : {
+          street: '',
+          city: '',
+          state: '',
+          postalCode: '',
+          country: 'India',
+        };
+
+    setAddress(formattedAddress); // ✅ This is now a single Address, not array
+    setIsLoading(false);
+  }
+  }, [user]);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate image type and size
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: 'Invalid File',
+        description: 'Please upload an image file',
+        variant: 'destructive'
+      });
+      return;
     }
-  }, [isAuthenticated, router])
 
-  useEffect(() => {
-    // In a real app, we would fetch this from an API
-    // For demo purposes, we're using localStorage
-    const storedOrders = JSON.parse(localStorage.getItem("ecoOrders") || "[]")
-    setSavedOrders(storedOrders)
-  }, [])
+    if (file.size > 2 * 1024 * 1024) { // 2MB limit
+      toast({
+        title: 'File Too Large',
+        description: 'Please upload an image smaller than 2MB',
+        variant: 'destructive'
+      });
+      return;
+    }
 
-  const copyReferralLink = () => {
-    navigator.clipboard.writeText(userData.referralLink)
-    toast({
-      title: "Copied to clipboard",
-      description: "Referral link has been copied to your clipboard.",
-    })
-  }
+    const reader = new FileReader();
+    reader.onload = () => setProfilePic(reader.result as string);
+    reader.readAsDataURL(file);
+  };
 
-  const handleLogout = () => {
-    logout()
-    router.push("/")
-    toast({
-      title: "Logged out",
-      description: "You have been successfully logged out.",
-    })
-  }
+  const handleSave = useCallback(async () => {
+    setIsSaving(true);
+    
+    try {
+      // Validate phone number
+      const phoneRegex = /^[6-9]\d{9}$/;
+      if (phone && !phoneRegex.test(phone)) {
+        toast({
+          title: 'Invalid Phone',
+          description: 'Please enter a valid 10-digit Indian phone number',
+          variant: 'destructive'
+        });
+        return;
+      }
 
-  if (showAuthModal) {
-    return <AuthModal open={true} onOpenChange={() => setShowAuthModal(false)} />
-  }
+      // Prepare updated user data
+      const updatedData = {
+        name,
+        email,
+        phone,
+        image: profilePic??undefined ,
+        address
+      };
 
-  return (
-    <section className="py-12 md:py-16 bg-gray-50">
-      <div className="container px-4 md:px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
-          {/* Sidebar */}
-          <div className="space-y-6">
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex flex-col items-center text-center">
-                  <Avatar className="h-24 w-24 mb-4">
-                    <AvatarImage src={userData.avatar || "/placeholder.svg"} alt={userData.name} />
-                    <AvatarFallback>{userData.initials}</AvatarFallback>
-                  </Avatar>
-                  <h2 className="text-xl font-bold">{userData.name}</h2>
-                  <p className="text-sm text-gray-500 mb-4">{userData.email}</p>
-                  <p className="text-xs text-gray-500">Member since {userData.joinDate}</p>
-                </div>
-              </CardContent>
-            </Card>
+      // Simulate API call to update user data
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      updateUser(updatedData);
 
-            <div className="hidden lg:block">
-              <nav className="space-y-2">
-                <Button
-                  variant={activeTab === "orders" ? "default" : "ghost"}
-                  className="w-full justify-start"
-                  onClick={() => setActiveTab("orders")}
-                >
-                  <Package className="h-5 w-5 mr-2" />
-                  Orders
-                </Button>
-                <Button
-                  variant={activeTab === "bookings" ? "default" : "ghost"}
-                  className="w-full justify-start"
-                  onClick={() => setActiveTab("bookings")}
-                >
-                  <Calendar className="h-5 w-5 mr-2" />
-                  Bookings
-                </Button>
-                <Button
-                  variant={activeTab === "referrals" ? "default" : "ghost"}
-                  className="w-full justify-start"
-                  onClick={() => setActiveTab("referrals")}
-                >
-                  <Users className="h-5 w-5 mr-2" />
-                  Referrals
-                </Button>
-                <Button
-                  variant={activeTab === "settings" ? "default" : "ghost"}
-                  className="w-full justify-start"
-                  onClick={() => setActiveTab("settings")}
-                >
-                  <Settings className="h-5 w-5 mr-2" />
-                  Settings
-                </Button>
-              </nav>
+      toast({
+        title: 'Profile Updated',
+        description: 'Your changes have been saved successfully',
+      });
+    } catch (error) {
+      toast({
+        title: 'Update Failed',
+        description: 'Failed to save your changes. Please try again.',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  }, [name, email, phone, profilePic, address, updateUser, toast]);
 
-              <div className="mt-6 pt-6 border-t">
-                <Button variant="ghost" className="w-full justify-start text-red-500" onClick={handleLogout}>
-                  <LogOut className="h-5 w-5 mr-2" />
-                  Logout
-                </Button>
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen bg-gray-50">
+        {/* Loading skeleton */}
+        <div className="max-w-6xl mx-auto w-full py-8 px-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {/* Sidebar skeleton */}
+            <div className="md:col-span-1 bg-white rounded-xl shadow-sm p-6 h-fit">
+              <div className="flex flex-col items-center mb-6">
+                <div className="bg-gray-200 rounded-full w-24 h-24 mb-4"></div>
+                <div className="h-6 w-40 bg-gray-200 rounded mb-2"></div>
+                <div className="h-4 w-32 bg-gray-200 rounded"></div>
+              </div>
+              <div className="space-y-3">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="h-10 bg-gray-200 rounded-lg"></div>
+                ))}
               </div>
             </div>
-
-            <div className="lg:hidden">
-              <Tabs defaultValue="orders" value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="grid grid-cols-4 w-full">
-                  <TabsTrigger value="orders">
-                    <Package className="h-5 w-5" />
-                    <span className="sr-only">Orders</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="bookings">
-                    <Calendar className="h-5 w-5" />
-                    <span className="sr-only">Bookings</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="referrals">
-                    <Users className="h-5 w-5" />
-                    <span className="sr-only">Referrals</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="settings">
-                    <Settings className="h-5 w-5" />
-                    <span className="sr-only">Settings</span>
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
+            
+            {/* Main content skeleton */}
+            <div className="md:col-span-3">
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="h-8 w-48 bg-gray-200 rounded mb-6"></div>
+                <div className="space-y-4">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="h-20 bg-gray-200 rounded-lg"></div>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
-
-          {/* Main Content */}
-          <div>
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              {/* Orders Tab */}
-              <TabsContent value="orders" className="mt-0">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>My Orders</CardTitle>
-                    <CardDescription>View and manage your product orders.</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    {savedOrders.length > 0 ? (
-                      <div className="space-y-6">
-                        {savedOrders.map((order) => (
-                          <div key={order.id} className="border rounded-lg overflow-hidden">
-                            <div className="bg-gray-50 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                              <div>
-                                <div className="flex items-center gap-2">
-                                  <h3 className="font-medium">{order.id}</h3>
-                                  <Badge variant="success">Processing</Badge>
-                                </div>
-                                <p className="text-sm text-gray-500">
-                                  Ordered on{" "}
-                                  {new Date(order.date).toLocaleDateString("en-IN", {
-                                    day: "numeric",
-                                    month: "long",
-                                    year: "numeric",
-                                  })}
-                                </p>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <span className="font-medium">₹{order.total.toFixed(2)}</span>
-                                <Link href={`/order-confirmation?orderId=${order.id}`}>
-                                  <Button variant="outline" size="sm">
-                                    <Eye className="h-4 w-4 mr-1" />
-                                    Details
-                                  </Button>
-                                </Link>
-                              </div>
-                            </div>
-                            <div className="p-4">
-                              <div className="space-y-4">
-                                {order.items.map((item, index) => (
-                                  <div key={index} className="flex items-center gap-4">
-                                    <div className="relative h-16 w-16 rounded overflow-hidden flex-shrink-0">
-                                      <Image
-                                        src={item.image || "/placeholder.svg"}
-                                        alt={item.name}
-                                        fill
-                                        className="object-cover"
-                                      />
-                                    </div>
-                                    <div className="flex-grow">
-                                      <h4 className="font-medium">{item.name}</h4>
-                                      <div className="flex items-center text-sm text-gray-500">
-                                        <span>Qty: {item.quantity}</span>
-                                        <span className="mx-2">•</span>
-                                        <span>₹{item.price.toFixed(2)}</span>
-                                      </div>
-                                    </div>
-                                    <Link href={`/shop/product/${item.id}`}>
-                                      <Button variant="ghost" size="sm">
-                                        Buy Again
-                                      </Button>
-                                    </Link>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-12">
-                        <Package className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                        <h3 className="text-lg font-medium mb-2">No orders yet</h3>
-                        <p className="text-gray-500 mb-4">You haven't placed any orders yet.</p>
-                        <Link href="/shop">
-                          <Button>Start Shopping</Button>
-                        </Link>
-                      </div>
-                    )}
-                  </CardContent>
-                  {orders.length > 0 && (
-                    <CardFooter className="flex justify-center">
-                      <Button variant="outline">View All Orders</Button>
-                    </CardFooter>
-                  )}
-                </Card>
-              </TabsContent>
-
-              {/* Bookings Tab */}
-              <TabsContent value="bookings" className="mt-0">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>My Bookings</CardTitle>
-                    <CardDescription>View and manage your service bookings.</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    {bookings.length > 0 ? (
-                      <div className="space-y-6">
-                        {bookings.map((booking) => (
-                          <div key={booking.id} className="border rounded-lg overflow-hidden">
-                            <div className="bg-gray-50 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                              <div>
-                                <div className="flex items-center gap-2">
-                                  <h3 className="font-medium">{booking.service}</h3>
-                                  <Badge
-                                    variant={
-                                      booking.status === "Completed"
-                                        ? "success"
-                                        : booking.status === "Confirmed"
-                                          ? "outline"
-                                          : "secondary"
-                                    }
-                                  >
-                                    {booking.status}
-                                  </Badge>
-                                </div>
-                                <p className="text-sm text-gray-500">
-                                  {booking.id} • {booking.date}
-                                </p>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <span className="font-medium">{booking.amount}</span>
-                                <Button variant="outline" size="sm">
-                                  <Eye className="h-4 w-4 mr-1" />
-                                  Details
-                                </Button>
-                              </div>
-                            </div>
-                            <div className="p-4">
-                              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                <div>
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <Clock className="h-4 w-4 text-gray-500" />
-                                    <span>{booking.time}</span>
-                                  </div>
-                                  <div className="text-sm text-gray-500">{booking.address}</div>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                  <Avatar className="h-10 w-10">
-                                    <AvatarImage
-                                      src={booking.professional.image || "/placeholder.svg"}
-                                      alt={booking.professional.name}
-                                    />
-                                    <AvatarFallback>
-                                      {booking.professional.name
-                                        .split(" ")
-                                        .map((n) => n[0])
-                                        .join("")}
-                                    </AvatarFallback>
-                                  </Avatar>
-                                  <div>
-                                    <div className="font-medium">{booking.professional.name}</div>
-                                    <div className="flex items-center text-sm">
-                                      <svg
-                                        className="h-4 w-4 text-yellow-400 fill-current"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                      >
-                                        <path d="M12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27Z" />
-                                      </svg>
-                                      <span className="ml-1">{booking.professional.rating}</span>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="flex flex-wrap gap-2 mt-4">
-                                {booking.status === "Scheduled" || booking.status === "Confirmed" ? (
-                                  <>
-                                    <Button variant="outline" size="sm">
-                                      Reschedule
-                                    </Button>
-                                    <Button variant="outline" size="sm" className="text-red-500">
-                                      Cancel
-                                    </Button>
-                                  </>
-                                ) : booking.status === "Completed" ? (
-                                  <>
-                                    <Button variant="outline" size="sm">
-                                      Leave Review
-                                    </Button>
-                                    <Button variant="outline" size="sm">
-                                      Book Again
-                                    </Button>
-                                  </>
-                                ) : null}
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-12">
-                        <Calendar className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                        <h3 className="text-lg font-medium mb-2">No bookings yet</h3>
-                        <p className="text-gray-500 mb-4">You haven't booked any services yet.</p>
-                        <Link href="/services">
-                          <Button>Explore Services</Button>
-                        </Link>
-                      </div>
-                    )}
-                  </CardContent>
-                  {bookings.length > 0 && (
-                    <CardFooter className="flex justify-center">
-                      <Button variant="outline">View All Bookings</Button>
-                    </CardFooter>
-                  )}
-                </Card>
-              </TabsContent>
-
-              {/* Referrals Tab */}
-              <TabsContent value="referrals" className="mt-0">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>My Referrals</CardTitle>
-                    <CardDescription>Share and earn rewards when friends join EcoGrow.</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-6">
-                      <div className="bg-green-50 border border-green-100 rounded-lg p-6 text-center">
-                        <h3 className="text-xl font-bold mb-2">Earn ₹100 for every friend who joins</h3>
-                        <p className="text-gray-600 mb-6">
-                          Share your unique referral link with friends and family. When they sign up and make their
-                          first purchase, you both get ₹100 in EcoGrow credits!
-                        </p>
-
-                        <div className="flex flex-col sm:flex-row items-center gap-4 mb-6">
-                          <div className="relative w-full">
-                            <Input
-                              value={userData.referralLink}
-                              readOnly
-                              className="pr-10 bg-white"
-                              onClick={(e) => e.currentTarget.select()}
-                            />
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="absolute right-0 top-0 h-full"
-                              onClick={copyReferralLink}
-                            >
-                              <Copy className="h-4 w-4" />
-                              <span className="sr-only">Copy</span>
-                            </Button>
-                          </div>
-                          <div className="flex-shrink-0">
-                            <Button className="w-full sm:w-auto" onClick={copyReferralLink}>
-                              <Copy className="h-4 w-4 mr-2" />
-                              Copy Link
-                            </Button>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-wrap justify-center gap-2">
-                          <Button variant="outline" size="sm" className="rounded-full">
-                            <Facebook className="h-4 w-4 mr-2" />
-                            Facebook
-                          </Button>
-                          <Button variant="outline" size="sm" className="rounded-full">
-                            <Twitter className="h-4 w-4 mr-2" />
-                            Twitter
-                          </Button>
-                          <Button variant="outline" size="sm" className="rounded-full">
-                            <Instagram className="h-4 w-4 mr-2" />
-                            Instagram
-                          </Button>
-                          <Button variant="outline" size="sm" className="rounded-full">
-                            <WhatsApp className="h-4 w-4 mr-2" />
-                            WhatsApp
-                          </Button>
-                          <Button variant="outline" size="sm" className="rounded-full">
-                            <Mail className="h-4 w-4 mr-2" />
-                            Email
-                          </Button>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <Card>
-                          <CardContent className="p-6">
-                            <div className="flex items-center justify-between">
-                              <h3 className="font-medium">Your Referral Code</h3>
-                              <Button variant="ghost" size="sm" onClick={copyReferralLink}>
-                                <Copy className="h-4 w-4 mr-1" />
-                                Copy
-                              </Button>
-                            </div>
-                            <div className="mt-2 text-2xl font-bold tracking-wider text-center py-2 bg-gray-50 rounded-md">
-                              {userData.referralCode}
-                            </div>
-                          </CardContent>
-                        </Card>
-
-                        <Card>
-                          <CardContent className="p-6">
-                            <h3 className="font-medium mb-4">Referral Stats</h3>
-                            <div className="grid grid-cols-2 gap-4">
-                              <div className="bg-gray-50 p-4 rounded-md text-center">
-                                <div className="text-2xl font-bold">{userData.referralCount}</div>
-                                <div className="text-sm text-gray-500">Friends Referred</div>
-                              </div>
-                              <div className="bg-gray-50 p-4 rounded-md text-center">
-                                <div className="text-2xl font-bold">₹{userData.referralPoints}</div>
-                                <div className="text-sm text-gray-500">Credits Earned</div>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </div>
-
-                      <Card>
-                        <CardHeader>
-                          <CardTitle>Referral History</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="text-center py-8">
-                            <Users className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                            <h3 className="text-lg font-medium mb-2">No referrals yet</h3>
-                            <p className="text-gray-500 mb-4">
-                              Share your referral link with friends to start earning rewards.
-                            </p>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              {/* Settings Tab */}
-              <TabsContent value="settings" className="mt-0">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Account Settings</CardTitle>
-                    <CardDescription>Manage your account preferences and information.</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-6">
-                      <div>
-                        <h3 className="text-lg font-medium mb-4">Personal Information</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="name">Full Name</Label>
-                            <Input id="name" defaultValue={userData.name} />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="email">Email Address</Label>
-                            <Input id="email" defaultValue={userData.email} type="email" />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="phone">Phone Number</Label>
-                            <Input id="phone" defaultValue="+91 98765 43210" type="tel" />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="dob">Date of Birth</Label>
-                            <Input id="dob" defaultValue="1990-05-15" type="date" />
-                          </div>
-                        </div>
-                        <Button className="mt-4">Save Changes</Button>
-                      </div>
-
-                      <div className="border-t pt-6">
-                        <h3 className="text-lg font-medium mb-4">Address Information</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="space-y-2 md:col-span-2">
-                            <Label htmlFor="address">Street Address</Label>
-                            <Input id="address" defaultValue="123 Green Street" />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="city">City</Label>
-                            <Input id="city" defaultValue="Chennai" />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="state">State</Label>
-                            <Input id="state" defaultValue="Tamil Nadu" />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="pincode">Pincode</Label>
-                            <Input id="pincode" defaultValue="600001" />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="country">Country</Label>
-                            <Input id="country" defaultValue="India" />
-                          </div>
-                        </div>
-                        <Button className="mt-4">Save Address</Button>
-                      </div>
-
-                      <div className="border-t pt-6">
-                        <h3 className="text-lg font-medium mb-4">Password & Security</h3>
-                        <div className="space-y-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="current-password">Current Password</Label>
-                            <Input id="current-password" type="password" />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="new-password">New Password</Label>
-                            <Input id="new-password" type="password" />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="confirm-password">Confirm New Password</Label>
-                            <Input id="confirm-password" type="password" />
-                          </div>
-                        </div>
-                        <Button className="mt-4">Update Password</Button>
-                      </div>
-
-                      <div className="border-t pt-6">
-                        <h3 className="text-lg font-medium mb-4">Notification Preferences</h3>
-                        <div className="space-y-4">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <Label htmlFor="email-notifications" className="font-medium">
-                                Email Notifications
-                              </Label>
-                              <p className="text-sm text-gray-500">Receive order updates and promotions via email</p>
-                            </div>
-                            <Switch id="email-notifications" defaultChecked />
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <Label htmlFor="sms-notifications" className="font-medium">
-                                SMS Notifications
-                              </Label>
-                              <p className="text-sm text-gray-500">Receive order updates and promotions via SMS</p>
-                            </div>
-                            <Switch id="sms-notifications" defaultChecked />
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <Label htmlFor="marketing-emails" className="font-medium">
-                                Marketing Emails
-                              </Label>
-                              <p className="text-sm text-gray-500">Receive newsletters and special offers</p>
-                            </div>
-                            <Switch id="marketing-emails" defaultChecked />
-                          </div>
-                        </div>
-                        <Button className="mt-4">Save Preferences</Button>
-                      </div>
-
-                      <div className="border-t pt-6">
-                        <h3 className="text-lg font-medium mb-4 text-red-500">Danger Zone</h3>
-                        <div className="space-y-4">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <p className="font-medium">Delete Account</p>
-                              <p className="text-sm text-gray-500">
-                                Permanently delete your account and all associated data
-                              </p>
-                            </div>
-                            <Button variant="destructive">Delete Account</Button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
           </div>
         </div>
       </div>
-    </section>
-  )
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-6xl mx-auto w-full py-8 px-4">
+        {/* Breadcrumb */}
+        <div className="flex items-center text-sm text-gray-500 mb-6">
+          <span>Home</span>
+          <ChevronRight className="mx-2 h-4 w-4" />
+          <span>My Account</span>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {/* Sidebar */}
+          <div className="md:col-span-1 bg-white rounded-xl shadow-sm p-6 h-fit">
+            <div className="flex flex-col items-center mb-6">
+              <div className="relative w-24 h-24 mb-4">
+                {profilePic ? (
+                  <Image
+                    src={profilePic}
+                    alt="Profile"
+                    fill
+                    className="rounded-full object-cover border-2 border-green-100"
+                  />
+                ) : (
+                  <div className="bg-gray-100 border-2 border-dashed rounded-full w-full h-full flex items-center justify-center">
+                    <User className="text-gray-400 w-10 h-10" />
+                  </div>
+                )}
+              </div>
+              <h2 className="text-lg font-semibold">{name}</h2>
+            </div>
+            
+            <nav className="space-y-2">
+              {SIDEBAR_ITEMS.map(item => (
+                <button
+                  key={item.key}
+                  className={cn(
+                    'flex items-center w-full px-4 py-3 text-left text-sm font-medium rounded-lg transition-colors',
+                    activeTab === item.key 
+                      ? 'bg-green-50 text-green-700' 
+                      : 'hover:bg-gray-50'
+                  )}
+                  onClick={() => setActiveTab(item.key)}
+                >
+                  <item.icon className={cn(
+                    "w-5 h-5 mr-3",
+                    activeTab === item.key ? "text-green-600" : "text-gray-500"
+                  )} />
+                  {item.label}
+                </button>
+              ))}
+              
+              <button
+                className="flex items-center w-full px-4 py-3 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors mt-4"
+                onClick={logout}
+              >
+                <LogOut className="w-5 h-5 mr-3" />
+                Sign out
+              </button>
+            </nav>
+          </div>
+          
+          {/* Main Content */}
+          <div className="md:col-span-3">
+            {activeTab === 'overview' && (
+              <div className="space-y-6">
+                {/* Welcome Card */}
+                <div className="bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-xl p-6">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between">
+                    <div>
+                      <h1 className="text-2xl font-bold text-gray-800">Welcome back, {name.split(' ')[0]}!</h1>
+                      <p className="text-gray-600 mt-2">Here's what's happening with your account today</p>
+                    </div>
+                    <Button className="mt-4 md:mt-0 bg-green-600 hover:bg-green-700">
+                      View Account
+                    </Button>
+                  </div>
+                </div>
+                
+                {/* Stats */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+                    <div className="flex items-center">
+                      <div className="bg-green-50 p-3 rounded-lg">
+                        <Package className="text-green-600 w-6 h-6" />
+                      </div>
+                      <div className="ml-4">
+                        <p className="text-sm text-gray-500">Total Orders</p>
+                        <p className="text-xl font-bold mt-1">12</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+                    <div className="flex items-center">
+                      <div className="bg-green-50 p-3 rounded-lg">
+                        <Calendar className="text-green-600 w-6 h-6" />
+                      </div>
+                      <div className="ml-4">
+                        <p className="text-sm text-gray-500">Upcoming Bookings</p>
+                        <p className="text-xl font-bold mt-1">2</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+                    <div className="flex items-center">
+                      <div className="bg-green-50 p-3 rounded-lg">
+                        <Star className="text-green-600 w-6 h-6" />
+                      </div>
+                      <div className="ml-4">
+                        <p className="text-sm text-gray-500">Loyalty Points</p>
+                        <p className="text-xl font-bold mt-1">1,240</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Recent Orders */}
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-lg font-bold">Recent Orders</h2>
+                    <Button variant="outline" className="text-green-600 border-green-200">
+                      View All Orders
+                    </Button>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {ORDERS.slice(0, 2).map(order => (
+                      <div key={order.id} className="flex flex-col md:flex-row md:items-center justify-between border-b pb-4">
+                        <div>
+                          <p className="font-medium">Order #{order.id}</p>
+                          <p className="text-sm text-gray-500 mt-1">
+                            {format(order.date, 'dd MMM yyyy')} • {order.items} item{order.items > 1 ? 's' : ''}
+                          </p>
+                        </div>
+                        <div className="flex items-center mt-2 md:mt-0">
+                          <div className="mr-4">
+                            <p className="font-medium">₹{order.total.toLocaleString()}</p>
+                            <p className={`text-xs mt-1 ${
+                              order.status === 'Delivered' ? 'text-green-600' : 
+                              order.status === 'Processing' ? 'text-yellow-600' : 'text-gray-600'
+                            }`}>
+                              {order.status}
+                            </p>
+                          </div>
+                          <Button variant="outline" size="sm">
+                            View Details
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Recent Bookings */}
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-lg font-bold">Upcoming Bookings</h2>
+                    <Button variant="outline" className="text-green-600 border-green-200">
+                      View All Bookings
+                    </Button>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {BOOKINGS.filter(b => b.status === 'Scheduled' || b.status === 'Confirmed').map(booking => (
+                      <div key={booking.id} className="flex flex-col md:flex-row md:items-center justify-between border-b pb-4">
+                        <div>
+                          <p className="font-medium">{booking.service}</p>
+                          <p className="text-sm text-gray-500 mt-1">
+                            {format(booking.date, 'EEE, d MMM yyyy, h:mm a')} • {booking.duration}
+                          </p>
+                        </div>
+                        <div className="flex items-center mt-2 md:mt-0">
+                          <div className="mr-4">
+                            <p className={`text-xs ${
+                              booking.status === 'Confirmed' ? 'text-green-600' : 
+                              booking.status === 'Scheduled' ? 'text-blue-600' : 'text-gray-600'
+                            }`}>
+                              {booking.status}
+                            </p>
+                          </div>
+                          <Button variant="outline" size="sm">
+                            View Details
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'orders' && (
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h1 className="text-xl font-bold">My Orders</h1>
+                  <div className="flex space-x-2">
+                    <Input placeholder="Search orders..." className="max-w-xs" />
+                    <Button variant="outline">Filter</Button>
+                  </div>
+                </div>
+                
+                {ORDERS.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Package className="mx-auto h-12 w-12 text-gray-400" />
+                    <h3 className="mt-4 font-medium text-gray-900">No orders yet</h3>
+                    <p className="mt-1 text-gray-500">Your orders will appear here once you make a purchase</p>
+                    <Button className="mt-4 bg-green-600 hover:bg-green-700">Start Shopping</Button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {ORDERS.map(order => (
+                      <div key={order.id} className="border rounded-lg p-4 hover:border-green-300 transition-colors">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <p className="font-medium">Order #{order.id}</p>
+                            <p className="text-sm text-gray-500">
+                              {format(order.date, 'dd MMM yyyy')} • {order.items} item{order.items > 1 ? 's' : ''}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="font-medium">₹{order.total.toLocaleString()}</p>
+                            <p className={`text-xs text-right mt-1 ${
+                              order.status === 'Delivered' ? 'text-green-600' : 
+                              order.status === 'Processing' ? 'text-yellow-600' : 'text-gray-600'
+                            }`}>
+                              {order.status}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex mt-4 justify-between">
+                          <div className="flex space-x-2">
+                            <Button variant="outline" size="sm">
+                              View Details
+                            </Button>
+                            {order.status === 'Delivered' && (
+                              <Button variant="outline" size="sm">
+                                Rate Product
+                              </Button>
+                            )}
+                          </div>
+                          {order.status === 'Processing' && (
+                            <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                              Track Order
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === 'bookings' && (
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h1 className="text-xl font-bold">My Bookings</h1>
+                  <Button className="bg-green-600 hover:bg-green-700">
+                    Book New Service
+                  </Button>
+                </div>
+                
+                {BOOKINGS.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Calendar className="mx-auto h-12 w-12 text-gray-400" />
+                    <h3 className="mt-4 font-medium text-gray-900">No bookings yet</h3>
+                    <p className="mt-1 text-gray-500">Your service bookings will appear here</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {BOOKINGS.map(booking => (
+                      <div key={booking.id} className="border rounded-lg p-4 hover:border-green-300 transition-colors">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="font-medium">{booking.service}</p>
+                            <p className="text-sm text-gray-500 mt-1">
+                              {format(booking.date, 'EEE, d MMM yyyy, h:mm a')} • {booking.duration}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className={`text-sm ${
+                              booking.status === 'Confirmed' ? 'text-green-600' : 
+                              booking.status === 'Completed' ? 'text-gray-600' : 
+                              booking.status === 'Scheduled' ? 'text-blue-600' : 'text-gray-600'
+                            }`}>
+                              {booking.status}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1">Booking #{booking.id}</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex mt-4 justify-between">
+                          <div className="flex space-x-2">
+                            <Button variant="outline" size="sm">
+                              View Details
+                            </Button>
+                            {booking.status === 'Completed' && (
+                              <Button variant="outline" size="sm">
+                                Rate Service
+                              </Button>
+                            )}
+                          </div>
+                          {booking.status !== 'Completed' && (
+                            <Button variant="outline" size="sm" className="text-red-500 border-red-200 hover:bg-red-50">
+                              Cancel Booking
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === 'settings' && (
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <h1 className="text-xl font-bold mb-6">Account Settings</h1>
+                
+                <div className="space-y-8">
+                  <div>
+                    <h2 className="text-lg font-semibold mb-4">Personal Information</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <Label>Name</Label>
+                        <Input 
+                          value={name} 
+                          onChange={(e) => setName(e.target.value)} 
+                          placeholder="Enter your full name"
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label>Email</Label>
+                        <Input 
+                          type="email" 
+                          value={email} 
+                          onChange={(e) => setEmail(e.target.value)} 
+                          placeholder="Enter your email"
+                          disabled
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
+                      </div>
+                      
+                      <div>
+                        <Label>Phone</Label>
+                        <Input 
+                          value={phone} 
+                          onChange={(e) => setPhone(e.target.value)} 
+                          placeholder="Enter your phone number"
+                          maxLength={10}
+                        />
+                        {phone && !/^[6-9]/.test(phone) && (
+                          <p className="text-red-500 text-xs mt-1">Phone number should start with 6,7,8 or 9</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h2 className="text-lg font-semibold mb-4">Profile Picture</h2>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-6">
+                      <div className="relative w-24 h-24">
+                        {profilePic ? (
+                          <Image
+                            src={profilePic}
+                            alt="Profile"
+                            fill
+                            className="rounded-full object-cover border-2 border-green-100"
+                          />
+                        ) : (
+                          <div className="bg-gray-100 border-2 border-dashed rounded-full w-full h-full flex items-center justify-center">
+                            <User className="text-gray-400 w-10 h-10" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                          <div>
+                            <Input 
+                              id="profile-upload"
+                              type="file" 
+                              accept="image/*" 
+                              onChange={handleImageUpload}
+                              className="hidden"
+                            />
+                            <Label 
+                              htmlFor="profile-upload"
+                              className="cursor-pointer border border-green-300 rounded-md px-4 py-2 text-sm font-medium text-green-700 bg-green-50 hover:bg-green-100 transition-colors"
+                            >
+                              Change Photo
+                            </Label>
+                          </div>
+                          <Button variant="outline" className="border-gray-300">
+                            Remove
+                          </Button>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-2">JPG, PNG or GIF. Max size 2MB</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <div className="flex justify-between items-center mb-4">
+                      <h2 className="text-lg font-semibold">Address</h2>
+                      <Button variant="outline" className="border-green-300 text-green-700">
+                        <MapPin className="w-4 h-4 mr-2" />
+                        Add New Address
+                      </Button>
+                    </div>
+                    
+                    <div className="border rounded-lg p-5 bg-green-50 border-green-200">
+                      <div className="flex justify-between">
+                        <h3 className="font-medium">Primary Address</h3>
+                        <Button variant="link" className="text-green-600 p-0 h-auto">
+                          Edit
+                        </Button>
+                      </div>
+                      
+                      <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label>Street Address</Label>
+                          <Textarea 
+                            value={address.street} 
+                            onChange={(e) => setAddress({...address, street: e.target.value})} 
+                            placeholder="House number, street, area"
+                            className="bg-white"
+                          />
+                        </div>
+
+                        <div>
+                          <Label>City</Label>
+                          <Input 
+                            value={address.city} 
+                            onChange={(e) => setAddress({...address, city: e.target.value})} 
+                            placeholder="Enter your city"
+                            className="bg-white"
+                          />
+                        </div>
+
+                        <div>
+                          <Label>State</Label>
+                          <Input 
+                            value={address.state} 
+                            onChange={(e) => setAddress({...address, state: e.target.value})} 
+                            placeholder="Enter your state"
+                            className="bg-white"
+                          />
+                        </div>
+
+                        <div>
+                          <Label>Postal Code</Label>
+                          <Input 
+                            value={address.postalCode} 
+                            onChange={(e) => setAddress({...address, postalCode: e.target.value})} 
+                            placeholder="Enter postal code"
+                            maxLength={6}
+                            className="bg-white"
+                          />
+                        </div>
+
+                        <div>
+                          <Label>Country</Label>
+                          <Input 
+                            value={address.country} 
+                            onChange={(e) => setAddress({...address, country: e.target.value})} 
+                            placeholder="Enter country"
+                            className="bg-white"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-end gap-3 pt-4">
+<Button 
+  variant="outline" 
+  onClick={() => {
+    setName(user?.name || '');
+    setPhone(user?.phone || '');
+    setProfilePic(user?.image || null);
+
+    const defaultAddress = user?.addresses?.find(addr => addr.isDefault) || user?.addresses?.[0];
+
+    setAddress(defaultAddress
+      ? {
+          street: defaultAddress.street,
+          city: defaultAddress.city,
+          state: defaultAddress.state,
+          postalCode: defaultAddress.pincode || '',
+          country: defaultAddress.country,
+        }
+      : {
+          street: '',
+          city: '',
+          state: '',
+          postalCode: '',
+          country: 'India'
+        });
+  }}
+>
+  Discard Changes
+</Button>
+
+                    <Button 
+                      onClick={handleSave} 
+                      disabled={isSaving}
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      {isSaving ? (
+                        <>
+                          <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Saving...
+                        </>
+                      ) : 'Save Changes'}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

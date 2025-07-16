@@ -1,13 +1,35 @@
 "use client"
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  type ReactNode,
+} from "react"
 
-type User = {
+export interface Address {
+  _id?: string
+  label: string
+  name: string
+  phone: string
+  street: string
+  city: string
+  state: string
+  pincode: string
+  country: string
+  isDefault?: boolean
+}
+
+export interface User {
   id: string
   name: string
   email: string
   avatar?: string
-  role?: 'buyer' | 'vendor'
+  image?: string // Google Auth profile picture
+  phone?: string
+  role?: "buyer" | "vendor"
+  addresses?: Address[]
 }
 
 type AuthContextType = {
@@ -15,7 +37,12 @@ type AuthContextType = {
   user: User | null
   login: (email: string, password: string) => Promise<boolean>
   logout: () => void
-  register: (name: string, email: string, password: string) => Promise<boolean>
+  register: (
+    name: string,
+    email: string,
+    password: string
+  ) => Promise<boolean>
+  updateUser: (newUser: Partial<User>) => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -24,9 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [user, setUser] = useState<User | null>(null)
 
-  // Check if user is already logged in (from localStorage in this demo)
   useEffect(() => {
-    // Only run on client side
     if (typeof window !== "undefined") {
       const storedUser = localStorage.getItem("user")
       if (storedUser) {
@@ -43,28 +68,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    // This is a mock implementation
-    // In a real app, you would call your authentication API
-
-    // Simulate API call delay
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
-    // Mock successful login for demo purposes
     if (email && password) {
-      // Simulate a vendor user for test@vendor.com, buyer for all others
-      const isVendor = email.toLowerCase() === 'test@vendor.com'
-      const mockUser = {
+      const isVendor = email.toLowerCase() === "test@vendor.com"
+      const mockUser: User = {
         id: "user-123",
         name: "Rahul Sharma",
         email: email,
         avatar: "/placeholder.svg?height=100&width=100&text=RS",
-        role: isVendor ? 'vendor' as const : 'buyer' as const
+        role: isVendor ? "vendor" : "buyer",
+        addresses: [
+          {
+            label: "Home",
+            name: "Rahul Sharma",
+            phone: "9876543210",
+            street: "123 MG Road",
+            city: "Bengaluru",
+            state: "Karnataka",
+            pincode: "560001",
+            country: "India",
+            isDefault: true,
+          },
+        ],
       }
 
       setUser(mockUser)
       setIsAuthenticated(true)
-
-      // Store in localStorage for demo persistence
       localStorage.setItem("user", JSON.stringify(mockUser))
 
       return true
@@ -79,18 +109,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem("user")
   }
 
-  const register = async (name: string, email: string, password: string): Promise<boolean> => {
-    // This is a mock implementation
-    // In a real app, you would call your registration API
-
-    // Simulate API call delay
+  const register = async (
+    name: string,
+    email: string,
+    password: string
+  ): Promise<boolean> => {
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
-    // Mock successful registration for demo purposes
     if (name && email && password) {
-      // For demo, we'll set any email with 'vendor' in it as a vendor role
-      const isVendor = email.toLowerCase().includes('vendor')
-      const mockUser = {
+      const isVendor = email.toLowerCase().includes("vendor")
+      const mockUser: User = {
         id: "user-" + Math.floor(Math.random() * 1000),
         name: name,
         email: email,
@@ -100,13 +128,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             .split(" ")
             .map((n) => n[0])
             .join(""),
-        role: isVendor ? 'vendor' as const : 'buyer' as const
+        role: isVendor ? "vendor" : "buyer",
+        addresses: [
+          {
+            label: "Home",
+            name: name,
+            phone: "9876543210",
+            street: "123 MG Road",
+            city: "Mumbai",
+            state: "Maharashtra",
+            pincode: "400001",
+            country: "India",
+            isDefault: true,
+          },
+        ],
       }
 
       setUser(mockUser)
       setIsAuthenticated(true)
-
-      // Store in localStorage for demo persistence
       localStorage.setItem("user", JSON.stringify(mockUser))
 
       return true
@@ -115,8 +154,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return false
   }
 
+  const updateUser = (newUser: Partial<User>) => {
+    setUser((prevUser) => {
+      if (!prevUser) return null
+      const updatedUser = { ...prevUser, ...newUser }
+      localStorage.setItem("user", JSON.stringify(updatedUser))
+      return updatedUser
+    })
+  }
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, register }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        user,
+        login,
+        logout,
+        register,
+        updateUser,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
   )
 }
 

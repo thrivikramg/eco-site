@@ -4,7 +4,7 @@ import { Order } from "@/models/order"
 
 export async function GET(req: NextRequest, { params }: { params: { orderId: string } }) {
   try {
-    await db
+    await db()
 
     const order = await Order.findById(params.orderId)
 

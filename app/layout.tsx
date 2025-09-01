@@ -7,8 +7,10 @@ import Footer from "@/components/footer"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/components/auth-provider"
 import { CartProvider } from "@/components/cart-provider"
+import Script from "next/script"
 
 const inter = Inter({ subsets: ["latin"] })
+
 
 export const metadata: Metadata = {
   title: "EcoGrow - Sustainable Products & Services",
@@ -23,7 +25,11 @@ export default function RootLayout({
 }>) {
   return (
 <html lang="en" suppressHydrationWarning>
+  <head>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  </head>
   <body className={inter.className}>
+    
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
       <AuthProvider>
         <CartProvider>

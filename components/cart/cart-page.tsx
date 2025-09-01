@@ -65,63 +65,104 @@ export default function CartPage() {
     }
   }
 
-  const handlePlaceOrder = async () => {
-    setIsProcessing(true)
-
-    if (!isAuthenticated || !user) {
-      setIsProcessing(false)
-      setShowAuthModalState(true)
-      return
-    }
-
-    try {
-      const res = await fetch("/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: user.id,
-          items: cartItems.map((item) => ({
-            productId: item.id,
-            name: item.name,
-            price: item.price,
-            quantity: item.quantity,
-            image: item.image || "",
-          })),
-          totalAmount: total,
-          shippingAddress: user.addresses?.[0] || {
-            street: "Unknown",
-            city: "Unknown",
-            state: "Unknown",
-            postalCode: "000000",
-            country: "India",
-          },
-          paymentMethod: "COD"
-        }),
-      })
-
-      const data = await res.json()
-
-      if (data.success) {
-        toast({
-          title: "Order Placed!",
-          description: "Your order has been placed successfully.",
-        })
-        clearCart()
-        router.push("/profile")
-      } else {
-        throw new Error(data.error || "Failed to place order")
-      }
-    } catch (error) {
-      console.error("Order error:", error)
-      toast({
-        title: "Order Failed",
-        description: "There was a problem placing your order.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsProcessing(false)
-    }
+const handleRazorpayPayment = async () => {
+  if (!isAuthenticated || !user) {
+    setShowAuthModalState(true)
+    return
   }
+
+  setIsProcessing(true)
+
+  try {
+    const res = await fetch("/api/payment/razorpay", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        amount: total, // amount in rupees
+        currency: "INR",
+        userId: user.id,
+      }),
+    })
+
+    const data = await res.json()
+
+    if (!data || !data.id) {
+      throw new Error("Invalid order response")
+    }
+
+    const options = {
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
+      amount: data.amount,
+      currency: "INR",
+      name: "EcoGrow",
+      description: "Order Payment",
+      order_id: data.id,
+      handler: async function (response: any) {
+        // ✅ Create order in DB
+        const orderRes = await fetch("/api/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: user.id,
+            items: cartItems.map((item) => ({
+              productId: item.id,
+              name: item.name,
+              price: item.price,
+              quantity: item.quantity,
+              image: item.image || "",
+            })),
+            totalAmount: total,
+            shippingAddress: user.addresses?.[0] || {
+              street: "Unknown",
+              city: "Unknown",
+              state: "Unknown",
+              postalCode: "000000",
+              country: "India",
+            },
+            paymentMethod: "Razorpay",
+            razorpayPaymentId: response.razorpay_payment_id,
+          }),
+        })
+
+        const result = await orderRes.json()
+
+        if (result.success) {
+          toast({
+            title: "Payment Success!",
+            description: "Your order has been placed.",
+          })
+          clearCart()
+          router.push("/profile")
+        } else {
+          throw new Error("Order creation failed")
+        }
+      },
+      prefill: {
+        name: user.name || "",
+        email: user.email || "",
+        contact: user.phone || "",
+      },
+      theme: {
+        color: "#34d399",
+      },
+    }
+
+    const razor = new (window as any).Razorpay(options)
+    razor.open()
+  } catch (error) {
+    console.error("Payment error:", error)
+    toast({
+      title: "Payment Failed",
+      description: "Something went wrong during payment.",
+      variant: "destructive",
+    })
+  } finally {
+    setIsProcessing(false)
+  }
+}
+
 
   if (!mounted) return null
   if (cartItems.length === 0) return <CartEmpty />
@@ -134,7 +175,7 @@ export default function CartPage() {
           onOpenChange={(open) => setShowAuthModalState(open)}
           onSuccess={() => {
             setShowAuthModalState(false)
-            handlePlaceOrder()
+            handleRazorpayPayment()
           }}
         />
       )}
@@ -281,7 +322,7 @@ export default function CartPage() {
 
               {/* PLACE ORDER button */}
               <Button
-                onClick={handlePlaceOrder}
+                onClick={handleRazorpayPayment}
                 disabled={isProcessing}
                 className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3"
               >

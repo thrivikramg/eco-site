@@ -158,10 +158,10 @@ const AvatarCanvas = forwardRef<AvatarHandle, AvatarCanvasProps>(
             background: 'transparent',
           }}
         >
-          <PerspectiveCamera makeDefault position={[0, 0, 10]} fov={35} />
+          <PerspectiveCamera makeDefault position={[0, 1, 7.2]} fov={35} />
           <ambientLight intensity={0.6} />
           <directionalLight position={[2, 4, 3]} intensity={1.2} />
-          <OrbitControls enablePan={false} enableZoom={false} />
+          <OrbitControls enablePan={false} enableZoom={false} enableRotate={false} />
           <AvatarModel isTalking={isTalking} position={position} scale={scale} />
         </Canvas>
       </div>

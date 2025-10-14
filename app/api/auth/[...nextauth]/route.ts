@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-// import GoogleProvider from "next-auth/providers/google"; // Google login disabled
+import GoogleProvider from "next-auth/providers/google";
 import { connectToDatabase } from "@/lib/mongoose";
 import { User } from "@/models/user";
 import { compare } from "bcryptjs";
@@ -8,10 +8,10 @@ import type { NextAuthOptions } from "next-auth";
 
 export const authOptions: NextAuthOptions = {
   providers: [
-    // GoogleProvider({
-    //   clientId: process.env.GOOGLE_CLIENT_ID!,
-    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    // }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
 
     CredentialsProvider({
       name: "Credentials",
@@ -23,29 +23,24 @@ export const authOptions: NextAuthOptions = {
         await connectToDatabase();
 
         const user = await User.findOne({ email: credentials?.email });
-
-        if (!user) {
-          throw new Error("No user found with this email");
-        }
+        if (!user) throw new Error("No user found with this email");
 
         const isValid = await compare(credentials!.password, user.password);
-        if (!isValid) {
-          throw new Error("Invalid password");
-        }
+        if (!isValid) throw new Error("Invalid password");
 
         return {
           id: user._id.toString(),
           name: user.name,
           email: user.email,
           image: user.image,
-          role: user.role || "user", // Default to 'user' if undefined
+          role: user.role || "user",
         };
       },
     }),
   ],
 
   callbacks: {
-    async signIn({ user }) {
+    async signIn({ user, account }) {
       await connectToDatabase();
 
       const existingUser = await User.findOne({ email: user.email });
@@ -54,8 +49,8 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           email: user.email,
           image: user.image || "",
-          role: user.role || "user",
-          authType: "credentials",
+          role: "user",
+          authType: account?.provider || "credentials",
         });
       }
 

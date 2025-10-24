@@ -1160,9 +1160,11 @@ export async function getProducts(): Promise<Product[]> {
 
 // Function to get a single product by ID
 export async function getProductById(id: string): Promise<Product | undefined> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 300))
-  return mockProducts.find((product) => product.id === id)
+  const response = await fetch(`http://localhost:3000/api/products/${id}`);
+  if (!response.ok) {
+    return undefined;
+  }
+  return response.json();
 }
 
 // Function to get featured products

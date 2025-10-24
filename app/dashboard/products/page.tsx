@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card"
 import { Button } from "../../../components/ui/button"
 import { Input } from "../../../components/ui/input"
@@ -8,7 +8,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../components/ui
 import { 
   Search, 
   Plus, 
-  Filter, 
   Upload, 
   MoreHorizontal,
   Edit,
@@ -38,106 +37,53 @@ import {
   PaginationPrevious
 } from "../../../components/ui/pagination"
 
-// Mock data for products
-const mockProducts = [
-  {
-    id: "PRD-8937",
-    name: "Organic Cotton T-Shirt",
-    category: "Clothing",
-    price: 29.99,
-    stock: 124,
-    variants: 4,
-    status: "active",
-    image: "/products/tshirt.jpg"
-  },
-  {
-    id: "PRD-8936",
-    name: "Bamboo Water Bottle",
-    category: "Accessories",
-    price: 24.95,
-    stock: 87,
-    variants: 3,
-    status: "active",
-    image: "/products/bottle.jpg"
-  },
-  {
-    id: "PRD-8935",
-    name: "Recycled Paper Notebook",
-    category: "Stationery",
-    price: 12.50,
-    stock: 215,
-    variants: 2,
-    status: "active",
-    image: "/products/notebook.jpg"
-  },
-  {
-    id: "PRD-8934",
-    name: "Hemp Tote Bag",
-    category: "Accessories",
-    price: 18.99,
-    stock: 162,
-    variants: 3,
-    status: "active",
-    image: "/products/tote.jpg"
-  },
-  {
-    id: "PRD-8933",
-    name: "Bamboo Toothbrush Set",
-    category: "Personal Care",
-    price: 15.99,
-    stock: 5,
-    variants: 2,
-    status: "low_stock",
-    image: "/products/toothbrush.jpg"
-  },
-  {
-    id: "PRD-8932",
-    name: "Eco-Friendly Soap Bars",
-    category: "Personal Care",
-    price: 8.99,
-    stock: 3,
-    variants: 5,
-    status: "low_stock",
-    image: "/products/soap.jpg"
-  },
-  {
-    id: "PRD-8931",
-    name: "Beeswax Food Wraps",
-    category: "Kitchen",
-    price: 22.50,
-    stock: 0,
-    variants: 3,
-    status: "out_of_stock",
-    image: "/products/wrap.jpg"
-  },
-  {
-    id: "PRD-8930",
-    name: "Stainless Steel Straw Set",
-    category: "Kitchen",
-    price: 14.95,
-    stock: 178,
-    variants: 2,
-    status: "active",
-    image: "/products/straws.jpg"
-  },
-  {
-    id: "PRD-8929",
-    name: "Recycled Plastic Plant Pots",
-    category: "Garden",
-    price: 19.99,
-    stock: 0,
-    variants: 4,
-    status: "hidden",
-    image: "/products/pots.jpg"
-  },
-]
+interface Product {
+  _id: string;
+  name: string;
+  category: string;
+  price: number;
+  stock: number;
+  variants: number;
+  status: string;
+}
 
 export default function ProductsPage() {
+  const [products, setProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState("")
   const [categoryFilter, setCategoryFilter] = useState("all")
   const [statusFilter, setStatusFilter] = useState("all")
   const [activeTab, setActiveTab] = useState("all")
   const [selectedProducts, setSelectedProducts] = useState<string[]>([])
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch('/api/seller/products');
+      if (response.ok) {
+        const data = await response.json();
+        setProducts(data);
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
+
+  const handleDeleteProduct = async (productId: string) => {
+    try {
+      const response = await fetch(`/api/seller/products/${productId}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        fetchProducts();
+      }
+    } catch (error) {
+      console.error('Error deleting product:', error);
+    }
+  };
   
   const toggleProductSelection = (productId: string) => {
     setSelectedProducts(prev => 
@@ -151,14 +97,13 @@ export default function ProductsPage() {
     if (selectedProducts.length === filteredProducts.length) {
       setSelectedProducts([])
     } else {
-      setSelectedProducts(filteredProducts.map(p => p.id))
+      setSelectedProducts(filteredProducts.map(p => p._id))
     }
   }
 
-  // Filter products based on search, category, status, and active tab
-  const filteredProducts = mockProducts.filter(product => {
+  const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.id.toLowerCase().includes(searchTerm.toLowerCase())
+      product._id.toLowerCase().includes(searchTerm.toLowerCase())
     
     const matchesCategory = categoryFilter === "all" || product.category === categoryFilter
     
@@ -173,8 +118,7 @@ export default function ProductsPage() {
     return matchesSearch && matchesCategory && matchesStatus && matchesTab
   })
 
-  // Extract unique categories for filter dropdown
-  const uniqueCategories = Array.from(new Set(mockProducts.map(product => product.category)))
+  const uniqueCategories = Array.from(new Set(products.map(product => product.category)))
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -285,11 +229,11 @@ export default function ProductsPage() {
             <TableBody>
               {filteredProducts.length > 0 ? (
                 filteredProducts.map((product) => (
-                  <TableRow key={product.id}>
+                  <TableRow key={product._id}>
                     <TableCell>
                       <Checkbox 
-                        checked={selectedProducts.includes(product.id)}
-                        onCheckedChange={() => toggleProductSelection(product.id)}
+                        checked={selectedProducts.includes(product._id)}
+                        onCheckedChange={() => toggleProductSelection(product._id)}
                         aria-label={`Select ${product.name}`}
                       />
                     </TableCell>
@@ -300,7 +244,7 @@ export default function ProductsPage() {
                         </div>
                         <div>
                           <div className="font-medium">{product.name}</div>
-                          <div className="text-xs text-gray-500">{product.id}</div>
+                          <div className="text-xs text-gray-500">{product._id}</div>
                         </div>
                       </div>
                     </TableCell>
@@ -346,7 +290,7 @@ export default function ProductsPage() {
                             </DropdownMenuItem>
                           )}
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem className="flex items-center text-red-600 cursor-pointer">
+                          <DropdownMenuItem className="flex items-center text-red-600 cursor-pointer" onClick={() => handleDeleteProduct(product._id)}>
                             <Trash2 className="h-4 w-4 mr-2" /> Delete Product
                           </DropdownMenuItem>
                         </DropdownMenuContent>

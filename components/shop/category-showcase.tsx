@@ -1,26 +1,30 @@
-"use client"
+"use client";
 
-import { useRouter, usePathname } from "next/navigation"
-import Image from "next/image"
-import { Card, CardContent } from "../../components/ui/card"
-import { productCategories } from "../../lib/products"
+import { useRouter, usePathname } from "next/navigation";
+import Image from "next/image";
+import { Card, CardContent } from "../../components/ui/card";
+import { Category } from "../../lib/products";
 
-export default function CategoryShowcase() {
-  const router = useRouter()
-  const pathname = usePathname()
+interface CategoryShowcaseProps {
+  categories: Category[];
+}
+
+export default function CategoryShowcase({ categories }: CategoryShowcaseProps) {
+  const router = useRouter();
+  const pathname = usePathname();
 
   const handleCategoryClick = (categoryValue: string) => {
-    const searchParams = new URLSearchParams()
-    searchParams.set("category", categoryValue)
-    router.push(`${pathname}?${searchParams.toString()}`)
-  }
+    const searchParams = new URLSearchParams();
+    searchParams.set("category", categoryValue);
+    router.push(`${pathname}?${searchParams.toString()}`);
+  };
 
   return (
     <section className="py-8 md:py-12 bg-gray-50">
       <div className="container px-4 sm:px-6">
         <h2 className="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-8">Shop by Category</h2>
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-          {productCategories.map((category, index) => (
+          {categories.map((category, index) => (
             <div 
               key={category.value} 
               onClick={() => handleCategoryClick(category.value)}

@@ -1,23 +1,26 @@
-import { Suspense } from "react"
-import type { Metadata } from "next"
-import CategoryShowcase from "../../components/shop/category-showcase"
-import ProductsLayout from "../../components/shop/products-layout"
-import { Skeleton } from "../../components/ui/skeleton"
+import { Suspense } from "react";
+import type { Metadata } from "next";
+import CategoryShowcase from "../../components/shop/category-showcase";
+import ProductsLayout from "../../components/shop/products-layout";
+import { Skeleton } from "../../components/ui/skeleton";
+import { getProductCategories } from "../../lib/products";
 
 export const metadata: Metadata = {
   title: "Shop All Products | EcoGrow",
   description: "Browse our collection of sustainable and eco-friendly products for a greener lifestyle.",
-}
+};
 
-export default function ShopPage() {
+export default async function ShopPage() {
+  const categories = await getProductCategories();
+
   return (
     <>
-      <CategoryShowcase />
+      <CategoryShowcase categories={categories} />
       <Suspense fallback={<ProductsLayoutSkeleton />}>
         <ProductsLayout />
       </Suspense>
     </>
-  )
+  );
 }
 
 function ProductsLayoutSkeleton() {
@@ -56,5 +59,5 @@ function ProductsLayoutSkeleton() {
         </div>
       </div>
     </div>
-  )
+  );
 }

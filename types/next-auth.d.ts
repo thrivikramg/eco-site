@@ -1,15 +1,16 @@
-import NextAuth, { DefaultSession } from "next-auth";
+import NextAuth, { DefaultSession, DefaultUser } from "next-auth";
+import { UserRole } from "@/models/user";
 
 declare module "next-auth" {
   interface Session {
     user: {
       id: string;
-      role: string; // 👈 add your custom field
+      role: UserRole;
     } & DefaultSession["user"];
   }
 
   interface User {
     id: string;
-    role: string;
+    role: UserRole;
   }
 }

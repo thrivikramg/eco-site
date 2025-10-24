@@ -24,7 +24,7 @@ export default function SellerPage() {
     return <p>Loading...</p>;
   }
 
-  if (!session || (session.user as any).role !== "vendor") {
+  if (!session || session.user.role !== "vendor") {
     redirect("/");
   }
 
@@ -52,7 +52,7 @@ export default function SellerPage() {
     await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...data, seller: (session.user as any).id }),
+      body: JSON.stringify({ ...data, seller: session.user.id }),
     });
 
     setIsModalOpen(false);
@@ -78,7 +78,7 @@ export default function SellerPage() {
         </DialogContent>
       </Dialog>
       <ProductList
-        sellerId={(session.user as any).id}
+        sellerId={session.user.id}
         onEdit={handleEdit}
         onDelete={handleDelete}
         key={reloadProducts.toString()}

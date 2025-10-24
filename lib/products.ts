@@ -83,15 +83,17 @@ export async function getProductCategories(): Promise<Category[]> {
   const categories: Record<string, Category> = {};
 
   products.forEach((product: IProduct) => {
-    if (!categories[product.category]) {
-      categories[product.category] = {
-        label: product.category,
-        value: product.category.toLowerCase().replace(/\s+/g, "-"),
-        count: 0,
-        subcategories: [],
-      };
+    if (product.category) {
+      if (!categories[product.category]) {
+        categories[product.category] = {
+          label: product.category,
+          value: product.category.toLowerCase().replace(/\s+/g, "-"),
+          count: 0,
+          subcategories: [],
+        };
+      }
+      categories[product.category].count++;
     }
-    categories[product.category].count++;
   });
 
   return Object.values(categories);

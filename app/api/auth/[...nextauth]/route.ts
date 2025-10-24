@@ -67,8 +67,12 @@ export const authOptions: NextAuthOptions = {
 
     async jwt({ token, user }) {
       if (user) {
-        token.sub = user.id;
-        token.role = (user as any).role || "user";
+        await connectToDatabase();
+        const dbUser = await User.findOne({ email: user.email });
+        if (dbUser) {
+          token.sub = dbUser._id.toString();
+          token.role = dbUser.role;
+        }
       }
       return token;
     },

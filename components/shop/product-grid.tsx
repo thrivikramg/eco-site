@@ -40,11 +40,11 @@ export default function ProductGrid({ products, isLoading, initialLoad = false }
       }
 
       addToCart({
-        id: product.id,
+        id: product._id,
         name: product.name,
         price: product.price,
         quantity: 1,
-        image: product.image,
+        image: product.images[0],
       })
 
       toast({
@@ -86,19 +86,19 @@ export default function ProductGrid({ products, isLoading, initialLoad = false }
   return (
     <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
       {products.map((product) => (
-        <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} />
+        <ProductCard key={product._id} product={product} onAddToCart={handleAddToCart} />
       ))}
     </div>
   )
 }
 
-function ProductCard({ product, onAddToCart }: { product: Product; onAddToCart: (product: Product) => void }) {
+function ProductCard({ product, onAddToCart }: { product: IProduct; onAddToCart: (product: IProduct) => void }) {
   return (
     <Card className="overflow-hidden group h-full flex flex-col border border-gray-100 hover:border-primary/20 transition-colors">
-      <Link href={`/shop/product/${product.id}`} className="relative block">
+      <Link href={`/shop/product/${product._id}`} className="relative block">
         <div className="relative aspect-square w-full overflow-hidden bg-gray-50">
           <Image
-            src={product.image || "/placeholder.svg"}
+            src={product.images[0] || "/placeholder.svg"}
             alt={product.name}
             fill
             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
@@ -120,7 +120,7 @@ function ProductCard({ product, onAddToCart }: { product: Product; onAddToCart: 
 
       <CardContent className="p-3 sm:p-4 flex-grow">
         <div className="text-xs sm:text-sm text-primary mb-0.5 line-clamp-1">{product.category}</div>
-        <Link href={`/shop/product/${product.id}`} className="group-hover:text-primary transition-colors">
+        <Link href={`/shop/product/${product._id}`} className="group-hover:text-primary transition-colors">
           <h3 className="font-medium text-sm sm:text-base lg:text-lg leading-tight line-clamp-2 h-10 sm:h-12 overflow-hidden">
             {product.name}
           </h3>

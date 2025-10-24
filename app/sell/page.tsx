@@ -1,41 +1,88 @@
-import type { Metadata } from "next"
-import Link from "next/link"
-import { Button } from "../../components/ui/button"
-import SellHero from "../../components/services/sell/hero"
-import SellerBenefits from "../../components/services/sell/seller-benefits"
-import HowToBecomeSeller from "../../components/services/sell/how-to-become-seller"
-import SellerFAQ from "../../components/services/sell/faq"
-import SellerTestimonials from "../../components/services/sell/testimonials"
-import CallToAction from "../../components/services/sell/call-to-action"
+"use client";
 
-export const metadata: Metadata = {
-  title: "Sell on EcoGrow | Join Our Eco-Friendly Marketplace",
-  description: "Become a seller on EcoGrow and grow your sustainable business. Join our community of eco-conscious sellers and reach customers who value sustainability.",
-}
+import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import ProductForm from "@/components/sell/product-form";
+import ProductList from "@/components/sell/product-list";
+import { IProduct } from "@/models/product";
 
-export default function SellPage() {
+export default function SellerPage() {
+  const { data: session, status } = useSession();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<IProduct | null>(null);
+  const [reloadProducts, setReloadProducts] = useState(false);
+
+  if (status === "loading") {
+    return <p>Loading...</p>;
+  }
+
+  if (!session || (session.user as any).role !== "vendor") {
+    redirect("/");
+  }
+
+  const handleCreateNew = () => {
+    setEditingProduct(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEdit = (product: IProduct) => {
+    setEditingProduct(product);
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = async (productId: string) => {
+    await fetch(`/api/products/${productId}`, { method: "DELETE" });
+    setReloadProducts(!reloadProducts);
+  };
+
+  const handleFormSubmit = async (data: any) => {
+    const method = editingProduct ? "PUT" : "POST";
+    const url = editingProduct
+      ? `/api/products/${editingProduct._id}`
+      : "/api/products";
+
+    await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...data, seller: (session.user as any).id }),
+    });
+
+    setIsModalOpen(false);
+    setReloadProducts(!reloadProducts);
+  };
+
   return (
-    <>
-      {/* Temporary dashboard button - to be removed */}
-      <div className="container mx-auto py-4 px-4 sm:px-6 lg:px-8">
-        <div className="bg-yellow-100 p-4 rounded-md flex items-center justify-between">
-          <p className="text-yellow-800 font-medium text-sm">
-            <span className="font-bold">TEMPORARY:</span> This button is for development purposes only and will be removed.
-          </p>
-          <Link href="/dashboard">
-            <Button className="bg-green-600 hover:bg-green-700">
-              Go to Vendor Dashboard
-            </Button>
-          </Link>
-        </div>
+    <div className="container py-8 md:py-12">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Seller Dashboard</h1>
+        <Button onClick={handleCreateNew}>Add New Product</Button>
       </div>
-      
-      <SellHero />
-      <SellerBenefits />
-      <HowToBecomeSeller />
-      <SellerTestimonials />
-      <SellerFAQ />
-      <CallToAction />
-    </>
-  )
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{editingProduct ? "Edit Product" : "Add New Product"}</DialogTitle>
+          </DialogHeader>
+          <ProductForm
+            initialData={editingProduct}
+            onSubmit={handleFormSubmit}
+            isLoading={false}
+          />
+        </DialogContent>
+      </Dialog>
+      <ProductList
+        sellerId={(session.user as any).id}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        key={reloadProducts.toString()}
+      />
+    </div>
+  );
 }

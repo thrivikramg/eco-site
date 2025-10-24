@@ -23,11 +23,11 @@ export default function ProductDetail({ product }: ProductDetailProps) {
 
   const handleAddToCart = () => {
     addToCart({
-      id: product.id,
+      id: product._id,
       name: product.name,
       price: product.discount > 0 ? (product.price * (100 - product.discount)) / 100 : product.price,
       quantity,
-      image: product.image,
+      image: product.images[0],
     })
 
     toast({

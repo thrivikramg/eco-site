@@ -7,7 +7,7 @@ import { Seller } from '@/models/seller';
 import { User } from '@/models/user';
 
 async function authorizeSeller(session: any) {
-  if (!session?.user || (session.user as any).role !== 'seller') {
+  if (!session?.user || (session.user as any).role !== 'vendor') {
     return { error: 'Unauthorized', status: 401 };
   }
 

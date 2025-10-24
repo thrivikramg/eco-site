@@ -9,7 +9,7 @@ import { User } from '@/models/user';
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
 
-  if (!session?.user || (session.user as any).role !== 'seller') {
+  if (!session?.user || (session.user as any).role !== 'vendor') {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }
 
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
 export async function GET() {
   const session = await getServerSession(authOptions);
 
-  if (!session?.user || (session.user as any).role !== 'seller') {
+  if (!session?.user || (session.user as any).role !== 'vendor') {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }
 

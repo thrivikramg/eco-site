@@ -22,7 +22,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'User not found' }, { status: 404 });
     }
 
-    user.role = 'seller';
+    user.role = 'vendor';
     await user.save();
 
     await Seller.create({

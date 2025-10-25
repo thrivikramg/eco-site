@@ -1,5 +1,6 @@
 "use client"
 import { useState, useEffect } from "react"
+import { useAuth } from "@/components/auth-provider"
 
 interface FormData {
   businessName: string
@@ -10,6 +11,7 @@ interface FormData {
 }
 
 export default function SimpleSellerRegistration() {
+  const { updateUser } = useAuth()
   const [form, setForm] = useState<FormData>({
     businessName: "",
     businessEmail: "",
@@ -95,6 +97,7 @@ export default function SimpleSellerRegistration() {
       })
       const data = await res.json()
       if (res.ok) {
+        updateUser({ role: 'vendor' })
         alert("Seller registered successfully!")
       } else {
         alert(data.message || "Failed to register")

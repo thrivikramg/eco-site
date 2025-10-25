@@ -4,8 +4,10 @@ import mongoose from "mongoose"
 import db from "@/lib/mongodb"
 import { Vendor } from "@/models/vendor"
 
+import { User } from "@/models/user"
+
 // Hardcoded ObjectId for testing
-const FAKE_USER_ID = new mongoose.Types.ObjectId("64f0a1234567890abcdef12")
+const FAKE_USER_ID = new mongoose.Types.ObjectId("60d5ecb8b486d3a9c8e8a8b9")
 
 export async function POST(req: Request) {
   try {
@@ -48,6 +50,8 @@ export async function POST(req: Request) {
     })
 
     await vendor.save()
+
+    await User.findByIdAndUpdate(FAKE_USER_ID, { role: 'vendor' })
 
     return NextResponse.json({ message: "Vendor registered successfully", vendor })
   } catch (err) {

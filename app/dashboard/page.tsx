@@ -1,325 +1,182 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
-} from "../../components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs"
-import { 
-  DollarSign, 
-  Users, 
-  CreditCard, 
-  ArrowDownRight, 
-  ArrowUpRight, 
-  ShoppingBag,
-  AlertTriangle,
-  Bell
-} from "lucide-react"
-import { Button } from "../../components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { Pencil, Trash2, Plus } from "lucide-react";
+
+interface Product {
+  _id: string;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  stock: number;
+  images: string[];
+}
 
 export default function DashboardPage() {
-  const [timeRange, setTimeRange] = useState("7d") // 7d, 30d, 90d
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState<Product | null>(null);
 
-  // Mock data for demo purposes
-  const salesSummary = {
-    "7d": {
-      totalOrders: 67,
-      revenue: 3890,
-      refunds: 280,
-      growth: 12.5
-    },
-    "30d": {
-      totalOrders: 284,
-      revenue: 16240,
-      refunds: 980,
-      growth: 8.2
-    },
-    "90d": {
-      totalOrders: 897,
-      revenue: 42680,
-      refunds: 2340,
-      growth: 14.3
+  const [form, setForm] = useState({
+    name: "",
+    description: "",
+    price: "",
+    category: "",
+    stock: "",
+    images: "",
+  });
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    setLoading(true);
+    const res = await fetch("/api/products");
+    const data = await res.json();
+    if (res.ok) setProducts(data);
+    setLoading(false);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async () => {
+    const payload = {
+      name: form.name,
+      description: form.description,
+      price: parseFloat(form.price),
+      category: form.category,
+      stock: parseInt(form.stock),
+      images: form.images.split(",").map((img) => img.trim()),
+    };
+
+    const method = editing ? "PUT" : "POST";
+    const url = editing ? `/api/products/${editing._id}` : "/api/products";
+
+    const res = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (res.ok) {
+      toast.success(editing ? "Product updated!" : "Product created!");
+      setForm({ name: "", description: "", price: "", category: "", stock: "", images: "" });
+      setEditing(null);
+      setOpen(false);
+      fetchProducts();
+    } else {
+      toast.error("Error saving product");
     }
-  }
+  };
 
-  const currentSummary = salesSummary[timeRange as keyof typeof salesSummary]
-  
-  const orderStatusData = {
-    delivered: 42,
-    pending: 15,
-    cancelled: 3
-  }
-  
-  const topProducts = [
-    { name: 'Organic Cotton T-Shirt', sold: 24, revenue: 1200 },
-    { name: 'Bamboo Water Bottle', sold: 18, revenue: 540 },
-    { name: 'Recycled Paper Notebook', sold: 15, revenue: 225 },
-    { name: 'Hemp Tote Bag', sold: 12, revenue: 300 },
-  ]
-  
-  const lowStockItems = [
-    { name: 'Bamboo Toothbrush', remaining: 5, threshold: 10 },
-    { name: 'Eco-Friendly Soap', remaining: 3, threshold: 15 },
-    { name: 'Beeswax Food Wrap', remaining: 2, threshold: 8 },
-  ]
-  
-  const notifications = [
-    { id: 1, type: 'admin', message: 'New sustainability guidelines published. Please review.', time: '2 hours ago' },
-    { id: 2, type: 'order', message: 'New order #38294 received', time: '3 hours ago' },
-    { id: 3, type: 'inventory', message: 'Bamboo Toothbrush is running low on stock', time: '1 day ago' },
-    { id: 4, type: 'payment', message: 'Payout of $1,240 has been processed', time: '2 days ago' },
-  ]
+  const handleDelete = async (id: string) => {
+    if (!confirm("Delete this product?")) return;
+    const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
+    if (res.ok) {
+      toast.success("Product deleted");
+      fetchProducts();
+    } else toast.error("Error deleting");
+  };
+
+  const startEdit = (product: Product) => {
+    setEditing(product);
+    setForm({
+      name: product.name,
+      description: product.description,
+      price: product.price.toString(),
+      category: product.category,
+      stock: product.stock.toString(),
+      images: product.images.join(", "),
+    });
+    setOpen(true);
+  };
 
   return (
-    <div className="flex flex-col gap-5">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-        <div>
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="text-gray-500">Welcome back to your vendor dashboard</p>
-        </div>
-        <div className="flex items-center mt-4 md:mt-0 gap-2">
-          <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select timeframe" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="7d">Last 7 days</SelectItem>
-              <SelectItem value="30d">Last 30 days</SelectItem>
-              <SelectItem value="90d">Last 90 days</SelectItem>
-            </SelectContent>
-          </Select>
-          
-          <Button variant="outline">Export Report</Button>
-        </div>
-      </div>
+    <div className="p-6 max-w-6xl mx-auto">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Vendor Dashboard</h1>
 
-      {/* Sales Summary Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
-            <ShoppingBag className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{currentSummary.totalOrders}</div>
-            <p className="text-xs text-muted-foreground">
-              <span className="text-green-500 flex items-center">
-                <ArrowUpRight className="mr-1 h-4 w-4" />
-                +{currentSummary.growth}%
-              </span>{" "}
-              from previous period
-            </p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${currentSummary.revenue}</div>
-            <p className="text-xs text-muted-foreground">
-              <span className="text-green-500 flex items-center">
-                <ArrowUpRight className="mr-1 h-4 w-4" />
-                +{currentSummary.growth}%
-              </span>{" "}
-              from previous period
-            </p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Refunds</CardTitle>
-            <CreditCard className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${currentSummary.refunds}</div>
-            <p className="text-xs text-muted-foreground">
-              <span className="text-red-500 flex items-center">
-                <ArrowDownRight className="mr-1 h-4 w-4" />
-                -2.5%
-              </span>{" "}
-              from previous period
-            </p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">New Customers</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{Math.round(currentSummary.totalOrders * 0.4)}</div>
-            <p className="text-xs text-muted-foreground">
-              <span className="text-green-500 flex items-center">
-                <ArrowUpRight className="mr-1 h-4 w-4" />
-                +5.1%
-              </span>{" "}
-              from previous period
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Order Status & Top Products */}
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Order Status</CardTitle>
-            <CardDescription>
-              Overview of your orders for the selected period
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center">
-                <div className="w-full">
-                  <div className="flex justify-between mb-1">
-                    <span className="text-sm font-medium">Delivered</span>
-                    <span className="text-sm font-medium">{orderStatusData.delivered}</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2.5">
-                    <div
-                      className="bg-green-500 h-2.5 rounded-full"
-                      style={{ width: `${(orderStatusData.delivered / (orderStatusData.delivered + orderStatusData.pending + orderStatusData.cancelled)) * 100}%` }}
-                    ></div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex items-center">
-                <div className="w-full">
-                  <div className="flex justify-between mb-1">
-                    <span className="text-sm font-medium">Pending</span>
-                    <span className="text-sm font-medium">{orderStatusData.pending}</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2.5">
-                    <div
-                      className="bg-amber-500 h-2.5 rounded-full"
-                      style={{ width: `${(orderStatusData.pending / (orderStatusData.delivered + orderStatusData.pending + orderStatusData.cancelled)) * 100}%` }}
-                    ></div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex items-center">
-                <div className="w-full">
-                  <div className="flex justify-between mb-1">
-                    <span className="text-sm font-medium">Cancelled</span>
-                    <span className="text-sm font-medium">{orderStatusData.cancelled}</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2.5">
-                    <div
-                      className="bg-red-500 h-2.5 rounded-full"
-                      style={{ width: `${(orderStatusData.cancelled / (orderStatusData.delivered + orderStatusData.pending + orderStatusData.cancelled)) * 100}%` }}
-                    ></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Top Products</CardTitle>
-            <CardDescription>Best-selling products in the selected period</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {topProducts.map((product, i) => (
-                <div key={i} className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium">{product.name}</p>
-                    <p className="text-sm text-gray-500">{product.sold} sold</p>
-                  </div>
-                  <p className="text-sm font-medium">${product.revenue}</p>
-                </div>
-              ))}
-            </div>
-            <div className="mt-4 pt-4 border-t">
-              <Button variant="ghost" size="sm" className="w-full text-green-600">
-                View All Products
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Inventory Health & Notifications */}
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card className="md:col-span-1">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Inventory Health</CardTitle>
-              <CardDescription>Products that need your attention</CardDescription>
-            </div>
-            <AlertTriangle className="h-5 w-5 text-amber-500" />
-          </CardHeader>
-          <CardContent>
-            {lowStockItems.map((item, i) => (
-              <div key={i} className="mb-4 p-3 bg-amber-50 border border-amber-100 rounded-md">
-                <div className="flex justify-between">
-                  <p className="font-medium">{item.name}</p>
-                  <p className={`font-medium ${item.remaining <= 5 ? 'text-red-500' : 'text-amber-500'}`}>
-                    {item.remaining} remaining
-                  </p>
-                </div>
-                <div className="w-full mt-2 bg-gray-200 rounded-full h-1.5">
-                  <div
-                    className={`${item.remaining <= 5 ? 'bg-red-500' : 'bg-amber-500'} h-1.5 rounded-full`}
-                    style={{ width: `${(item.remaining / item.threshold) * 100}%` }}
-                  ></div>
-                </div>
-              </div>
-            ))}
-            <Button variant="outline" size="sm" className="mt-2 w-full">
-              Manage Inventory
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button onClick={() => { setEditing(null); setForm({ name: "", description: "", price: "", category: "", stock: "", images: "" }); }}>
+              <Plus className="w-4 h-4 mr-2" /> Add Product
             </Button>
-          </CardContent>
-        </Card>
+          </DialogTrigger>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Notifications</CardTitle>
-              <CardDescription>Recent updates and alerts</CardDescription>
-            </div>
-            <Bell className="h-5 w-5" />
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {notifications.map((notification) => (
-                <div key={notification.id} className="flex items-start pb-3 border-b last:border-b-0 last:pb-0">
-                  <div 
-                    className={`w-2 h-2 mt-1.5 mr-2 rounded-full ${
-                      notification.type === 'admin' ? 'bg-blue-500' : 
-                      notification.type === 'order' ? 'bg-green-500' : 
-                      notification.type === 'inventory' ? 'bg-amber-500' : 
-                      'bg-gray-500'
-                    }`}
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{editing ? "Edit Product" : "Add Product"}</DialogTitle>
+            </DialogHeader>
+
+            <div className="grid gap-3 py-2">
+              {["name", "description", "price", "category", "stock", "images"].map((field) => (
+                <div key={field} className="flex flex-col space-y-1.5">
+                  <Label className="capitalize" htmlFor={field}>{field}</Label>
+                  <Input
+                    id={field}
+                    name={field}
+                    value={(form as any)[field]}
+                    onChange={handleChange}
+                    placeholder={`Enter ${field}`}
                   />
-                  <div className="flex-1">
-                    <p className="text-sm">{notification.message}</p>
-                    <p className="text-xs text-gray-500">{notification.time}</p>
-                  </div>
                 </div>
               ))}
-              <Button variant="ghost" size="sm" className="w-full text-green-600 mt-2">
-                View All Notifications
+              <Button className="mt-2" onClick={handleSubmit}>
+                {editing ? "Update" : "Create"}
               </Button>
             </div>
-          </CardContent>
-        </Card>
+          </DialogContent>
+        </Dialog>
       </div>
+
+      {/* Product Table */}
+      {loading ? (
+        <p>Loading...</p>
+      ) : products.length === 0 ? (
+        <p className="text-gray-500">No products found.</p>
+      ) : (
+        <div className="overflow-x-auto border rounded-lg">
+          <table className="min-w-full text-sm text-left">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="p-3">Name</th>
+                <th className="p-3">Price</th>
+                <th className="p-3">Category</th>
+                <th className="p-3">Stock</th>
+                <th className="p-3">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {products.map((p) => (
+                <tr key={p._id} className="border-t hover:bg-gray-50">
+                  <td className="p-3">{p.name}</td>
+                  <td className="p-3">₹{p.price}</td>
+                  <td className="p-3">{p.category}</td>
+                  <td className="p-3">{p.stock}</td>
+                  <td className="p-3 flex gap-2">
+                    <Button size="sm" variant="outline" onClick={() => startEdit(p)}>
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                    <Button size="sm" variant="destructive" onClick={() => handleDelete(p._id)}>
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
-  )
+  );
 }

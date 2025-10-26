@@ -1,6 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { Combobox } from "@/components/ui/combobox"
+import { indianBanks } from "@/lib/indian-banks"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../../components/ui/card"
 import { Button } from "../../../components/ui/button"
 import { Input } from "../../../components/ui/input"
@@ -18,6 +20,7 @@ import {
   Building,
   AlertTriangle
 } from "lucide-react"
+import { toast } from "sonner"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../../../components/ui/select"
 import { Switch } from "../../../components/ui/switch"
 
@@ -55,6 +58,46 @@ export default function StoreSettingsPage() {
       businessAddress: "123 Green Street, Eco City, EC 12345",
     }
   })
+
+
+  useEffect(() => {
+    const fetchStoreData = async () => {
+      try {
+        const res = await fetch("/api/vendor/store");
+        if (res.ok) {
+          const data = await res.json();
+          setStoreData(prev => ({
+            ...prev,
+            name: data.businessName || prev.name,
+            description: data.storeDescription || prev.description,
+            contactEmail: data.businessEmail || prev.contactEmail,
+            contactPhone: data.contact?.phone || prev.contactPhone,
+            bankInfo: {
+              accountName: data.bankDetails?.accountHolder || prev.bankInfo.accountName,
+              accountNumber: data.bankDetails?.accountNumber || prev.bankInfo.accountNumber,
+              bankName: data.bankDetails?.bankName || prev.bankInfo.bankName,
+              ifscCode: data.bankDetails?.ifsc || prev.bankInfo.ifscCode,
+            },
+            gstDetails: {
+              gstNumber: data.taxInfo?.gstin || prev.gstDetails.gstNumber,
+              businessPan: data.taxInfo?.pan || prev.gstDetails.businessPan,
+              businessAddress: data.businessAddress?.street || prev.gstDetails.businessAddress,
+            }
+          }));
+        } else {
+          toast.error("Failed to fetch store settings.");
+        }
+      } catch (error) {
+        toast.error("An error occurred while fetching store settings.");
+        console.error(error);
+      }
+    };
+    fetchStoreData();
+  }, []);
+
+  const handleBankChange = (bankCode: string) => {
+    setStoreData(prev => ({ ...prev, bankInfo: { ...prev.bankInfo, bankName: bankCode, ifscCode: '' } }));
+  };
 
   const handleGeneralInfoChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -343,10 +386,13 @@ export default function StoreSettingsPage() {
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
                     <Label htmlFor="bank-name">Bank Name</Label>
-                    <Input 
-                      id="bank-name" 
-                      value={storeData.bankInfo.bankName} 
-                      // In a real app, you'd handle state updates for these inputs
+                    <Combobox
+                      options={indianBanks}
+                      value={storeData.bankInfo.bankName}
+                      onChange={handleBankChange}
+                      placeholder="Select bank..."
+                      searchPlaceholder="Search banks..."
+                      emptyPlaceholder="No bank found."
                     />
                   </div>
                   <div>
@@ -368,10 +414,13 @@ export default function StoreSettingsPage() {
                   </div>
                   <div>
                     <Label htmlFor="ifsc-code">IFSC Code</Label>
-                    <Input 
-                      id="ifsc-code" 
-                      value={storeData.bankInfo.ifscCode} 
-                      // In a real app, you'd handle state updates for these inputs
+                    <Input
+                      id="ifsc-code"
+                      value={storeData.bankInfo.ifscCode}
+                      onChange={(e) => setStoreData(prev => ({
+                        ...prev,
+                        bankInfo: { ...prev.bankInfo, ifscCode: e.target.value }
+                      }))}
                     />
                   </div>
                 </div>

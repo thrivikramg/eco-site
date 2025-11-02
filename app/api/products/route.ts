@@ -1,49 +1,37 @@
 
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../../lib/auth";
-import  db from "../../../lib/dbconnect";
+import { authOptions } from "../auth/[...nextauth]/route";
+import db from "../../../lib/mongodb";
 import { Product } from "../../../models/product.model";
-import { User } from "../../../models/user";
 import { Vendor } from "../../../models/vendor";
-import { IUser } from "../../../models/user";
 
 export async function POST(req: Request) {
-  // TEMP: Bypass auth for development
-  // const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
 
-  // if (!session || !session.user || (session.user as IUser).role !== "vendor") {
-  //   return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  // }
+  if (!session || !session.user || (session.user as any).role !== "vendor") {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
 
   await db();
 
   try {
-    let vendor = await Vendor.findOne();
+    const vendor = await Vendor.findOne({ user: session.user.id });
 
     if (!vendor) {
-      const dummyUser = await User.create({
-        name: 'Dummy Vendor',
-        email: `dummyvendor@example.com`,
-        password: 'password',
-        role: 'vendor',
-      });
-      vendor = await Vendor.create({
-        user: dummyUser._id,
-        storeName: 'Dummy Store',
-      });
+      return NextResponse.json({ message: "Vendor profile not found for this user." }, { status: 404 });
     }
 
-    const { bankDetails } = vendor;
-    if (
-      !bankDetails ||
-      !bankDetails.accountHolder ||
-      !bankDetails.accountNumber ||
-      !bankDetails.bankName ||
-      !bankDetails.ifsc
-    ) {
-      return NextResponse.json({ message: 'Please complete your banking information in the store settings before adding products.' }, { status: 403 });
-    }
+    // const { payoutDetails } = vendor;
+    // if (
+    //   !payoutDetails ||
+    //   !payoutDetails.accountHolder ||
+    //   !payoutDetails.accountNumber ||
+    //   !payoutDetails.bankName ||
+    //   !payoutDetails.ifscCode
+    // ) {
+    //   return NextResponse.json({ message: 'Please complete your banking information in the store settings before adding products.' }, { status: 403 });
+    // }
 
     const body = await req.json();
     const { name, description, price, category, stock, images } = body;
@@ -72,12 +60,6 @@ export async function POST(req: Request) {
 }
 
 export async function GET(req: Request) {
-  // TEMP: Bypass auth for development
-  // const session = await getServerSession(authOptions);
-  // if (!session || !session.user || (session.user as IUser).role !== "vendor") {
-  //   return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  // }
-
   await db();
 
   try {
@@ -85,11 +67,14 @@ export async function GET(req: Request) {
     const role = searchParams.get('role');
 
     if (role === 'vendor') {
-      let vendor = await Vendor.findOne();
+      const session = await getServerSession(authOptions);
+      if (!session || !session.user || (session.user as any).role !== "vendor") {
+        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      }
+
+      const vendor = await Vendor.findOne({ user: session.user.id });
       if (!vendor) {
-        // Create dummy vendor if none exists
-        const dummyUser = await User.create({ name: 'Dummy Vendor', email: `dummyvendor@example.com`, role: 'vendor' });
-        vendor = await Vendor.create({ user: dummyUser._id, businessName: 'Dummy Store' });
+        return NextResponse.json({ message: "Vendor profile not found for this user." }, { status: 404 });
       }
       const products = await Product.find({ vendor: vendor._id });
       return NextResponse.json(products);

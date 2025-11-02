@@ -11,17 +11,17 @@ import { Sheet, SheetContent, SheetTrigger } from "../../components/ui/sheet"
 import { ScrollArea } from "../../components/ui/scroll-area"
 import { useToast } from "../../hooks/use-toast"
 import { useMobile } from "../../hooks/use-mobile"
-import { type Product, type Category, productCategories, getProducts } from "../../lib/products"
+import { type Product, type Category, productCategories } from "../../lib/products"
 
-export default function ProductsLayout() {
+export default function ProductsLayout({ initialProducts }: { initialProducts: Product[] }) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
   const { toast } = useToast()
   const isMobile = useMobile()
 
-  const [products, setProducts] = useState<Product[]>([])
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
+  const [products, setProducts] = useState<Product[]>(initialProducts)
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>(initialProducts)
   const [isLoading, setIsLoading] = useState(true)
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
 
@@ -35,27 +35,11 @@ export default function ProductsLayout() {
   const [initialLoad, setInitialLoad] = useState(true)
 
   // Fetch products
+  // Products are now passed as a prop, so we can remove the client-side fetch.
   useEffect(() => {
-    const fetchProducts = async () => {
-      setIsLoading(true)
-      try {
-        // In a real app, this would be an API call
-        const data = await getProducts()
-        setProducts(data)
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "Failed to load products. Please try again later.",
-          variant: "destructive",
-        })
-      } finally {
-        setIsLoading(false)
-        setInitialLoad(false)
-      }
-    }
-
-    fetchProducts()
-  }, [toast])
+    setIsLoading(false);
+    setInitialLoad(false);
+  }, []);
 
   // Filter and sort products
   useEffect(() => {
@@ -103,7 +87,7 @@ export default function ProductsLayout() {
       if (subcategoryLabel) {
         console.log(`Filtering by subcategory: ${subcategoryLabel}`)
         result = result.filter((product) => 
-          product.subcategory.toLowerCase() === subcategoryLabel.toLowerCase()
+          product.category.toLowerCase() === subcategoryLabel.toLowerCase()
         )
         console.log(`Found ${result.length} products after subcategory filtering`)
       }
@@ -116,8 +100,7 @@ export default function ProductsLayout() {
         (product) =>
           product.name.toLowerCase().includes(query) ||
           product.description.toLowerCase().includes(query) ||
-          product.category.toLowerCase().includes(query) ||
-          product.subcategory.toLowerCase().includes(query),
+          product.category.toLowerCase().includes(query),
       )
     }
 

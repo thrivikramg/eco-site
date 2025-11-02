@@ -1,48 +1,22 @@
 
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../../../lib/auth";
-import  db from "../../../../lib/dbconnect";
-import { Product } from "../../../../models/product.model";
-import { User } from "../../../../models/user";
+import { authOptions } from "../../auth/[...nextauth]/route";
+import db from "../../../../lib/mongodb";
+import { Product } from "@/models/product.model";
 import { Vendor } from "../../../../models/vendor";
-import { IUser } from "../../../../models/user";
 
 interface IParams {
-  params: { productId: string };
+  params: { id: string };
 }
 
 export async function GET(req: Request, { params }: IParams) {
-  // const session = await getServerSession(authOptions);
-
-  // if (!session || !session.user || (session.user as IUser).role !== "vendor") {
-  //   return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  // }
-
   await db();
 
   try {
-    // TEMP: Use a dummy vendor for development
-    let vendor = await Vendor.findOne();
-    if (!vendor) {
-      const dummyUser = await User.create({
-        name: 'Dummy Vendor',
-        email: `dummyvendor@example.com`,
-        role: 'vendor',
-      });
-      vendor = await Vendor.create({
-        user: dummyUser._id,
-        businessName: 'Dummy Store',
-      });
-    }
-    if (!vendor) {
-      return NextResponse.json({ message: "Vendor not found" }, { status: 404 });
-    }
-
-    const product = await Product.findOne({
-      _id: params.productId,
-      vendor: vendor._id,
-    });
+    // This endpoint is public for customers to view product details.
+    // We find the product directly by its ID.
+    const product = await Product.findById(params.id);
 
     if (!product) {
       return NextResponse.json({ message: "Product not found" }, { status: 404 });
@@ -59,48 +33,35 @@ export async function GET(req: Request, { params }: IParams) {
 }
 
 export async function PUT(req: Request, { params }: IParams) {
-  // const session = await getServerSession(authOptions);
-
-  // if (!session || !session.user || (session.user as IUser).role !== "vendor") {
-  //   return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  // }
+  const session = await getServerSession(authOptions);
+  if (!session || !session.user || (session.user as any).role !== "vendor") {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
 
   await db();
 
   try {
-    // TEMP: Use a dummy vendor for development
-    let vendor = await Vendor.findOne();
-    if (!vendor) {
-      const dummyUser = await User.create({
-        name: 'Dummy Vendor',
-        email: `dummyvendor@example.com`,
-        role: 'vendor',
-      });
-      vendor = await Vendor.create({
-        user: dummyUser._id,
-        businessName: 'Dummy Store',
-      });
-    }
+    const vendor = await Vendor.findOne({ user: session.user.id });
     if (!vendor) {
       return NextResponse.json({ message: "Vendor not found" }, { status: 404 });
     }
 
-    const { bankDetails } = vendor;
-    if (
-      !bankDetails ||
-      !bankDetails.accountHolder ||
-      !bankDetails.accountNumber ||
-      !bankDetails.bankName ||
-      !bankDetails.ifsc
-    ) {
-      return NextResponse.json({ message: 'Please complete your banking information in the store settings before updating products.' }, { status: 403 });
-    }
+    // const { payoutDetails } = vendor;
+    // if (
+    //   !payoutDetails ||
+    //   !payoutDetails.accountHolder ||
+    //   !payoutDetails.accountNumber ||
+    //   !payoutDetails.bankName ||
+    //   !payoutDetails.ifscCode
+    // ) {
+    //   return NextResponse.json({ message: 'Please complete your banking information in the store settings before updating products.' }, { status: 403 });
+    // }
 
     const body = await req.json();
     const { name, description, price, category, stock, images } = body;
 
     const product = await Product.findOneAndUpdate(
-      { _id: params.productId, vendor: vendor._id },
+      { _id: params.id, vendor: vendor._id },
       { name, description, price, category, stock, images },
       { new: true }
     );
@@ -120,45 +81,32 @@ export async function PUT(req: Request, { params }: IParams) {
 }
 
 export async function DELETE(req: Request, { params }: IParams) {
-  // const session = await getServerSession(authOptions);
-
-  // if (!session || !session.user || (session.user as IUser).role !== "vendor") {
-  //   return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  // }
+  const session = await getServerSession(authOptions);
+  if (!session || !session.user || (session.user as any).role !== "vendor") {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
 
   await db();
 
   try {
-    // TEMP: Use a dummy vendor for development
-    let vendor = await Vendor.findOne();
-    if (!vendor) {
-      const dummyUser = await User.create({
-        name: 'Dummy Vendor',
-        email: `dummyvendor@example.com`,
-        role: 'vendor',
-      });
-      vendor = await Vendor.create({
-        user: dummyUser._id,
-        businessName: 'Dummy Store',
-      });
-    }
+    const vendor = await Vendor.findOne({ user: session.user.id });
     if (!vendor) {
       return NextResponse.json({ message: "Vendor not found" }, { status: 404 });
     }
 
-    const { bankDetails } = vendor;
-    if (
-      !bankDetails ||
-      !bankDetails.accountHolder ||
-      !bankDetails.accountNumber ||
-      !bankDetails.bankName ||
-      !bankDetails.ifsc
-    ) {
-      return NextResponse.json({ message: 'Please complete your banking information in the store settings before deleting products.' }, { status: 403 });
-    }
+    // const { payoutDetails } = vendor;
+    // if (
+    //   !payoutDetails ||
+    //   !payoutDetails.accountHolder ||
+    //   !payoutDetails.accountNumber ||
+    //   !payoutDetails.bankName ||
+    //   !payoutDetails.ifscCode
+    // ) {
+    //   return NextResponse.json({ message: 'Please complete your banking information in the store settings before deleting products.' }, { status: 403 });
+    // }
 
     const product = await Product.findOneAndDelete({
-      _id: params.productId,
+      _id: params.id,
       vendor: vendor._id,
     });
 

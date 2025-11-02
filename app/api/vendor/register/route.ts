@@ -4,14 +4,19 @@ import mongoose from "mongoose";
 import db from "@/lib/mongodb";
 import { Vendor } from "@/models/vendor";
 import { User } from "@/models/user";
-
-// Hardcoded ObjectId for testing
-const FAKE_USER_ID = new mongoose.Types.ObjectId("60d5ecb8b486d3a9c8e8a8b9");
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../../auth/[...nextauth]/route";
 
 export async function POST(req: Request) {
   try {
     // Connect to DB inside the handler (deployment safe)
     await db();
+
+    const session = await getServerSession(authOptions);
+
+    if (!session || !session.user?.id) {
+      return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    }
 
     const body = await req.json();
 
@@ -34,7 +39,7 @@ export async function POST(req: Request) {
     }
 
     // Check if vendor already exists
-    const existing = await Vendor.findOne({ user: FAKE_USER_ID });
+    const existing = await Vendor.findOne({ user: session.user.id });
     if (existing) {
       return NextResponse.json(
         { message: "Vendor already registered" },
@@ -44,7 +49,7 @@ export async function POST(req: Request) {
 
     // Create new vendor
     const vendor = new Vendor({
-      user: FAKE_USER_ID,
+      user: session.user.id,
       businessName: body.businessName,
       businessEmail: body.businessEmail,
       businessPhone: body.phoneNumber,
@@ -61,7 +66,7 @@ export async function POST(req: Request) {
     await vendor.save();
 
     // Update user role to vendor
-    await User.findByIdAndUpdate(FAKE_USER_ID, { role: "vendor" });
+    await User.findByIdAndUpdate(session.user.id, { role: "vendor" });
 
     return NextResponse.json({
       message: "Vendor registered successfully",

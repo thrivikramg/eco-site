@@ -7,6 +7,7 @@ import {
   useEffect,
   type ReactNode,
 } from "react"
+import { useSession, signIn, signOut } from "next-auth/react"
 
 export interface Address {
   _id?: string
@@ -35,6 +36,7 @@ export interface User {
 type AuthContextType = {
   isAuthenticated: boolean
   user: User | null
+  loading: boolean
   login: (email: string, password: string) => Promise<boolean>
   logout: () => void
   register: (
@@ -48,24 +50,29 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [user, setUser] = useState<User | null>(null)
+  const { data: session, status } = useSession()
+  const [user, setUser] = useState<User | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
+  const loading = status === 'loading'
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedUser = localStorage.getItem("user")
-      if (storedUser) {
-        try {
-          const parsedUser = JSON.parse(storedUser)
-          setUser(parsedUser)
-          setIsAuthenticated(true)
-        } catch (error) {
-          console.error("Failed to parse stored user:", error)
-          localStorage.removeItem("user")
-        }
+    if (status === 'authenticated' && session) {
+      // Adapt the session user to your app's User type
+      const appUser: User = {
+        id: session.user.id || '', // Ensure you have id in your session callback
+        name: session.user.name || 'Unnamed User',
+        email: session.user.email || '',
+        image: session.user.image || undefined,
+        // You might need to fetch role and addresses from your backend here
+        role: (session.user as any).role || 'buyer', 
       }
+      setUser(appUser)
+      setIsAuthenticated(true)
+    } else if (status === 'unauthenticated') {
+      setUser(null)
+      setIsAuthenticated(false)
     }
-  }, [])
+  }, [session, status])
 
   const login = async (email: string, password: string): Promise<boolean> => {
     await new Promise((resolve) => setTimeout(resolve, 1000))
@@ -168,6 +175,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         isAuthenticated,
         user,
+        loading,
         login,
         logout,
         register,

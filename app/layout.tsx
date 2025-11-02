@@ -2,10 +2,11 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
-import Header from "@/components/header"
+import Header from "@/components/header" // Corrected import path if needed, but name is key
 import Footer from "@/components/footer"
 import { ThemeProvider } from "@/components/theme-provider"
-import { AuthProvider } from "@/components/auth-provider"
+import NextAuthProvider from "@/components/AuthProvider" // Renamed to avoid conflict
+import { AuthProvider } from "@/components/auth-provider" // Your custom auth provider
 import { CartProvider } from "@/components/cart-provider"
 import Script from "next/script"
 
@@ -31,15 +32,17 @@ export default function RootLayout({
   <body className={inter.className}>
     
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-      <AuthProvider>
-        <CartProvider>
-          <div className="flex min-h-screen flex-col">
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </div>
-        </CartProvider>
-      </AuthProvider>
+      <NextAuthProvider>
+        <AuthProvider>
+          <CartProvider>
+            <div className="flex min-h-screen flex-col">
+              <Header />
+              <main className="flex-1">{children}</main>
+              <Footer />
+            </div>
+          </CartProvider>
+        </AuthProvider>
+      </NextAuthProvider>
     </ThemeProvider>
   </body>
 </html>

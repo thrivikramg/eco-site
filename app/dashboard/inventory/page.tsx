@@ -23,11 +23,11 @@ interface Product {
 }
 
 interface Vendor {
-  bankDetails?: {
+  payoutDetails?: {
     accountHolder?: string;
     accountNumber?: string;
     bankName?: string;
-    ifsc?: string;
+    ifscCode?: string;
   };
 }
 
@@ -36,7 +36,7 @@ export default function VendorInventoryPage() {
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [hasCompleteBankDetails, setHasCompleteBankDetails] = useState(false);
+  // const [hasCompleteBankDetails, setHasCompleteBankDetails] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -49,22 +49,22 @@ export default function VendorInventoryPage() {
 
   const fetchProducts = async () => {
     // Also fetch vendor status to check bank details
-    try {
-      const vendorRes = await fetch('/api/vendor/store');
-      if (vendorRes.ok) {
-        const vendorData: Vendor = await vendorRes.json();
-        const { bankDetails } = vendorData;
-        if (bankDetails && bankDetails.accountHolder && bankDetails.accountNumber && bankDetails.bankName && bankDetails.ifsc) {
-          setHasCompleteBankDetails(true);
-        } else {
-          setHasCompleteBankDetails(false);
-        }
-      } else {
-        setHasCompleteBankDetails(false);
-      }
-    } catch (e) {
-      setHasCompleteBankDetails(false);
-    }
+    // try {
+    //   const vendorRes = await fetch('/api/vendor/store');
+    //   if (vendorRes.ok) {
+    //     const vendorData: Vendor = await vendorRes.json();
+    //     const { payoutDetails } = vendorData;
+    //     if (payoutDetails && payoutDetails.accountHolder && payoutDetails.accountNumber && payoutDetails.bankName && payoutDetails.ifscCode) {
+    //       setHasCompleteBankDetails(true);
+    //     } else {
+    //       setHasCompleteBankDetails(false);
+    //     }
+    //   } else {
+    //     setHasCompleteBankDetails(false);
+    //   }
+    // } catch (e) {
+    //   setHasCompleteBankDetails(false);
+    // }
 
     setLoading(true);
     try {
@@ -154,7 +154,7 @@ export default function VendorInventoryPage() {
 
   return (
     <div className="p-6">
-      {!hasCompleteBankDetails && !loading && (
+      {/* {!hasCompleteBankDetails && !loading && (
         <Alert variant="destructive" className="mb-6">
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Banking Information Incomplete</AlertTitle>
@@ -168,7 +168,7 @@ export default function VendorInventoryPage() {
             </Button>
           </AlertDescription>
         </Alert>
-      )}
+      )} */}
 
       <div className="flex justify-between mb-6 items-center">
         <h1 className="text-3xl font-bold">Vendor Inventory</h1>
@@ -184,7 +184,7 @@ export default function VendorInventoryPage() {
             }
           }}>
             <DialogTrigger asChild>
-              <Button className="bg-green-600 hover:bg-green-700 text-white" disabled={!hasCompleteBankDetails}>
+              <Button className="bg-green-600 hover:bg-green-700 text-white" /* disabled={!hasCompleteBankDetails} */>
                 <Plus className="w-4 h-4 mr-2" /> Add Product
               </Button>
             </DialogTrigger>
@@ -207,7 +207,7 @@ export default function VendorInventoryPage() {
                   </div>
                 ))}
               </div>
-              <Button onClick={handleSubmit} className="w-full" disabled={!hasCompleteBankDetails}>{editingProduct ? "Update Product" : "Create Product"}</Button>
+              <Button onClick={handleSubmit} className="w-full" /* disabled={!hasCompleteBankDetails} */>{editingProduct ? "Update Product" : "Create Product"}</Button>
             </DialogContent>
           </Dialog>
         </div>
@@ -234,10 +234,10 @@ export default function VendorInventoryPage() {
                   <TableCell>₹{p.price}</TableCell>
                   <TableCell>{p.stock}</TableCell>
                   <TableCell className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={() => handleEdit(p)} disabled={!hasCompleteBankDetails}>
+                    <Button variant="outline" size="sm" onClick={() => handleEdit(p)} /* disabled={!hasCompleteBankDetails} */>
                       <Edit className="w-4 h-4" />
                     </Button>
-                    <Button variant="outline" size="sm" onClick={() => deleteProduct(p._id)} disabled={!hasCompleteBankDetails}>
+                    <Button variant="outline" size="sm" onClick={() => deleteProduct(p._id)} /* disabled={!hasCompleteBankDetails} */>
                       <Trash2 className="w-4 h-4 text-red-500" />
                     </Button>
                   </TableCell>

@@ -38,14 +38,36 @@ import {
   PaginationPrevious
 } from "../../../components/ui/pagination"
 
-const mockProducts = []
+import { useEffect } from "react";
 
 export default function ProductsPage() {
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("")
   const [categoryFilter, setCategoryFilter] = useState("all")
   const [statusFilter, setStatusFilter] = useState("all")
   const [activeTab, setActiveTab] = useState("all")
   const [selectedProducts, setSelectedProducts] = useState<string[]>([])
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch("/api/products?role=vendor");
+        if (!response.ok) {
+          throw new Error("Failed to fetch products");
+        }
+        const data = await response.json();
+        setProducts(data);
+      } catch (error: any) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
   
   const toggleProductSelection = (productId: string) => {
     setSelectedProducts(prev => 
@@ -59,14 +81,14 @@ export default function ProductsPage() {
     if (selectedProducts.length === filteredProducts.length) {
       setSelectedProducts([])
     } else {
-      setSelectedProducts(filteredProducts.map(p => p.id))
+      setSelectedProducts(filteredProducts.map(p => p._id))
     }
   }
 
   // Filter products based on search, category, status, and active tab
-  const filteredProducts = mockProducts.filter(product => {
+  const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.id.toLowerCase().includes(searchTerm.toLowerCase())
+      product._id.toLowerCase().includes(searchTerm.toLowerCase())
     
     const matchesCategory = categoryFilter === "all" || product.category === categoryFilter
     
@@ -81,8 +103,8 @@ export default function ProductsPage() {
     return matchesSearch && matchesCategory && matchesStatus && matchesTab
   })
 
-  // Extract unique categories for filter dropdown
-  const uniqueCategories = Array.from(new Set(mockProducts.map(product => product.category)))
+  // Extract unique categories for filter dropdown from actual products
+  const uniqueCategories = Array.from(new Set(products.map(product => product.category)))
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -193,11 +215,11 @@ export default function ProductsPage() {
             <TableBody>
               {filteredProducts.length > 0 ? (
                 filteredProducts.map((product) => (
-                  <TableRow key={product.id}>
+                  <TableRow key={product._id}>
                     <TableCell>
                       <Checkbox 
-                        checked={selectedProducts.includes(product.id)}
-                        onCheckedChange={() => toggleProductSelection(product.id)}
+                        checked={selectedProducts.includes(product._id)}
+                        onCheckedChange={() => toggleProductSelection(product._id)}
                         aria-label={`Select ${product.name}`}
                       />
                     </TableCell>
@@ -208,7 +230,7 @@ export default function ProductsPage() {
                         </div>
                         <div>
                           <div className="font-medium">{product.name}</div>
-                          <div className="text-xs text-gray-500">{product.id}</div>
+                          <div className="text-xs text-gray-500">{product._id}</div>
                         </div>
                       </div>
                     </TableCell>

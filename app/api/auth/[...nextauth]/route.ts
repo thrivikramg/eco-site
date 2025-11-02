@@ -33,7 +33,7 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           email: user.email,
           image: user.image,
-          role: user.role || "user",
+          role: user.role || "buyer", // ✅ default to buyer
         };
       },
     }),
@@ -49,7 +49,8 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           email: user.email,
           image: user.image || "",
-          role: "user",
+          role: "buyer", // ✅ FIXED HERE
+          isEmailVerified: true,
           authType: account?.provider || "credentials",
         });
       }
@@ -65,17 +66,31 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
 
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
+      // On initial sign-in, the `user` object is available.
       if (user) {
-        token.sub = user.id;
-        token.role = (user as any).role || "user";
+        // For credentials provider, user.id is already the MongoDB ObjectId.
+        // For OAuth providers, we need to fetch the user from the DB to get the ObjectId.
+        if (account?.provider !== "credentials") {
+          const dbUser = await User.findOne({ email: user.email });
+          if (dbUser) {
+            token.sub = dbUser._id.toString();
+            token.role = dbUser.role;
+          }
+        } else {
+          token.sub = user.id;
+          token.role = (user as any).role;
+        }
       }
+
+      // On subsequent requests, fetch user data from DB to keep token updated
+      const existingUser = await User.findById(token.sub);
+      if (existingUser) { // This check is now safe for all providers.
+        token.role = existingUser.role;
+      }
+
       return token;
     },
-  },
-
-  pages: {
-    signIn: "/signin",
   },
 
   session: {

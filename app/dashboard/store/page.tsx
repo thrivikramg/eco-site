@@ -1,6 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { Combobox } from "@/components/ui/combobox"
+import { indianBanks } from "@/lib/indian-banks"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../../components/ui/card"
 import { Button } from "../../../components/ui/button"
 import { Input } from "../../../components/ui/input"
@@ -18,6 +20,7 @@ import {
   Building,
   AlertTriangle
 } from "lucide-react"
+import { toast } from "sonner"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../../../components/ui/select"
 import { Switch } from "../../../components/ui/switch"
 
@@ -44,10 +47,10 @@ export default function StoreSettingsPage() {
       { name: "Express Shipping", price: 12.99, days: "1-2" },
     ],
     bankInfo: {
-      accountName: "EcoFriendly Goods LLC",
-      accountNumber: "XXXX-XXXX-4578",
-      bankName: "Green Bank",
-      ifscCode: "GRBN000123",
+      accountName: "",
+      accountNumber: "",
+      bankName: "",
+      ifscCode: "",
     },
     gstDetails: {
       gstNumber: "29ABCDE1234F1Z5",
@@ -55,6 +58,54 @@ export default function StoreSettingsPage() {
       businessAddress: "123 Green Street, Eco City, EC 12345",
     }
   })
+
+
+  useEffect(() => {
+    const fetchStoreData = async () => {
+      try {
+        const res = await fetch("/api/vendor/store");
+        if (res.ok) {
+          const data = await res.json();
+          setStoreData(prev => ({
+            ...prev,
+            name: data.businessName || prev.name,
+            description: data.storeDescription || prev.description,
+            contactEmail: data.businessEmail || prev.contactEmail,
+            contactPhone: data.contact?.phone || prev.contactPhone,
+            bankInfo: {
+              accountName: data.payoutDetails?.accountHolder || prev.bankInfo.accountName,
+              accountNumber: data.payoutDetails?.accountNumber || prev.bankInfo.accountNumber,
+              bankName: data.payoutDetails?.bankName || prev.bankInfo.bankName,
+              ifscCode: data.payoutDetails?.ifscCode || prev.bankInfo.ifscCode,
+            },
+            gstDetails: {
+              gstNumber: data.taxInfo?.gstin || prev.gstDetails.gstNumber,
+              businessPan: data.taxInfo?.pan || prev.gstDetails.businessPan,
+              businessAddress: data.businessAddress?.street || prev.gstDetails.businessAddress,
+            },
+            returnPolicy: data.returnPolicy || prev.returnPolicy,
+            shippingOptions: data.shippingOptions && data.shippingOptions.length > 0 ? data.shippingOptions : prev.shippingOptions,
+          }));
+        } else {
+          toast.error("Failed to fetch store settings.");
+        }
+      } catch (error) {
+        toast.error("An error occurred while fetching store settings.");
+        console.error(error);
+      }
+    };
+    fetchStoreData();
+  }, []);
+
+  const handleBankChange = (bankCode: string) => {
+    setStoreData(prev => ({ 
+      ...prev, 
+      bankInfo: { 
+        ...prev.bankInfo, 
+        bankName: bankCode 
+      } 
+    }));
+  };
 
   const handleGeneralInfoChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -64,11 +115,99 @@ export default function StoreSettingsPage() {
     }));
   }
 
-  const handleSave = () => {
-    // In a real implementation, this would save to the backend
-    console.log("Saving store settings:", storeData);
-    // Show success message to user
-    alert("Store settings saved successfully!");
+  const handleHoursChange = (day: string, field: 'open' | 'close' | 'closed', value: string | boolean) => {
+    setStoreData(prev => ({
+      ...prev,
+      openingHours: {
+        ...prev.openingHours,
+        [day]: {
+          ...prev.openingHours[day as keyof typeof prev.openingHours],
+          [field]: value,
+        }
+      }
+    }));
+  };
+
+  const handleShippingChange = (index: number, field: 'name' | 'price' | 'days', value: string | number) => {
+    const newShippingOptions = [...storeData.shippingOptions];
+    newShippingOptions[index] = { ...newShippingOptions[index], [field]: value };
+    setStoreData(prev => ({ ...prev, shippingOptions: newShippingOptions }));
+  };
+
+  const addShippingOption = () => {
+    setStoreData(prev => ({
+      ...prev,
+      shippingOptions: [...prev.shippingOptions, { name: "", price: 0, days: "" }]
+    }));
+  };
+
+  const removeShippingOption = (index: number) => {
+    setStoreData(prev => ({ ...prev, shippingOptions: prev.shippingOptions.filter((_, i) => i !== index) }));
+  };
+
+  const handleBankInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setStoreData(prev => ({
+      ...prev,
+      bankInfo: {
+        ...prev.bankInfo,
+        [name]: value
+      }
+    }));
+  };
+
+  const handleGstDetailsChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setStoreData(prev => ({
+      ...prev,
+      gstDetails: {
+        ...prev.gstDetails,
+        [name]: value
+      }
+    }));
+  };
+
+
+  const handleSave = async () => {
+    const payload = {
+      businessName: storeData.name,
+      storeDescription: storeData.description,
+      businessEmail: storeData.contactEmail,
+      contact: { phone: storeData.contactPhone },
+      payoutDetails: {
+        accountHolder: storeData.bankInfo.accountName,
+        accountNumber: storeData.bankInfo.accountNumber,
+        bankName: storeData.bankInfo.bankName,
+        ifscCode: storeData.bankInfo.ifscCode,
+      },
+      taxInfo: {
+        gstin: storeData.gstDetails.gstNumber,
+        pan: storeData.gstDetails.businessPan,
+      },
+      businessAddress: { 
+        street: storeData.gstDetails.businessAddress,
+        // Assuming city, state, pincode are part of the address string for now.
+        // For a long-term fix, you should have separate fields for these.
+        city: "City", // Placeholder
+        state: "State", // Placeholder
+        pincode: "000000" // Placeholder
+      },
+      returnPolicy: storeData.returnPolicy,
+      shippingOptions: storeData.shippingOptions,
+    };
+
+    const res = await fetch('/api/vendor/store', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (res.ok) {
+      toast.success("Store settings saved successfully!");
+    } else {
+      const errorData = await res.json();
+      toast.error(errorData.message || "Failed to save store settings.");
+    }
   }
 
   return (
@@ -191,13 +330,13 @@ export default function StoreSettingsPage() {
                       <Switch 
                         id={`${day}-open`} 
                         checked={!hours.closed}
-                        // In a real app, you'd handle state updates for these switches
+                        onCheckedChange={(checked) => handleHoursChange(day, 'closed', !checked)}
                       />
                       <div className="flex items-center gap-2">
                         <Select 
                           disabled={hours.closed} 
                           value={hours.open}
-                          // In a real app, you'd handle state updates for these selects
+                          onValueChange={(value) => handleHoursChange(day, 'open', value)}
                         >
                           <SelectTrigger className="w-[100px]">
                             <SelectValue />
@@ -213,7 +352,7 @@ export default function StoreSettingsPage() {
                         <Select 
                           disabled={hours.closed}
                           value={hours.close}
-                          // In a real app, you'd handle state updates for these selects
+                          onValueChange={(value) => handleHoursChange(day, 'close', value)}
                         >
                           <SelectTrigger className="w-[100px]">
                             <SelectValue />
@@ -268,8 +407,8 @@ export default function StoreSettingsPage() {
                       <Input 
                         id={`shipping-name-${index}`} 
                         value={option.name} 
+                        onChange={(e) => handleShippingChange(index, 'name', e.target.value)}
                         className="mt-1"
-                        // In a real app, you'd handle state updates for these inputs
                       />
                     </div>
                     <div className="w-full sm:w-auto sm:flex-initial">
@@ -278,12 +417,12 @@ export default function StoreSettingsPage() {
                         <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">$</span>
                         <Input 
                           id={`shipping-price-${index}`} 
-                          value={option.price} 
+                          value={option.price}
+                          onChange={(e) => handleShippingChange(index, 'price', parseFloat(e.target.value))}
                           className="pl-7"
                           type="number" 
                           min="0" 
                           step="0.01"
-                          // In a real app, you'd handle state updates for these inputs
                         />
                       </div>
                     </div>
@@ -292,19 +431,19 @@ export default function StoreSettingsPage() {
                       <Input 
                         id={`shipping-days-${index}`} 
                         value={option.days} 
+                        onChange={(e) => handleShippingChange(index, 'days', e.target.value)}
                         className="mt-1"
-                        // In a real app, you'd handle state updates for these inputs
                       />
                     </div>
                     <div className="flex items-end justify-end w-full sm:w-auto mt-2 sm:mt-0">
-                      <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
+                      <Button onClick={() => removeShippingOption(index)} variant="outline" size="sm" className="text-red-600 hover:text-red-700">
                         Remove
                       </Button>
                     </div>
                   </div>
                 ))}
                 
-                <Button variant="outline" size="sm" className="mt-2">
+                <Button onClick={addShippingOption} variant="outline" size="sm" className="mt-2">
                   + Add Shipping Option
                 </Button>
               </div>
@@ -343,35 +482,44 @@ export default function StoreSettingsPage() {
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
                     <Label htmlFor="bank-name">Bank Name</Label>
-                    <Input 
-                      id="bank-name" 
-                      value={storeData.bankInfo.bankName} 
-                      // In a real app, you'd handle state updates for these inputs
+                    <Combobox
+                      options={indianBanks}
+                      value={storeData.bankInfo.bankName}
+                      onChange={handleBankChange}
+                      placeholder="Select bank..."
+                      searchPlaceholder="Search banks..."
+                      emptyPlaceholder="No bank found."
                     />
                   </div>
                   <div>
                     <Label htmlFor="account-name">Account Holder Name</Label>
                     <Input 
                       id="account-name" 
+                      name="accountName"
                       value={storeData.bankInfo.accountName} 
-                      // In a real app, you'd handle state updates for these inputs
+                      placeholder="Enter account holder's name"
+                      onChange={handleBankInfoChange}
                     />
                   </div>
                   <div>
                     <Label htmlFor="account-number">Account Number</Label>
                     <Input 
                       id="account-number" 
+                      name="accountNumber"
                       value={storeData.bankInfo.accountNumber} 
+                      placeholder="Enter account number"
                       type="password" 
-                      // In a real app, you'd handle state updates for these inputs
+                      onChange={handleBankInfoChange}
                     />
                   </div>
                   <div>
                     <Label htmlFor="ifsc-code">IFSC Code</Label>
-                    <Input 
-                      id="ifsc-code" 
-                      value={storeData.bankInfo.ifscCode} 
-                      // In a real app, you'd handle state updates for these inputs
+                    <Input
+                      id="ifsc-code"
+                      name="ifscCode"
+                      value={storeData.bankInfo.ifscCode}
+                      placeholder="Enter IFSC code"
+                      onChange={handleBankInfoChange}
                     />
                   </div>
                 </div>
@@ -383,26 +531,29 @@ export default function StoreSettingsPage() {
                   <div>
                     <Label htmlFor="gst-number">GST Number</Label>
                     <Input 
-                      id="gst-number" 
+                      id="gst-number"
+                      name="gstNumber"
                       value={storeData.gstDetails.gstNumber} 
-                      // In a real app, you'd handle state updates for these inputs
+                      onChange={handleGstDetailsChange}
                     />
                   </div>
                   <div>
                     <Label htmlFor="business-pan">Business PAN</Label>
                     <Input 
-                      id="business-pan" 
+                      id="business-pan"
+                      name="businessPan"
                       value={storeData.gstDetails.businessPan} 
-                      // In a real app, you'd handle state updates for these inputs
+                      onChange={handleGstDetailsChange}
                     />
                   </div>
                   <div className="sm:col-span-2">
                     <Label htmlFor="business-address">Registered Business Address</Label>
                     <Textarea 
-                      id="business-address" 
+                      id="business-address"
+                      name="businessAddress"
                       value={storeData.gstDetails.businessAddress} 
                       className="min-h-[80px]"
-                      // In a real app, you'd handle state updates for these inputs
+                      onChange={handleGstDetailsChange}
                     />
                   </div>
                 </div>

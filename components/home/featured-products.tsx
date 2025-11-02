@@ -12,73 +12,16 @@ import { Badge } from "@/components/ui/badge"
 import { useCart } from "@/components/cart-provider"
 import { useToast } from "@/hooks/use-toast"
 
-// Mock products data - expanded for better scrolling effect
-const products = [
-  {
-    id: "1",
-    name: "Organic Plant Food",
-    price: 12.99,
-    category: "Agro Products",
-    image: "/Organic Plant Food.webp",
-    isNew: true,
-  },
-  {
-    id: "2",
-    name: "Bamboo Toothbrush Set",
-    price: 8.49,
-    category: "Eco-Friendly",
-    image: "/bamboo toothbrush set.webp?height=400&width=400",
-    isNew: false,
-  },
-  {
-    id: "3",
-    name: "Herbal Hair Oil",
-    price: 15.99,
-    category: "Herbal Products",
-    image: "/herbal hair oil.webp?height=400&width=400",
-    isNew: true,
-  },
-  {
-    id: "4",
-    name: "Aloe Vera Gel",
-    price: 9.99,
-    category: "Cosmetics",
-    image: "/alovera-gel.jpg?height=400&width=400",
-    isNew: false,
-  },
-  {
-    id: "5",
-    name: "Reusable Produce Bags",
-    price: 6.99,
-    category: "Eco-Friendly",
-    image: "/reusable bags.jpg?height=400&width=400",
-    isNew: true,
-  },
-  {
-    id: "6",
-    name: "Neem Face Wash",
-    price: 11.49,
-    category: "Cosmetics",
-    image: "/neem face wash.webp?height=400&width=400",
-    isNew: false,
-  },
-  {
-    id: "7",
-    name: "Organic Seeds Pack",
-    price: 7.99,
-    category: "Agro Products",
-    image: "/seeds.jpg?height=400&width=400",
-    isNew: true,
-  },
-  {
-    id: "8",
-    name: "Eco-Friendly Detergent",
-    price: 14.99,
-    category: "Home Care",
-    image: "/detergent.webp?height=400&width=400",
-    isNew: false,
-  },
-]
+interface Product {
+  _id: string;
+  id: string;
+  name: string;
+  price: number;
+  category: string;
+  image?: string; // Make image optional to handle products without one
+  images: string[];
+  isNew?: boolean; // isNew is not part of the backend model, can be handled on frontend
+}
 
 export default function FeaturedProducts() {
   const { addToCart } = useCart()
@@ -86,17 +29,18 @@ export default function FeaturedProducts() {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [isPaused, setIsPaused] = useState(false)
   const scrollSpeed = 1.5 // Increased speed for more noticeable scrolling
+  const [products, setProducts] = useState<Product[]>([]);
 
-  const handleAddToCart = (product: (typeof products)[0], e: React.MouseEvent) => {
+  const handleAddToCart = (product: Product, e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
 
     addToCart({
-      id: product.id,
+      id: product._id,
       name: product.name,
       price: product.price,
       quantity: 1,
-      image: product.image,
+      image: product.images?.[0] || "/placeholder.svg",
     })
 
     toast({
@@ -105,8 +49,21 @@ export default function FeaturedProducts() {
     })
   }
 
-  // Duplicate products array to create a seamless loop
-  const duplicatedProducts = [...products, ...products, ...products] // Triple the products for more content
+  useEffect(() => {
+    const fetchAllProducts = async () => {
+      try {
+        const res = await fetch('/api/products');
+        if (res.ok) {
+          const data = await res.json();
+          setProducts(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      }
+    };
+
+    fetchAllProducts();
+  }, []);
 
   // Auto-scrolling animation with simplified approach
   useEffect(() => {
@@ -144,6 +101,9 @@ export default function FeaturedProducts() {
     }
   }, [isPaused, scrollSpeed])
 
+  // Duplicate products array to create a seamless loop
+  const duplicatedProducts = products.length > 0 ? [...products, ...products, ...products] : [];
+
   return (
     <section className="py-16 bg-cream-50 overflow-hidden">
       <div className="container">
@@ -179,18 +139,19 @@ export default function FeaturedProducts() {
         >
           {duplicatedProducts.map((product, index) => (
             <Card
-              key={`${product.id}-${index}`}
+              key={`${product._id}-${index}`}
               className="overflow-hidden group flex-shrink-0 w-[280px] transition-all duration-300 hover:shadow-lg border border-emerald-200 hover:border-emerald-400 bg-white"
             >
-              <Link href={`/shop/product/${product.id}`} className="block">
+              <Link href={`/shop/product/${product._id}`} className="block">
                 <div className="relative h-64 w-full overflow-hidden">
                   <Image
-                    src={product.image || "/placeholder.svg"}
+                    src={product.images?.[0] || "/placeholder.svg"}
                     alt={product.name}
                     fill
                     className="object-cover transition-transform group-hover:scale-105"
                   />
-                  {product.isNew && <Badge className="absolute top-2 right-2 bg-emerald-600 text-white">New</Badge>}
+                  {/* A simple logic for 'New' badge, can be improved */}
+                  {index % 4 === 0 && <Badge className="absolute top-2 right-2 bg-emerald-600 text-white">New</Badge>}
                 </div>
 
                 <CardContent className="pt-6">

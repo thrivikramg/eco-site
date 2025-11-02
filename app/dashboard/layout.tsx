@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import { useSession } from "next-auth/react"
 import { usePathname, useRouter } from "next/navigation"
 import { useAuth } from "../../components/auth-provider"
 import { AlertTriangle } from "lucide-react"
@@ -27,6 +28,7 @@ export default function DashboardLayout({
   const pathname = usePathname()
   const router = useRouter()
   const { isAuthenticated, user } = useAuth()
+  const { status } = useSession()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const [authorized, setAuthorized] = useState(false)
@@ -35,32 +37,31 @@ export default function DashboardLayout({
     // TEMPORARY FOR DEVELOPMENT: Allow all users to access the dashboard
     // Once development is complete, uncomment the role check below
     const checkAuthorization = () => {
-      // DEVELOPMENT MODE: Skip authentication check
-      setAuthorized(true)
-      setLoading(false)
-      
+      if (status === 'loading') {
+        // Still checking auth status, do nothing yet.
+        return;
+      }
+
       // PRODUCTION MODE: Uncomment this code when ready
-      /*
       if (!isAuthenticated) {
         // User is not logged in, redirect to login
         router.push('/')
         return
       }
-      
+
       // Check if user has vendor role
-      if (user?.role !== 'vendor') {
+      if (!user || user.role !== 'vendor') {
         // User is not a vendor, redirect to home with message
         setAuthorized(false)
       } else {
         setAuthorized(true)
       }
-      
+
       setLoading(false)
-      */
     }
     
     checkAuthorization()
-  }, [isAuthenticated, user, router])
+  }, [isAuthenticated, user, router, status])
   
   const navigation = [
     { 

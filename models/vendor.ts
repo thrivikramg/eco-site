@@ -15,7 +15,7 @@ export interface IVendorAddress {
 export interface IPayoutDetails {
   bankName: string
   accountNumber: string
-  accountHolderName: string
+  accountHolder: string
   ifscCode: string
 }
 
@@ -51,6 +51,13 @@ const AddressSchema: Schema<IVendorAddress> = new Schema({
   state: { type: String, required: true },
   pincode: { type: String, required: true },
   country: { type: String, required: true, default: 'India' },
+}, { _id: false });
+
+const PayoutDetailsSchema: Schema<IPayoutDetails> = new Schema({
+  bankName: { type: String },
+  accountNumber: { type: String },
+  accountHolder: { type: String },
+  ifscCode: { type: String },
 }, { _id: false });
 
 
@@ -92,6 +99,10 @@ const VendorSchema: Schema<IVendor> = new Schema(
       default: "pending",
     },
     products: [{ type: Schema.Types.ObjectId, ref: "Product" }],
+    payoutDetails: {
+      type: PayoutDetailsSchema,
+      required: false,
+    }
   },
   {
     timestamps: true,

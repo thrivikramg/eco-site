@@ -10,7 +10,7 @@ import { Badge } from "../../components/ui/badge"
 import { Skeleton } from "../../components/ui/skeleton"
 import { useCart } from "../../components/cart-provider"
 import { useToast } from "../../hooks/use-toast"
-import type { Product } from "../../lib/products"
+import { Product } from "@/lib/products"
 
 interface ProductGridProps {
   products: Product[]
@@ -40,11 +40,11 @@ export default function ProductGrid({ products, isLoading, initialLoad = false }
       }
 
       addToCart({
-        id: product.id,
+        id: product._id,
         name: product.name,
         price: product.price,
         quantity: 1,
-        image: product.image,
+        image: product.images?.[0] || "/placeholder.svg",
       })
 
       toast({
@@ -86,7 +86,7 @@ export default function ProductGrid({ products, isLoading, initialLoad = false }
   return (
     <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
       {products.map((product) => (
-        <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} />
+        <ProductCard key={product._id} product={product} onAddToCart={handleAddToCart} />
       ))}
     </div>
   )
@@ -95,85 +95,38 @@ export default function ProductGrid({ products, isLoading, initialLoad = false }
 function ProductCard({ product, onAddToCart }: { product: Product; onAddToCart: (product: Product) => void }) {
   return (
     <Card className="overflow-hidden group h-full flex flex-col border border-gray-100 hover:border-primary/20 transition-colors">
-      <Link href={`/shop/product/${product.id}`} className="relative block">
+      <Link href={`/shop/product/${product._id}`} className="relative block">
         <div className="relative aspect-square w-full overflow-hidden bg-gray-50">
           <Image
-            src={product.image || "/placeholder.svg"}
+            src={product.images?.[0] || "/placeholder.svg"}
             alt={product.name}
             fill
             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
             className="object-cover transition-transform duration-300 group-hover:scale-105"
             priority={false}
           />
-          {product.isNew && (
-            <Badge className="absolute top-2 right-2 bg-primary text-xs py-0.5 px-1.5">
-              New
-            </Badge>
-          )}
-          {product.discount > 0 && (
-            <Badge className="absolute top-2 left-2 bg-red-500 text-xs py-0.5 px-1.5">
-              -{product.discount}%
-            </Badge>
-          )}
         </div>
       </Link>
 
       <CardContent className="p-3 sm:p-4 flex-grow">
         <div className="text-xs sm:text-sm text-primary mb-0.5 line-clamp-1">{product.category}</div>
-        <Link href={`/shop/product/${product.id}`} className="group-hover:text-primary transition-colors">
+        <Link href={`/shop/product/${product._id}`} className="group-hover:text-primary transition-colors">
           <h3 className="font-medium text-sm sm:text-base lg:text-lg leading-tight line-clamp-2 h-10 sm:h-12 overflow-hidden">
             {product.name}
           </h3>
         </Link>
-        <div className="flex items-center mt-1 sm:mt-2">
-          <div className="flex items-center">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <svg
-                key={star}
-                className={`h-3 w-3 sm:h-4 sm:w-4 ${star <= Math.round(product.rating) ? "text-yellow-400" : "text-gray-300"}`}
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 15.585l-7.07 3.707 1.35-7.857L.587 7.11l7.89-1.146L10 0l2.523 5.964 7.89 1.146-5.693 5.325 1.35 7.857z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            ))}
-          </div>
-          <span className="text-[10px] sm:text-xs text-gray-500 ml-1">({product.reviewCount})</span>
-        </div>
         <div className="mt-1 sm:mt-2 space-y-0.5">
           <div className="flex items-center flex-wrap gap-x-2">
-            {product.discount > 0 ? (
-              <>
-                <p className="font-semibold text-base sm:text-lg text-primary">
-                  ₹{Math.round((product.price * (100 - product.discount)) / 100).toLocaleString()}
-                </p>
-                <p className="text-xs sm:text-sm text-gray-500 line-through">
-                  ₹{product.price.toLocaleString()}
-                </p>
-                <span className="bg-red-50 text-red-600 text-[10px] px-1.5 py-0.5 rounded-full ml-auto">
-                  {product.discount}% OFF
-                </span>
-              </>
-            ) : (
-              <p className="font-semibold text-base sm:text-lg text-primary">
-                ₹{product.price.toLocaleString()}
-              </p>
-            )}
+            <p className="font-semibold text-base sm:text-lg text-primary">
+              ₹{product.price.toLocaleString()}
+            </p>
           </div>
-          <p className={`text-[10px] sm:text-xs ${product.inStock ? 'text-green-600' : 'text-amber-600'}`}>
-            {product.inStock ? 'In Stock' : 'Out of Stock'}
-          </p>
         </div>
       </CardContent>
 
       <CardFooter className="border-t p-2 sm:p-3 mt-auto">
         <Button 
           className="w-full h-9 sm:h-10 text-xs sm:text-sm" 
-          disabled={!product.inStock} 
           onClick={(e) => {
             e.preventDefault();
             onAddToCart(product);

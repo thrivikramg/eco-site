@@ -1,59 +1,62 @@
-import { NextRequest, NextResponse } from 'next/server'
-import db from '@/lib/mongodb'
-import { Order } from '@/models/order'
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]/route";
+import db from "../../../lib/mongodb";
+import { Order } from "../../../models/order.model";
+import { Vendor } from "../../../models/vendor";
 
-// GET /api/orders?userId=xxx
-export async function GET(req: NextRequest) {
-  try {
-    await db()  // ✅ CALL the db function
+/**
+ * GET /api/orders
+ * Gets all orders for the currently authenticated vendor.
+ */
+export async function GET(req: Request) {
+  const session = await getServerSession(authOptions);
 
-    const { searchParams } = new URL(req.url)
-    const userId = searchParams.get('userId')
-
-    if (!userId) {
-      return NextResponse.json({ error: 'Missing userId' }, { status: 400 })
-    }
-
-    const orders = await Order.find({ userId }).sort({ createdAt: -1 })
-
-    return NextResponse.json({ success: true, orders }, { status: 200 })
-  } catch (error: any) {
-    console.error('Error fetching orders:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  if (!session || !session.user || (session.user as any).role !== "vendor") {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
-}
 
-// POST logic (already added before)
-export async function POST(req: NextRequest) {
+  await db();
+
   try {
-    await db()  // ✅ CALL the db function
+    const { searchParams } = new URL(req.url);
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const limit = parseInt(searchParams.get('limit') || '10', 10);
+    const skip = (page - 1) * limit;
 
-    const body = await req.json()
-    const {
-      userId,
-      items,
-      totalAmount,
-      shippingAddress,
-      paymentMethod
-    } = body
+    const vendor = await Vendor.findOne({ user: session.user.id }).select('products');
 
-    if (!userId || !items?.length || !totalAmount || !shippingAddress || !paymentMethod) {
-      return NextResponse.json({ error: 'Missing or invalid fields' }, { status: 400 })
+    if (!vendor) {
+      return NextResponse.json({ message: "Vendor profile not found for this user." }, { status: 404 });
     }
 
-    const newOrder = await Order.create({
-      userId,
-      items,
-      totalAmount,
-      status: 'Pending',
-      shippingAddress,
-      paymentMethod
-    })
+    const orderFilter = { 'items.product': { $in: vendor.products } };
 
-    return NextResponse.json({ success: true, order: newOrder }, { status: 201 })
+    // Find orders that contain at least one product from this vendor
+    const orders = await Order.find(orderFilter)
+      .populate('user', 'name email')
+      .populate('items.product', 'name price images')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
 
-  } catch (error: any) {
-    console.error('Error placing order:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    const totalOrders = await Order.countDocuments(orderFilter);
+    const totalPages = Math.ceil(totalOrders / limit);
+
+    return NextResponse.json({
+      orders,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalOrders,
+        limit,
+      },
+    });
+  } catch (error) {
+    console.error("Failed to fetch orders:", error);
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

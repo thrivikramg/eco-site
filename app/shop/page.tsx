@@ -26,17 +26,26 @@ const ProductCard = ({ product }: { product: Product }) => {
   )
 }
 
+
 // Fetch products from the API endpoint instead of direct DB access
 async function getProducts(): Promise<Product[]> {
-  // Using an absolute URL for server-side fetching
-  const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/shop`, { cache: 'no-store' });
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL
+    ? process.env.NEXT_PUBLIC_APP_URL
+    : (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+
+  const apiUrl = `${baseUrl}/api/shop`;
+
+  const res = await fetch(apiUrl, { cache: 'no-store' });
 
   if (!res.ok) {
     throw new Error('Failed to fetch products');
+
   }
 
   return res.json();
 }
+
+
 
 const ShopPage = async () => {
   const products = await getProducts();

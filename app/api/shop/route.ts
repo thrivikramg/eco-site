@@ -6,7 +6,7 @@ export async function GET(req: Request) {
   try {
     // 1. Ensure the database connection is established.
     await db();
-     
+
     // 2. Use the Product model to find all documents in the collection.
     const products = await Product.find({});
 
@@ -17,4 +17,3 @@ export async function GET(req: Request) {
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
-

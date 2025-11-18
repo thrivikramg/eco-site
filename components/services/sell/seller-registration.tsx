@@ -1,6 +1,13 @@
 "use client"
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { useAuth } from "@/components/auth-provider"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
+import { Loader2, CheckCircle } from "lucide-react"
 
 interface FormData {
   businessName: string
@@ -11,6 +18,7 @@ interface FormData {
 }
 
 export default function SimpleSellerRegistration() {
+  const router = useRouter()
   const { updateUser } = useAuth()
   const [form, setForm] = useState<FormData>({
     businessName: "",
@@ -23,11 +31,16 @@ export default function SimpleSellerRegistration() {
   const [isVerifying, setIsVerifying] = useState(false)
   const [resendTimer, setResendTimer] = useState(30)
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
-  
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
   // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
+
+  const handleOtpChange = (otp: string) => {
+    setForm({ ...form, otp })
+  };
 
   // Send OTP simulation
   const sendOtp = () => {
@@ -36,9 +49,11 @@ export default function SimpleSellerRegistration() {
       return
     }
     setErrors({})
+    // In a real app, you would call an API to send the OTP here.
+    // For simulation, we'll just show the input.
     setIsOtpSent(true)
     setResendTimer(30)
-    // Simulate sending OTP
+
     console.log("OTP sent to", form.phoneNumber)
   }
 
@@ -53,7 +68,7 @@ export default function SimpleSellerRegistration() {
 
   // Verify OTP simulation
   const verifyOtp = () => {
-    if (form.otp.length !== 6) {
+    if (!form.otp || form.otp.length !== 6) {
       setErrors({ otp: "Enter 6-digit OTP" })
       return
     }
@@ -61,6 +76,7 @@ export default function SimpleSellerRegistration() {
     setIsVerifying(true)
     setTimeout(() => {
       setForm(prev => ({ ...prev, otpVerified: true }))
+      setErrors({})
       setIsVerifying(false)
       console.log("OTP verified")
     }, 1000)
@@ -68,15 +84,17 @@ export default function SimpleSellerRegistration() {
 
   // Submit registration
   const handleSubmit = async () => {
+    if (isSubmitting) return
     const newErrors: { [key: string]: string } = {}
     if (!form.businessName) newErrors.businessName = "Business name is required"
     if (!form.businessEmail) newErrors.businessEmail = "Business email is required"
     if (!form.phoneNumber) newErrors.phoneNumber = "Phone number is required"
-    if (!form.otpVerified) newErrors.otp = "Please verify OTP"
+    if (!form.otpVerified) newErrors.otp = "Please verify your phone number"
     
     setErrors(newErrors)
     if (Object.keys(newErrors).length > 0) return
 
+    setIsSubmitting(true)
     try {
       const res = await fetch("/api/vendor/register", {
         method: "POST",
@@ -98,86 +116,104 @@ export default function SimpleSellerRegistration() {
       const data = await res.json()
       if (res.ok) {
         updateUser({ role: 'vendor' })
-        alert("Seller registered successfully!")
+        router.push('/sell/register/success')
       } else {
-        alert(data.message || "Failed to register")
+        setErrors({ submit: data.message || "Failed to register. Please try again." })
       }
     } catch (err) {
       console.error(err)
-      alert("Server error")
+      setErrors({ submit: "An unexpected server error occurred." })
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
   return (
-    <div style={{ maxWidth: "400px", margin: "2rem auto", fontFamily: "sans-serif" }}>
-      <h2>Simple Seller Registration</h2>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <Card className="w-full max-w-lg shadow-lg">
+        <CardHeader className="text-center">
+          <CardTitle className="text-3xl font-bold text-gray-900">Become a Seller</CardTitle>
+          <CardDescription>Fill out the form below to start selling on EcoGrow.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="businessName">Business Name</Label>
+              <Input id="businessName" name="businessName" value={form.businessName} onChange={handleChange} placeholder="e.g., GreenLeaf Essentials" disabled={isSubmitting} />
+              {errors.businessName && <p className="text-sm text-red-500">{errors.businessName}</p>}
+            </div>
 
-      <label>
-        Business Name
-        <input
-          type="text"
-          name="businessName"
-          value={form.businessName}
-          onChange={handleChange}
-          style={{ width: "100%", padding: "0.5rem", marginBottom: "0.5rem" }}
-        />
-        {errors.businessName && <div style={{ color: "red" }}>{errors.businessName}</div>}
-      </label>
+            <div className="space-y-2">
+              <Label htmlFor="businessEmail">Business Email</Label>
+              <Input id="businessEmail" name="businessEmail" type="email" value={form.businessEmail} onChange={handleChange} placeholder="you@example.com" disabled={isSubmitting} />
+              {errors.businessEmail && <p className="text-sm text-red-500">{errors.businessEmail}</p>}
+            </div>
 
-      <label>
-        Business Email
-        <input
-          type="email"
-          name="businessEmail"
-          value={form.businessEmail}
-          onChange={handleChange}
-          style={{ width: "100%", padding: "0.5rem", marginBottom: "0.5rem" }}
-        />
-        {errors.businessEmail && <div style={{ color: "red" }}>{errors.businessEmail}</div>}
-      </label>
+            <div className="space-y-2">
+              <Label htmlFor="phoneNumber">Phone Number</Label>
+              <div className="flex items-center space-x-2">
+                <Input id="phoneNumber" name="phoneNumber" type="tel" value={form.phoneNumber} onChange={handleChange} placeholder="Your phone number" disabled={isOtpSent || isSubmitting} />
+                {!isOtpSent && (
+                  <Button onClick={sendOtp} variant="outline" className="flex-shrink-0" disabled={isSubmitting}>
+                    Send OTP
+                  </Button>
+                )}
+                {form.otpVerified && (
+                  <div className="flex items-center text-green-600 flex-shrink-0">
+                    <CheckCircle className="h-5 w-5 mr-1" />
+                    <span>Verified</span>
+                  </div>
+                )}
+              </div>
+              {errors.phoneNumber && <p className="text-sm text-red-500">{errors.phoneNumber}</p>}
+            </div>
 
-      <label>
-        Phone Number
-        <input
-          type="tel"
-          name="phoneNumber"
-          value={form.phoneNumber}
-          onChange={handleChange}
-          style={{ width: "100%", padding: "0.5rem", marginBottom: "0.5rem" }}
-        />
-        {errors.phoneNumber && <div style={{ color: "red" }}>{errors.phoneNumber}</div>}
-      </label>
+            {isOtpSent && !form.otpVerified && (
+              <div className="space-y-4 text-center p-4 bg-gray-50 rounded-md border">
+                <Label htmlFor="otp" className="font-semibold">Enter Verification Code</Label>
+                <p className="text-sm text-gray-500">
+                  We've sent a 6-digit code to {form.phoneNumber}.
+                </p>
+                <div className="flex justify-center">
+                  <InputOTP maxLength={6} value={form.otp} onChange={handleOtpChange}>
+                    <InputOTPGroup>
+                      <InputOTPSlot index={0} />
+                      <InputOTPSlot index={1} />
+                      <InputOTPSlot index={2} />
+                      <InputOTPSlot index={3} />
+                      <InputOTPSlot index={4} />
+                      <InputOTPSlot index={5} />
+                    </InputOTPGroup>
+                  </InputOTP>
+                </div>
+                
+                <Button onClick={verifyOtp} disabled={isVerifying || form.otp.length < 6} className="w-full">
+                  {isVerifying && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {isVerifying ? "Verifying..." : "Verify Phone Number"}
+                </Button>
 
-      {!form.otpVerified && (
-        <div style={{ marginBottom: "1rem" }}>
-          {!isOtpSent ? (
-            <button onClick={sendOtp} style={{ padding: "0.5rem 1rem" }}>Send OTP</button>
-          ) : (
-            <>
-              <input
-                type="text"
-                name="otp"
-                maxLength={6}
-                value={form.otp}
-                onChange={handleChange}
-                placeholder="Enter OTP"
-                style={{ padding: "0.5rem", width: "60%", marginRight: "0.5rem" }}
-              />
-              <button onClick={verifyOtp} disabled={isVerifying} style={{ padding: "0.5rem 1rem" }}>
-                {isVerifying ? "Verifying..." : "Verify OTP"}
-              </button>
-              {resendTimer > 0 && <span style={{ marginLeft: "0.5rem" }}>Resend in {resendTimer}s</span>}
-              {errors.otp && <div style={{ color: "red" }}>{errors.otp}</div>}
-            </>
-          )}
-        </div>
-      )}
-
-      {form.otpVerified && <div style={{ color: "green", marginBottom: "1rem" }}>OTP Verified!</div>}
-
-      <button onClick={handleSubmit} style={{ padding: "0.5rem 1rem", backgroundColor: "green", color: "white" }}>
-        Submit Registration
-      </button>
+                <div className="text-sm text-gray-500">
+                  {resendTimer > 0 ? (
+                    <span>You can resend the code in {resendTimer}s</span>
+                  ) : (
+                    <button onClick={sendOtp} className="text-green-600 hover:underline font-medium">
+                      Resend Code
+                    </button>
+                  )}
+                </div>
+                {errors.otp && <p className="text-sm text-red-500">{errors.otp}</p>}
+              </div>
+            )}
+          </div>
+        </CardContent>
+        <CardFooter className="flex flex-col">
+          {errors.submit && <p className="text-sm text-red-500 mb-4">{errors.submit}</p>}
+          <Button onClick={handleSubmit} disabled={!form.otpVerified || isSubmitting} className="w-full bg-green-600 hover:bg-green-700 text-lg py-6">
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isSubmitting ? "Submitting..." : "Complete Registration"}
+          </Button>
+        </CardFooter>
+      </Card>
     </div>
   )
 }

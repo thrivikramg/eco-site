@@ -18,7 +18,9 @@
     "jsx": "preserve",
     "incremental": true,
     "types": [
-      "next-auth"
+      "next-auth",
+      "node",
+      "nodemailer"
     ],
     "plugins": [
       {

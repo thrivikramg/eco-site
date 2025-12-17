@@ -117,7 +117,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm text-muted-foreground">&copy; 2025 EcoSaro. All rights reserved.</p>
+          <p className="text-sm text-muted-foreground">&copy; 2025 Watonezz LLP. All rights reserved.</p>
           <div className="mt-4 md:mt-0">
             <Link href="/privacy-policy" className="text-sm text-muted-foreground hover:text-primary mr-4">
               Privacy

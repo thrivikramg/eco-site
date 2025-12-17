@@ -39,7 +39,7 @@ export default function ComingSoonPage() {
             </div>
 
             <div className="mt-8 text-center text-gray-500 text-sm">
-                <p>&copy; {new Date().getFullYear()} EcoSaro. All rights reserved.</p>
+                <p>&copy; {new Date().getFullYear()} Watonezz LLP. All rights reserved.</p>
             </div>
         </div>
     )

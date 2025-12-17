@@ -11,7 +11,7 @@ import CommonDiseases from "../../../components/eco-library/common-diseases"
 import PreventionTips from "../../../components/eco-library/prevention-tips"
 
 export const metadata: Metadata = {
-  title: "Plant Disease Detector | EcoGrow",
+  title: "Plant Disease Detector | EcoSaro",
   description: "Identify plant diseases and get treatment recommendations with our AI-powered tool.",
 }
 
@@ -88,7 +88,7 @@ const plantDiseaseArticles = [
 const generateMoreArticles = () => {
   const baseArticles = [...plantDiseaseArticles];
   const result = [...baseArticles];
-  
+
   const titles = [
     "Leaf Spot Diseases: Identification Guide",
     "Black Spot on Roses: Treatment Options",
@@ -103,7 +103,7 @@ const generateMoreArticles = () => {
     "Bacterial Leaf Spot in Peppers",
     "Cedar-Apple Rust: A Complex Fungal Disease"
   ];
-  
+
   // Generate additional articles to reach 18 total
   for (let i = 0; result.length < 18; i++) {
     const title = titles[i % titles.length];
@@ -119,7 +119,7 @@ const generateMoreArticles = () => {
       externalLink: baseArticles[i % baseArticles.length].externalLink
     });
   }
-  
+
   return result;
 };
 
@@ -132,12 +132,12 @@ export default function PlantDiseasePage() {
       <PlantDiseaseDetector />
       <CommonDiseases />
       <PreventionTips />
-      
+
       {/* Articles Section */}
       <section className="container mx-auto px-4 py-16">
         <h2 className="text-3xl font-bold mb-8">Plant Disease Articles</h2>
         <p className="text-lg text-gray-700 mb-10 max-w-3xl">Explore our collection of articles about plant diseases, their identification, prevention, and treatment methods.</p>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {allArticles.map((article) => (
             <Card key={article.id} className="overflow-hidden h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-1 rounded-lg border border-amber-100">

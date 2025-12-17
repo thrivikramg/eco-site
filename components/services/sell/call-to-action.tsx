@@ -11,7 +11,7 @@ export default function CallToAction() {
         <div>
           <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
             <span className="block">Ready to grow your eco-business?</span>
-            <span className="block text-green-200">Join EcoGrow today.</span>
+            <span className="block text-green-200">Join EcoSaro today.</span>
           </h2>
           <p className="mt-4 text-lg text-green-100">
             Start selling to eco-conscious customers and become part of our thriving sustainable marketplace.

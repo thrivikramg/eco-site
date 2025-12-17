@@ -42,19 +42,33 @@ export default function SimpleSellerRegistration() {
     setForm({ ...form, otp })
   };
 
-  // Send OTP simulation
-  const sendOtp = () => {
+  // Send OTP
+  const sendOtp = async () => {
     if (!form.phoneNumber) {
       setErrors({ phoneNumber: "Phone number is required" })
       return
     }
     setErrors({})
-    // In a real app, you would call an API to send the OTP here.
-    // For simulation, we'll just show the input.
-    setIsOtpSent(true)
-    setResendTimer(30)
 
-    console.log("OTP sent to", form.phoneNumber)
+    try {
+      const res = await fetch("/api/otp/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phoneNumber: form.phoneNumber }),
+      })
+
+      if (!res.ok) {
+        throw new Error("Failed to send OTP")
+      }
+
+      setIsOtpSent(true)
+      setResendTimer(30)
+      // For development/demo purposes, we can tell the user where to look
+      console.log("OTP sent! Check server console for the code.")
+    } catch (error) {
+      console.error("Error sending OTP:", error)
+      setErrors({ phoneNumber: "Failed to send OTP. Please try again." })
+    }
   }
 
   // OTP timer
@@ -66,20 +80,37 @@ export default function SimpleSellerRegistration() {
     return () => clearInterval(interval)
   }, [isOtpSent, resendTimer])
 
-  // Verify OTP simulation
-  const verifyOtp = () => {
+  // Verify OTP
+  const verifyOtp = async () => {
     if (!form.otp || form.otp.length !== 6) {
       setErrors({ otp: "Enter 6-digit OTP" })
       return
     }
     setErrors({})
     setIsVerifying(true)
-    setTimeout(() => {
-      setForm(prev => ({ ...prev, otpVerified: true }))
-      setErrors({})
+
+    try {
+      const res = await fetch("/api/otp/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ otp: form.otp }),
+      })
+
+      const data = await res.json()
+
+      if (res.ok) {
+        setForm(prev => ({ ...prev, otpVerified: true }))
+        setErrors({})
+        console.log("OTP verified")
+      } else {
+        setErrors({ otp: data.message || "Invalid OTP" })
+      }
+    } catch (error) {
+      console.error("Error verifying OTP:", error)
+      setErrors({ otp: "Failed to verify OTP. Please try again." })
+    } finally {
       setIsVerifying(false)
-      console.log("OTP verified")
-    }, 1000)
+    }
   }
 
   // Submit registration
@@ -90,7 +121,7 @@ export default function SimpleSellerRegistration() {
     if (!form.businessEmail) newErrors.businessEmail = "Business email is required"
     if (!form.phoneNumber) newErrors.phoneNumber = "Phone number is required"
     if (!form.otpVerified) newErrors.otp = "Please verify your phone number"
-    
+
     setErrors(newErrors)
     if (Object.keys(newErrors).length > 0) return
 
@@ -133,7 +164,7 @@ export default function SimpleSellerRegistration() {
       <Card className="w-full max-w-lg shadow-lg">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-bold text-gray-900">Become a Seller</CardTitle>
-          <CardDescription>Fill out the form below to start selling on EcoGrow.</CardDescription>
+          <CardDescription>Fill out the form below to start selling on EcoSaro.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
@@ -186,7 +217,7 @@ export default function SimpleSellerRegistration() {
                     </InputOTPGroup>
                   </InputOTP>
                 </div>
-                
+
                 <Button onClick={verifyOtp} disabled={isVerifying || form.otp.length < 6} className="w-full">
                   {isVerifying && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {isVerifying ? "Verifying..." : "Verify Phone Number"}

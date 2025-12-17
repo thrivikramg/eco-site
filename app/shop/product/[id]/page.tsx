@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { notFound } from "next/navigation"
+import { notFound, useParams, useRouter } from "next/navigation"
 import type { Product } from "@/lib/products"
 import { Star, StarHalf, Leaf, Truck, Shield, Recycle, Heart, Sparkles, CheckCircle } from "lucide-react"
 import { useCart } from "@/components/cart-provider"
@@ -116,7 +116,9 @@ const TrustBadges = () => (
 
 // --- End Mock Data ---
 
-export default function ProductDetailPage({ params }: { params: { id: string } }) {
+export default function ProductDetailPage() {
+  const params = useParams()
+  const router = useRouter()
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { addToCart } = useCart();
@@ -124,15 +126,16 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
 
   useEffect(() => {
     const getProduct = async () => {
+      if (!params?.id) return
       setIsLoading(true);
-      const fetchedProduct = await fetchProduct(params.id);
+      const fetchedProduct = await fetchProduct(params.id as string);
       if (fetchedProduct) {
         setProduct(fetchedProduct);
       }
       setIsLoading(false);
     };
     getProduct();
-  }, [params.id]);
+  }, [params?.id]);
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -193,7 +196,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                 </span>
               </div>
             </div>
-            
+
             {/* Additional Images */}
             <div className="grid grid-cols-4 gap-3">
               {[1, 2, 3, 4].map((item) => (
@@ -213,7 +216,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                   <Heart className="h-6 w-6" />
                 </button>
               </div>
-              
+
               <div className="flex items-center mb-4">
                 <StarRating rating={averageRating} />
                 <span className="ml-3 text-gray-600 font-medium">
@@ -251,9 +254,9 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                   <p className="text-green-600 text-sm font-medium">Ready to ship</p>
                 </div>
               </div>
-              
+
               <div className="space-y-3">
-                <button 
+                <button
                   onClick={handleAddToCart}
                   disabled={product.stock === 0}
                   className="w-full bg-green-600 text-white py-4 px-6 rounded-xl font-semibold hover:bg-green-700 transition-all duration-300 transform hover:-translate-y-0.5 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
@@ -261,11 +264,14 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                   <Leaf className="h-5 w-5" />
                   Add to Cart
                 </button>
-                <button className="w-full border-2 border-green-600 text-green-700 py-4 px-6 rounded-xl font-semibold hover:bg-green-50 transition-colors">
+                <button
+                  onClick={() => router.push("/coming-soon")}
+                  className="w-full border-2 border-green-600 text-green-700 py-4 px-6 rounded-xl font-semibold hover:bg-green-50 transition-colors"
+                >
                   Buy Now
                 </button>
               </div>
-              
+
               <p className="text-center text-gray-500 text-sm mt-4">
                 ✓ Free carbon-neutral shipping on orders over $50
               </p>
@@ -329,7 +335,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             <Leaf className="h-12 w-12 mx-auto mb-4" />
             <h2 className="text-2xl font-bold mb-4">Your Purchase Makes a Difference</h2>
             <p className="text-green-100 text-lg mb-6">
-              With this purchase, you're helping to remove 5kg of plastic from our oceans and 
+              With this purchase, you're helping to remove 5kg of plastic from our oceans and
               supporting reforestation projects that plant 3 new trees.
             </p>
             <div className="grid grid-cols-3 gap-6 text-center">

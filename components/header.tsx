@@ -34,7 +34,7 @@ const mobileMenuItems = [
   { name: "Eco Library", href: "/eco-library" },
   { name: "Community", href: "/community" },
   { name: "Learn with AI", href: "/chat" },
-  { name: "Sell on EcoGrow", href: "/sell" },
+  { name: "Sell on EcoSaro", href: "/sell" },
 ]
 
 export default function Header() {
@@ -65,9 +65,8 @@ export default function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full bg-white border-b transition-all duration-300 ${
-        isScrolled ? "shadow-sm" : ""
-      }`}
+      className={`sticky top-0 z-50 w-full bg-white border-b transition-all duration-300 ${isScrolled ? "shadow-sm" : ""
+        }`}
     >
       <div className="container flex h-16 items-center justify-between px-4">
         {/* Mobile: Hamburger Menu */}
@@ -92,9 +91,8 @@ export default function Header() {
             aria-label="Toggle menu"
           >
             <Menu
-              className={`h-6 w-6 text-gray-700 transition-transform duration-200 ${
-                isMenuOpen ? "rotate-90" : ""
-              }`}
+              className={`h-6 w-6 text-gray-700 transition-transform duration-200 ${isMenuOpen ? "rotate-90" : ""
+                }`}
             />
           </button>
 
@@ -105,11 +103,10 @@ export default function Header() {
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={`flex items-center px-4 py-3 text-sm font-medium hover:bg-gray-50 ${
-                      pathname === item.href
-                        ? "text-primary bg-gray-50"
-                        : "text-gray-700"
-                    }`}
+                    className={`flex items-center px-4 py-3 text-sm font-medium hover:bg-gray-50 ${pathname === item.href
+                      ? "text-primary bg-gray-50"
+                      : "text-gray-700"
+                      }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {item.icon && <span className="mr-3">{item.icon}</span>}
@@ -181,7 +178,7 @@ export default function Header() {
 
           <Link href="/sell">
             <Button className="bg-green-600 hover:bg-green-700 text-white text-sm px-4 h-9">
-              Sell on EcoGrow
+              Sell on EcoSaro
             </Button>
           </Link>
 
@@ -289,11 +286,10 @@ export default function Header() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`px-4 py-3 text-base font-medium rounded-md ${
-                    pathname === item.href
-                      ? "bg-gray-100 text-primary"
-                      : "text-gray-700 hover:bg-gray-50"
-                  }`}
+                  className={`px-4 py-3 text-base font-medium rounded-md ${pathname === item.href
+                    ? "bg-gray-100 text-primary"
+                    : "text-gray-700 hover:bg-gray-50"
+                    }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}

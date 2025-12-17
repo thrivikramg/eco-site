@@ -29,11 +29,11 @@ export default function CheckoutPage() {
 
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        name: 'EcoGrow',
+        name: 'EcoSaro',
         currency: orderData.currency,
         amount: orderData.amount,
         order_id: orderData.id,
-        description: 'EcoGrow Payment',
+        description: 'EcoSaro Payment',
         handler: async function (response: any) {
           // ✅ Call /api/orders after successful payment
           const orderResponse = await fetch('/api/orders', {

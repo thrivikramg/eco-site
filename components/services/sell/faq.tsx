@@ -11,52 +11,51 @@ import {
 export default function SellerFAQ() {
   const faqs = [
     {
-      question: "How much does it cost to sell on EcoGrow?",
-      answer: "We have a simple fee structure: a 5% transaction fee on each sale plus a small listing fee. New sellers receive a 3-month reduced fee period at just 3% to help you get started. There are no monthly subscription fees or hidden charges."
+      question: "How much does it cost to sell on EcoSaro?",
+      answer: "We offer a simple, transparent fee structure. There is no monthly subscription fee. We charge a flat 5% commission on each sale, plus a small payment processing fee. Listing products is completely free.",
     },
     {
-      question: "What kind of products can I sell on EcoGrow?",
-      answer: "EcoGrow specializes in eco-friendly, sustainable, and environmentally conscious products. This includes organic products, recycled items, plastic alternatives, energy-efficient products, sustainable fashion, and more. All products must meet our sustainability standards."
+      question: "What kind of products can I sell on EcoSaro?",
+      answer: "EcoSaro specializes in eco-friendly, sustainable, and environmentally conscious products. This includes organic products, recycled items, plastic alternatives, energy-efficient products, sustainable fashion, and more. All products must meet our sustainability standards.",
     },
     {
-      question: "How do I get my products certified as eco-friendly?",
-      answer: "We offer an EcoGrow certification process for sellers. You can submit your products for review by our sustainability team who will verify your eco-friendly claims. Certified products receive a special badge on the marketplace, increasing visibility and trust."
+      question: "How do I get paid?",
+      answer: "Payments are processed securely and deposited directly into your bank account on a weekly basis. You can track all your earnings and payouts through the seller dashboard.",
     },
     {
-      question: "How long does the seller approval process take?",
-      answer: "Most seller applications are reviewed within 3-5 business days. Once approved, you can immediately start listing your products. The verification process may take longer for certain business types or product categories that require additional review."
+      question: "Do I need to be a registered business?",
+      answer: "Yes, you need to have a registered business entity (Sole Proprietorship, LLC, Pvt Ltd, etc.) and a valid GST number to sell on our platform, as per government regulations.",
     },
     {
-      question: "How and when will I get paid for my sales?",
-      answer: "Payments are processed every 14 days for all sales where the delivery has been confirmed and the return period has passed. Funds are directly deposited to your registered bank account. You can track all your sales and payments through the seller dashboard."
+      question: "How does the certification process work?",
+      answer: "We offer an EcoSaro certification process for sellers. You can submit your products for review by our sustainability team who will verify your eco-friendly claims. Certified products receive a special badge on the marketplace, increasing visibility and trust.",
     },
     {
-      question: "Do I need to handle shipping and returns?",
-      answer: "Sellers are responsible for shipping products to customers. You can set your own shipping rates or use our discounted shipping partners. For returns, we have a streamlined process where we handle the customer service aspect, but returned items will be sent back to you unless you opt into our managed returns program."
+      question: "Who handles shipping and delivery?",
+      answer: "You have two options: Self-Ship (you handle packaging and shipping) or EcoShip (we pick up products from your location and deliver them to customers). EcoShip offers competitive rates and eco-friendly packaging options.",
     },
     {
-      question: "Can international sellers join EcoGrow?",
-      answer: "Yes, we welcome international sellers as long as you can ship to our customer base and meet our product sustainability standards. International sellers need to provide additional documentation and ensure compliance with relevant import/export regulations."
+      question: "Can international sellers join EcoSaro?",
+      answer: "Currently, we are only accepting sellers based in India. We plan to expand internationally in the near future.",
     },
     {
-      question: "What marketing support does EcoGrow provide for sellers?",
-      answer: "We offer various marketing opportunities including featured product placements, participation in seasonal campaigns, inclusion in our email newsletters, and social media promotions. Top-performing sellers also get priority in our marketing efforts."
-    }
+      question: "What marketing support does EcoSaro provide for sellers?",
+      answer: "We actively promote our sellers through email newsletters, social media campaigns, and homepage features. High-performing sellers also get access to exclusive promotional events and banner placements.",
+    },
   ]
 
   return (
-    <section className="bg-white py-24">
-      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <h2 className="text-base font-semibold uppercase tracking-wide text-green-600">Questions & Answers</h2>
-          <p className="mt-2 text-3xl font-extrabold leading-8 tracking-tight text-gray-900 sm:text-4xl">
+    <section className="bg-gray-50 py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
             Frequently Asked Questions
-          </p>
-          <p className="mt-4 max-w-2xl text-xl text-gray-500 mx-auto">
-            Everything you need to know about selling on EcoGrow
+          </h2>
+          <p className="mt-4 text-lg text-gray-600">
+            Everything you need to know about selling on EcoSaro
           </p>
         </div>
-        
+
         <div className="mt-12">
           <Accordion type="single" collapsible className="w-full">
             {faqs.map((faq, index) => (
@@ -71,7 +70,7 @@ export default function SellerFAQ() {
             ))}
           </Accordion>
         </div>
-        
+
         <div className="mt-10 text-center">
           <p className="text-gray-600">
             Still have questions?{" "}

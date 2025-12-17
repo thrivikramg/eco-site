@@ -8,6 +8,7 @@ export interface CartItem {
   price: number
   quantity: number
   image?: string
+  category?: string
 }
 
 interface CartContextType {
@@ -30,7 +31,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     setIsClient(true)
     try {
-      const savedCart = localStorage.getItem("ecoGrowCart")
+      const savedCart = localStorage.getItem("ecoSaroCart")
       if (savedCart) {
         setCart(JSON.parse(savedCart))
       }
@@ -43,7 +44,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (isClient) {
       try {
-        localStorage.setItem("ecoGrowCart", JSON.stringify(cart))
+        localStorage.setItem("ecoSaroCart", JSON.stringify(cart))
       } catch (error) {
         console.error("Error saving cart to localStorage:", error)
       }

@@ -6,7 +6,7 @@ import { Quote } from "lucide-react"
 export default function SellerTestimonials() {
   const testimonials = [
     {
-      content: "Joining EcoGrow completely transformed my small sustainable business. Their eco-conscious audience helped me grow sales by 300% in just 6 months. The seller support team is always responsive and helpful.",
+      content: "Joining EcoSaro completely transformed my small sustainable business. Their eco-conscious audience helped me grow sales by 300% in just 6 months. The seller support team is always responsive and helpful.",
       author: {
         name: "Sarah Johnson",
         role: "Founder, GreenLeaf Essentials",
@@ -14,7 +14,7 @@ export default function SellerTestimonials() {
       }
     },
     {
-      content: "As a craftsman making products from reclaimed materials, I struggled to find the right audience. EcoGrow connected me with customers who truly value sustainability and are willing to pay for quality eco-friendly products.",
+      content: "As a craftsman making products from reclaimed materials, I struggled to find the right audience. EcoSaro connected me with customers who truly value sustainability and are willing to pay for quality eco-friendly products.",
       author: {
         name: "Michael Torres",
         role: "Owner, Reclaimed Creations",
@@ -22,7 +22,7 @@ export default function SellerTestimonials() {
       }
     },
     {
-      content: "The EcoGrow certification process gave my organic skincare line instant credibility. The transparent fee structure and timely payments make it easy to manage cash flow as we scale our business.",
+      content: "The EcoSaro certification process gave my organic skincare line instant credibility. The transparent fee structure and timely payments make it easy to manage cash flow as we scale our business.",
       author: {
         name: "Emma Chen",
         role: "CEO, Pure Earth Beauty",
@@ -40,14 +40,14 @@ export default function SellerTestimonials() {
             Success Stories from Our Sellers
           </p>
           <p className="mt-4 max-w-2xl text-xl text-gray-500 mx-auto">
-            Hear from eco-entrepreneurs who have grown with EcoGrow
+            Hear from eco-entrepreneurs who have grown with EcoSaro
           </p>
         </div>
 
         <div className="mt-16 grid gap-8 md:grid-cols-3">
           {testimonials.map((testimonial, index) => (
-            <div 
-              key={index} 
+            <div
+              key={index}
               className="relative rounded-lg bg-white p-8 shadow-md transition-transform hover:-translate-y-1"
             >
               <Quote className="absolute -top-6 -left-6 h-12 w-12 text-green-100" />

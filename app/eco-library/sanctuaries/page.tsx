@@ -10,7 +10,7 @@ import SanctuariesMap from "../../../components/eco-library/sanctuaries-map"
 import SanctuariesList from "../../../components/eco-library/sanctuaries-list"
 
 export const metadata: Metadata = {
-  title: "Wildlife Sanctuaries | EcoGrow",
+  title: "Wildlife Sanctuaries | EcoSaro",
   description: "Explore wildlife sanctuaries and conservation areas around the world.",
 }
 
@@ -109,7 +109,7 @@ const sanctuariesArticles = [
 const generateMoreArticles = () => {
   const baseArticles = [...sanctuariesArticles];
   const result = [...baseArticles];
-  
+
   const titles = [
     "Everglades National Park: America's River of Grass",
     "Komodo National Park: Protecting the World's Largest Lizards",
@@ -128,7 +128,7 @@ const generateMoreArticles = () => {
     "Daintree Rainforest: Ancient Ecosystem Protection",
     "Yosemite National Park: Conservation Pioneer"
   ];
-  
+
   // Generate additional articles to reach 24 total
   for (let i = 0; result.length < 24; i++) {
     const title = titles[i % titles.length];
@@ -144,7 +144,7 @@ const generateMoreArticles = () => {
       externalLink: baseArticles[i % baseArticles.length].externalLink
     });
   }
-  
+
   return result;
 };
 
@@ -156,14 +156,14 @@ export default function SanctuariesPage() {
       {/* Existing Sanctuaries Components */}
       <SanctuariesMap />
       <SanctuariesList />
-      
+
       {/* Articles Section */}
       <section className="container mx-auto px-4 py-16">
         <div className="mb-10">
           <h2 className="text-3xl font-bold mb-4">Sanctuaries Articles</h2>
           <p className="text-lg text-gray-700 max-w-3xl">Discover wildlife sanctuaries and conservation areas around the world through our curated collection of articles.</p>
         </div>
-        
+
         {/* Featured Article */}
         <div className="mb-16">
           <Card className="overflow-hidden h-full">
@@ -204,7 +204,7 @@ export default function SanctuariesPage() {
             </div>
           </Card>
         </div>
-        
+
         {/* All Articles Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {allArticles.filter(article => article.id !== "s2").map((article) => (
@@ -245,7 +245,7 @@ export default function SanctuariesPage() {
             </Card>
           ))}
         </div>
-        
+
         {/* Pagination */}
         <div className="flex justify-center mt-12">
           <nav className="inline-flex space-x-1 rounded-md shadow-sm" aria-label="Pagination">

@@ -1,13 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Button } from "../ui/button"
+import { Card, CardContent } from "../ui/card"
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
+import { Badge } from "../ui/badge"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
 import { Heart, MessageSquare, Share2, Calendar, MapPin, Clock } from "lucide-react"
+import Image from "next/image"
 
 export default function Feed() {
   const [activeTab, setActiveTab] = useState("latest")
@@ -212,7 +212,7 @@ const posts = [
     content:
       "Join us for a hands-on workshop where you'll learn to make effective, non-toxic cleaning products using simple ingredients. Perfect for those looking to reduce plastic waste and harmful chemicals in their home.",
     author: {
-      name: "EcoGrow Team",
+      name: "EcoSaro Team",
       avatar: "/placeholder.svg?height=40&width=40&text=EG",
       isVerified: true,
       isFollowing: false,
@@ -221,7 +221,7 @@ const posts = [
     event: {
       date: "June 15, 2025",
       time: "10:00 AM - 12:00 PM",
-      location: "EcoGrow Community Center, Chennai",
+      location: "EcoSaro Community Center, Chennai",
     },
     likes: 35,
     comments: 8,

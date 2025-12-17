@@ -45,6 +45,7 @@ export default function ProductGrid({ products, isLoading, initialLoad = false }
         price: product.price,
         quantity: 1,
         image: product.images?.[0] || "/placeholder.svg",
+        category: product.category,
       })
 
       toast({
@@ -125,13 +126,13 @@ function ProductCard({ product, onAddToCart }: { product: Product; onAddToCart: 
       </CardContent>
 
       <CardFooter className="border-t p-2 sm:p-3 mt-auto">
-        <Button 
-          className="w-full h-9 sm:h-10 text-xs sm:text-sm" 
+        <Button
+          className="w-full h-9 sm:h-10 text-xs sm:text-sm"
           onClick={(e) => {
             e.preventDefault();
             onAddToCart(product);
           }}
-          size="sm" 
+          size="sm"
         >
           <ShoppingCart className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5" />
           Add to Cart

@@ -11,12 +11,12 @@ import { Input } from "../../components/ui/input"
 import { Label } from "../../components/ui/label"
 import { RadioGroup, RadioGroupItem } from "../../components/ui/radio-group"
 import { Separator } from "../../components/ui/separator"
-import { 
-  CalendarDays, 
-  ChevronLeft, 
-  CreditCard, 
-  Landmark, 
-  Truck, 
+import {
+  CalendarDays,
+  ChevronLeft,
+  CreditCard,
+  Landmark,
+  Truck,
   Wallet,
   Clock
 } from "lucide-react"
@@ -24,11 +24,11 @@ import { useAuth } from "../../components/auth-provider"
 import AuthModal from "../../components/auth-modal"
 import { useToast } from "../../hooks/use-toast"
 import { Textarea } from "../../components/ui/textarea"
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
   SelectValue
 } from "../../components/ui/select"
 
@@ -52,7 +52,7 @@ export default function ServiceCheckoutPageClient() {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({})
   const [isClient, setIsClient] = useState(false)
   const [debugInfo, setDebugInfo] = useState<string[]>([])
-  
+
   // Get service data from localStorage or query params
   const [service, setService] = useState<Service | null>(null)
 
@@ -126,7 +126,7 @@ export default function ServiceCheckoutPageClient() {
 
   const handleSelectChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }))
-    
+
     if (formErrors[name]) {
       setFormErrors((prev) => {
         const newErrors = { ...prev }
@@ -227,10 +227,10 @@ export default function ServiceCheckoutPageClient() {
       if (typeof window !== "undefined") {
         try {
           addDebug("Saving booking to localStorage")
-          const existingBookings = JSON.parse(localStorage.getItem("ecoGrowServiceBookings") || "[]")
-          localStorage.setItem("ecoGrowServiceBookings", JSON.stringify([booking, ...existingBookings]))
+          const existingBookings = JSON.parse(localStorage.getItem("ecoSaroServiceBookings") || "[]")
+          localStorage.setItem("ecoSaroServiceBookings", JSON.stringify([booking, ...existingBookings]))
           addDebug("Booking saved to localStorage successfully")
-          
+
           // Clear the selected service
           localStorage.removeItem("selectedService")
         } catch (storageError) {
@@ -302,9 +302,9 @@ export default function ServiceCheckoutPageClient() {
 
   // Available time slots
   const timeSlots = [
-    "9:00 AM - 11:00 AM", 
-    "11:00 AM - 1:00 PM", 
-    "2:00 PM - 4:00 PM", 
+    "9:00 AM - 11:00 AM",
+    "11:00 AM - 1:00 PM",
+    "2:00 PM - 4:00 PM",
     "4:00 PM - 6:00 PM"
   ]
 
@@ -478,7 +478,7 @@ export default function ServiceCheckoutPageClient() {
                   Preferred Time Slot <span className="text-red-500">*</span>
                 </Label>
                 <div className="relative">
-                  <Select 
+                  <Select
                     value={formData.serviceTime}
                     onValueChange={(value) => handleSelectChange("serviceTime", value)}
                   >

@@ -28,7 +28,7 @@ export default function CallToAction() {
           </div>
 
           <p className="text-white/80 mt-8 text-sm">
-            Have questions? Call us at +91 98765 43210 or email at services@ecogrow.com
+            Have questions? Call us at +91 98765 43210 or email at services@ecosaro.com
           </p>
         </div>
       </div>

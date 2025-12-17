@@ -22,7 +22,7 @@ export default function StoreDetails({ formData, updateFormData, errors = {} }: 
   const [localErrors, setLocalErrors] = useState<Record<string, string | null>>({})
   const [storeLogo, setStoreLogo] = useState<File | null>(null)
 
-  // Product categories available on EcoGrow
+  // Product categories available on EcoSaro
   const productCategories: ProductCategory[] = [
     { id: "organic-food", label: "Organic Food & Beverages" },
     { id: "eco-fashion", label: "Eco-Friendly Fashion" },
@@ -45,7 +45,7 @@ export default function StoreDetails({ formData, updateFormData, errors = {} }: 
     const updatedCategories = formData.productCategories.includes(id)
       ? formData.productCategories.filter((category: string) => category !== id)
       : [...formData.productCategories, id]
-    
+
     updateFormData({ productCategories: updatedCategories })
   }
 
@@ -186,11 +186,11 @@ export default function StoreDetails({ formData, updateFormData, errors = {} }: 
           </div>
           <div className="ml-3">
             <h3 className="text-sm font-medium text-green-800">
-              EcoGrow Store Guidelines
+              EcoSaro Store Guidelines
             </h3>
             <div className="mt-2 text-sm text-green-700">
               <p>
-                Your store should focus on eco-friendly, sustainable products that align with EcoGrow's mission. 
+                Your store should focus on eco-friendly, sustainable products that align with EcoSaro's mission.
                 All products will be reviewed to ensure they meet our sustainability standards before being listed.
               </p>
             </div>

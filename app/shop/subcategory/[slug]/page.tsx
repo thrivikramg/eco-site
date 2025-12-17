@@ -1,11 +1,24 @@
 import type { Metadata } from "next"
 import ProductsLayout from "@/components/shop/products-layout"
-import { productCategories } from "@/lib/products"
+import { productCategories, type Product } from "@/lib/products"
 
 interface SubcategoryPageProps {
   params: {
     slug: string
   }
+}
+
+async function getProducts(): Promise<Product[]> {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL
+    ? process.env.NEXT_PUBLIC_APP_URL
+    : (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+  const apiUrl = `${baseUrl}/api/shop`;
+  const res = await fetch(apiUrl, { cache: 'no-store' });
+  if (!res.ok) {
+    console.error('Failed to fetch products');
+    return [];
+  }
+  return res.json();
 }
 
 export async function generateMetadata({ params }: SubcategoryPageProps): Promise<Metadata> {
@@ -28,11 +41,12 @@ export async function generateMetadata({ params }: SubcategoryPageProps): Promis
   }
 
   return {
-    title: `${subcategoryName} | EcoGrow Shop`,
+    title: `${subcategoryName} | EcoSaro Shop`,
     description: `Browse our collection of sustainable ${subcategoryName.toLowerCase()} for a greener lifestyle.`,
   }
 }
 
-export default function SubcategoryPage({ params }: SubcategoryPageProps) {
-  return <ProductsLayout />
+export default async function SubcategoryPage({ params }: SubcategoryPageProps) {
+  const products = await getProducts();
+  return <ProductsLayout initialProducts={products} />
 }

@@ -14,9 +14,9 @@ const inter = Inter({ subsets: ["latin"] })
 
 
 export const metadata: Metadata = {
-  title: "EcoGrow - Sustainable Products & Services",
+  title: "EcoSaro - Sustainable Products & Services",
   description: "Connect with nature, knowledge, and like-minded individuals.",
-    generator: 'v0.dev'
+  generator: 'v0.dev'
 }
 
 export default function RootLayout({
@@ -25,27 +25,27 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-<html lang="en" suppressHydrationWarning>
-  <head>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-  </head>
-  <body className={inter.className}>
-    
-    <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-      <NextAuthProvider>
-        <AuthProvider>
-          <CartProvider>
-            <div className="flex min-h-screen flex-col">
-              <Header />
-              <main className="flex-1">{children}</main>
-              <Footer />
-            </div>
-          </CartProvider>
-        </AuthProvider>
-      </NextAuthProvider>
-    </ThemeProvider>
-  </body>
-</html>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+      </head>
+      <body className={inter.className}>
+
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+          <NextAuthProvider>
+            <AuthProvider>
+              <CartProvider>
+                <div className="flex min-h-screen flex-col">
+                  <Header />
+                  <main className="flex-1">{children}</main>
+                  <Footer />
+                </div>
+              </CartProvider>
+            </AuthProvider>
+          </NextAuthProvider>
+        </ThemeProvider>
+      </body>
+    </html>
 
   )
 }

@@ -92,118 +92,7 @@ export default function CheckoutPageClient() {
   }
 
   const handlePlaceOrder = () => {
-    addDebug("Place order button clicked")
-
-    // Check if user is logged in
-    if (!user) {
-      addDebug("User not logged in, showing auth modal")
-      setIsAuthModalOpen(true)
-      return
-    }
-
-    // Validate form
-    if (!validateForm()) {
-      addDebug("Form validation failed")
-      Object.entries(formErrors).forEach(([field, error]) => {
-        addDebug(`Validation error: ${field} - ${error}`)
-      })
-
-      toast({
-        title: "Please check your information",
-        description: "Some required fields are missing or invalid.",
-        variant: "destructive",
-      })
-      return
-    }
-
-    try {
-      addDebug("Processing order...")
-      setIsProcessing(true)
-
-      // Check if cart is available
-      if (!cart || cart.length === 0) {
-        addDebug("Cart is empty, cannot place order")
-        toast({
-          title: "Your cart is empty",
-          description: "Please add items to your cart before placing an order.",
-          variant: "destructive",
-        })
-        setIsProcessing(false)
-        return
-      }
-
-      // Create order object
-      const orderId = `ECO-${Math.floor(100000 + Math.random() * 900000)}`
-      addDebug(`Generated order ID: ${orderId}`)
-
-      const order = {
-        id: orderId,
-        date: new Date().toISOString(),
-        items: cart,
-        totalAmount: totalPrice(),
-        shippingAddress: {
-          fullName: formData.fullName,
-          phoneNumber: formData.phoneNumber,
-          addressLine1: formData.addressLine1,
-          addressLine2: formData.addressLine2,
-          city: formData.city,
-          state: formData.state,
-          pincode: formData.pincode,
-          addressType: formData.addressType,
-        },
-        paymentMethod: formData.paymentMethod,
-        status: "confirmed",
-      }
-
-      addDebug("Order object created")
-
-      // Save order to localStorage (in a real app, this would be an API call)
-      if (typeof window !== "undefined") {
-        try {
-          addDebug("Saving order to localStorage")
-          const existingOrders = JSON.parse(localStorage.getItem("ecoGrowOrders") || "[]")
-          localStorage.setItem("ecoGrowOrders", JSON.stringify([order, ...existingOrders]))
-          addDebug("Order saved to localStorage successfully")
-        } catch (storageError) {
-          console.error("Error saving to localStorage:", storageError)
-          addDebug(`Error saving to localStorage: ${storageError}`)
-          toast({
-            title: "Error saving order",
-            description: "There was a problem saving your order. Please try again.",
-            variant: "destructive",
-          })
-          setIsProcessing(false)
-          return
-        }
-      }
-
-      // Clear cart
-      addDebug("Clearing cart")
-      clearCart()
-      addDebug("Cart cleared successfully")
-
-      // Show success toast
-      toast({
-        title: "Order placed successfully!",
-        description: "Thank you for your purchase.",
-      })
-
-      // Redirect to order confirmation page
-      addDebug(`Redirecting to order confirmation page with orderId: ${orderId}`)
-      setTimeout(() => {
-        router.push(`/order-confirmation?orderId=${orderId}`)
-      }, 1000)
-    } catch (error) {
-      console.error("Error placing order:", error)
-      addDebug(`Error placing order: ${error}`)
-      toast({
-        title: "Error placing order",
-        description: "Please try again later.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsProcessing(false)
-    }
+    router.push("/coming-soon")
   }
 
   const getPaymentMethodLabel = (method: string) => {
@@ -390,117 +279,144 @@ export default function CheckoutPageClient() {
             <RadioGroup
               value={formData.paymentMethod}
               onValueChange={(value) => setFormData((prev) => ({ ...prev, paymentMethod: value }))}
-              className="space-y-3"
+              className="space-y-4"
             >
-              {["cod", "card", "upi", "netbanking"].map((method) => (
-                <div
-                  key={method}
-                  className="flex items-center space-x-3 border rounded-md p-3 cursor-pointer hover:bg-muted/50"
-                >
-                  <RadioGroupItem value={method} id={`payment-${method}`} />
-                  <Label htmlFor={`payment-${method}`} className="flex items-center cursor-pointer w-full">
-                    <div className="h-8 w-8 rounded-full bg-emerald-100 flex items-center justify-center mr-3">
-                      {getPaymentMethodIcon(method)}
-                    </div>
-                    <span>{getPaymentMethodLabel(method)}</span>
-                  </Label>
-                </div>
-              ))}
+              <div className="flex items-center space-x-2 border p-4 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                <RadioGroupItem value="cod" id="cod" />
+                <Label htmlFor="cod" className="flex items-center cursor-pointer w-full">
+                  <Wallet className="h-5 w-5 mr-3 text-gray-500" />
+                  <div>
+                    <span className="font-medium">Cash on Delivery</span>
+                    <p className="text-sm text-gray-500">Pay when you receive your order</p>
+                  </div>
+                </Label>
+              </div>
+
+              <div className="flex items-center space-x-2 border p-4 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                <RadioGroupItem value="card" id="card" />
+                <Label htmlFor="card" className="flex items-center cursor-pointer w-full">
+                  <CreditCard className="h-5 w-5 mr-3 text-gray-500" />
+                  <div>
+                    <span className="font-medium">Credit/Debit Card</span>
+                    <p className="text-sm text-gray-500">Secure payment via Stripe/Razorpay</p>
+                  </div>
+                </Label>
+              </div>
+
+              <div className="flex items-center space-x-2 border p-4 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                <RadioGroupItem value="upi" id="upi" />
+                <Label htmlFor="upi" className="flex items-center cursor-pointer w-full">
+                  <Wallet className="h-5 w-5 mr-3 text-gray-500" />
+                  <div>
+                    <span className="font-medium">UPI</span>
+                    <p className="text-sm text-gray-500">Google Pay, PhonePe, Paytm, etc.</p>
+                  </div>
+                </Label>
+              </div>
+
+              <div className="flex items-center space-x-2 border p-4 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                <RadioGroupItem value="netbanking" id="netbanking" />
+                <Label htmlFor="netbanking" className="flex items-center cursor-pointer w-full">
+                  <Landmark className="h-5 w-5 mr-3 text-gray-500" />
+                  <div>
+                    <span className="font-medium">Net Banking</span>
+                    <p className="text-sm text-gray-500">All major banks supported</p>
+                  </div>
+                </Label>
+              </div>
             </RadioGroup>
           </div>
         </div>
 
-        {/* Order Summary */}
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-lg border shadow-sm p-6 sticky top-4">
+          <div className="bg-white rounded-lg border shadow-sm p-6 sticky top-24">
             <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
 
-            <div className="space-y-4 mb-4">
-              {cart && cart.length > 0 ? (
-                cart.map((item) => (
-                  <div key={item.id} className="flex gap-3">
-                    <div className="h-16 w-16 rounded-md overflow-hidden bg-muted flex-shrink-0">
-                      <Image
-                        src={item.image || "/placeholder.svg"}
-                        alt={item.name}
-                        width={64}
-                        height={64}
-                        className="h-full w-full object-cover"
-                      />
+            <div className="space-y-4 mb-6 max-h-60 overflow-y-auto pr-2">
+              {cart.map((item) => (
+                <div key={item.id} className="flex gap-3">
+                  <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+                    <Image
+                      src={item.image || "/placeholder.svg"}
+                      alt={item.name}
+                      width={64}
+                      height={64}
+                      className="h-full w-full object-cover object-center"
+                    />
+                  </div>
+                  <div className="flex flex-1 flex-col">
+                    <div>
+                      <div className="flex justify-between text-base font-medium text-gray-900">
+                        <h3 className="line-clamp-1">{item.name}</h3>
+                        <p className="ml-4">₹{item.price * item.quantity}</p>
+                      </div>
+                      <p className="mt-1 text-sm text-gray-500 line-clamp-1">{item.category}</p>
                     </div>
-                    <div className="flex-1">
-                      <p className="font-medium line-clamp-1">{item.name}</p>
-                      <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
-                      <p className="font-medium text-emerald-600">₹{item.price * item.quantity}</p>
+                    <div className="flex flex-1 items-end justify-between text-sm">
+                      <p className="text-gray-500">Qty {item.quantity}</p>
                     </div>
                   </div>
-                ))
-              ) : (
-                <p>Your cart is empty</p>
-              )}
+                </div>
+              ))}
             </div>
 
             <Separator className="my-4" />
 
             <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Subtotal</span>
-                <span>₹{totalPrice()}</span>
+              <div className="flex justify-between text-base font-medium text-gray-900">
+                <p>Subtotal</p>
+                <p>₹{totalPrice()}</p>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Shipping</span>
-                <span>₹0</span>
+              <div className="flex justify-between text-sm text-gray-500">
+                <p>Shipping</p>
+                <p>Free</p>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Tax</span>
-                <span>₹{Math.round(totalPrice() * 0.18)}</span>
+              <div className="flex justify-between text-sm text-gray-500">
+                <p>Taxes</p>
+                <p>Calculated at checkout</p>
               </div>
             </div>
 
             <Separator className="my-4" />
 
-            <div className="flex justify-between font-semibold text-lg mb-6">
-              <span>Total</span>
-              <span>₹{totalPrice() + Math.round(totalPrice() * 0.18)}</span>
+            <div className="flex justify-between text-lg font-bold text-gray-900 mb-6">
+              <p>Total</p>
+              <p>₹{totalPrice()}</p>
             </div>
 
-            <Button
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
-              size="lg"
-              onClick={handlePlaceOrder}
-              disabled={isProcessing || !cart || cart.length === 0}
-            >
-              {isProcessing ? "Processing..." : "PLACE ORDER"}
+            <Button className="w-full bg-emerald-600 hover:bg-emerald-700" size="lg" onClick={handlePlaceOrder} disabled={isProcessing}>
+              {isProcessing ? (
+                <>
+                  <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                  Processing...
+                </>
+              ) : (
+                <>
+                  Place Order <Truck className="ml-2 h-4 w-4" />
+                </>
+              )}
             </Button>
 
-            <div className="flex items-center justify-center mt-4 text-sm text-muted-foreground">
-              <Truck className="h-4 w-4 mr-2" />
-              Free shipping on all orders
+            <div className="mt-6 text-center text-xs text-gray-500">
+              <p>
+                By placing this order, you agree to EcoSaro's <Link href="/terms" className="underline">Terms of Service</Link> and <Link href="/privacy" className="underline">Privacy Policy</Link>.
+              </p>
             </div>
+
+            {/* Debug info section - only visible in development */}
+            {process.env.NODE_ENV === 'development' && debugInfo.length > 0 && (
+              <div className="mt-8 p-4 bg-gray-100 rounded text-xs font-mono overflow-auto max-h-40">
+                <p className="font-bold mb-2">Debug Info:</p>
+                {debugInfo.map((info, i) => (
+                  <div key={i} className="mb-1 border-b border-gray-200 pb-1">{info}</div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Debug info - only visible in development */}
-      {process.env.NODE_ENV === "development" && debugInfo.length > 0 && (
-        <div className="mt-8 p-4 border border-gray-300 rounded-md bg-gray-50">
-          <h3 className="font-bold mb-2">Debug Info:</h3>
-          <ul className="text-xs space-y-1">
-            {debugInfo.map((info, index) => (
-              <li key={index}>{info}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      <AuthModal
-        open={isAuthModalOpen}
-        onOpenChange={(open) => setIsAuthModalOpen(open)}
-        onSuccess={() => {
-          // After successful login, try placing order again
-          setTimeout(() => handlePlaceOrder(), 500)
-        }}
-      />
+      <AuthModal open={isAuthModalOpen} onOpenChange={setIsAuthModalOpen} onSuccess={() => setIsAuthModalOpen(false)} />
     </div>
   )
 }

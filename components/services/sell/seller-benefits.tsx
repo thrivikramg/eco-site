@@ -11,7 +11,7 @@ export default function SellerBenefits() {
     },
     {
       name: "Trusted Brand Association",
-      description: "Leverage EcoGrow's trusted reputation in the sustainable marketplace.",
+      description: "Leverage EcoSaro's trusted reputation in the sustainable marketplace.",
       icon: ShieldCheck,
     },
     {
@@ -31,7 +31,7 @@ export default function SellerBenefits() {
     },
     {
       name: "Simplified Returns & Support",
-      description: "We handle customer service and returns for your products sold on EcoGrow.",
+      description: "We handle customer service and returns for your products sold on EcoSaro.",
       icon: RefreshCw,
     },
   ]
@@ -42,7 +42,7 @@ export default function SellerBenefits() {
         <div className="lg:text-center">
           <h2 className="text-base font-semibold uppercase tracking-wide text-green-600">Seller Benefits</h2>
           <p className="mt-2 text-3xl font-extrabold leading-8 tracking-tight text-gray-900 sm:text-4xl">
-            Why Sell on EcoGrow?
+            Why Sell on EcoSaro?
           </p>
           <p className="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
             Join thousands of successful sellers who have grown their sustainable businesses on our platform.

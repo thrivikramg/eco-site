@@ -8,7 +8,7 @@ import Newsletter from "@/components/home/newsletter"
 import TipsTutorials from "@/components/eco-library/tips-tutorials"
 
 export const metadata: Metadata = {
-  title: "Eco Library | EcoGrow",
+  title: "Eco Library | EcoSaro",
   description: "Explore our knowledge hub for sustainable living, gardening tips, and environmental education.",
 }
 

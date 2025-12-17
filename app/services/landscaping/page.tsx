@@ -7,7 +7,7 @@ import FAQ from "../../../components/services/landscaping/faq"
 import CallToAction from "../../../components/services/call-to-action"
 
 export const metadata: Metadata = {
-  title: "Sustainable Landscaping Services | EcoGrow",
+  title: "Sustainable Landscaping Services | EcoSaro",
   description: "Transform your outdoor space with eco-friendly landscaping solutions that blend beauty with environmental sustainability.",
 }
 

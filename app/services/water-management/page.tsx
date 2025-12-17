@@ -7,7 +7,7 @@ import FAQ from "../../../components/services/water-management/faq"
 import CallToAction from "../../../components/services/call-to-action"
 
 export const metadata: Metadata = {
-  title: "Water Management Services | EcoGrow",
+  title: "Water Management Services | EcoSaro",
   description: "Efficient and sustainable water management solutions for homes and businesses to conserve water and reduce costs.",
 }
 

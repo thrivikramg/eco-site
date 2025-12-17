@@ -42,7 +42,7 @@ interface ServiceBooking {
 function BookingContent() {
   const searchParams = useSearchParams()
   const bookingId = searchParams.get("bookingId")
-  
+
   const [booking, setBooking] = useState<ServiceBooking | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -50,7 +50,7 @@ function BookingContent() {
     // Try to retrieve booking from localStorage
     if (typeof window !== "undefined" && bookingId) {
       try {
-        const storedBookings = JSON.parse(localStorage.getItem("ecoGrowServiceBookings") || "[]")
+        const storedBookings = JSON.parse(localStorage.getItem("ecoSaroServiceBookings") || "[]")
         const foundBooking = storedBookings.find((b: ServiceBooking) => b.id === bookingId)
         setBooking(foundBooking || null)
       } catch (error) {
@@ -94,10 +94,10 @@ function BookingContent() {
     month: "long",
     day: "numeric",
   })
-  
+
   const formattedServiceDate = new Date(booking.serviceDate).toLocaleDateString("en-IN", {
     year: "numeric",
-    month: "long", 
+    month: "long",
     day: "numeric",
   })
 
@@ -124,7 +124,7 @@ function BookingContent() {
           Back to Services
         </Link>
       </div>
-      
+
       <div className="bg-white rounded-lg border shadow-sm p-8">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-emerald-100 text-emerald-600 mx-auto mb-4">
@@ -135,17 +135,17 @@ function BookingContent() {
           <p className="font-medium mt-2">Booking ID: {booking.id}</p>
           <p className="text-sm text-gray-500">Placed on {formattedBookingDate}</p>
         </div>
-        
+
         <Separator className="my-6" />
-        
+
         <div className="space-y-8">
           {/* Service Details */}
           <div>
             <h2 className="text-lg font-semibold mb-4">Service Details</h2>
             <div className="flex gap-4">
               <div className="h-20 w-20 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                <Image 
-                  src={booking.service.image || "/placeholder.svg"} 
+                <Image
+                  src={booking.service.image || "/placeholder.svg"}
                   alt={booking.service.name}
                   width={80}
                   height={80}
@@ -159,7 +159,7 @@ function BookingContent() {
               </div>
             </div>
           </div>
-          
+
           {/* Schedule Information */}
           <div>
             <h2 className="text-lg font-semibold mb-4">Schedule Information</h2>
@@ -171,7 +171,7 @@ function BookingContent() {
                   <p className="text-gray-600">{formattedServiceDate}</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start">
                 <Clock className="h-5 w-5 mr-3 text-gray-500 flex-shrink-0 mt-0.5" />
                 <div>
@@ -179,7 +179,7 @@ function BookingContent() {
                   <p className="text-gray-600">{booking.serviceTime}</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start">
                 <MapPin className="h-5 w-5 mr-3 text-gray-500 flex-shrink-0 mt-0.5" />
                 <div>
@@ -194,7 +194,7 @@ function BookingContent() {
               </div>
             </div>
           </div>
-          
+
           {/* Payment Information */}
           <div>
             <h2 className="text-lg font-semibold mb-4">Payment Information</h2>
@@ -219,12 +219,12 @@ function BookingContent() {
             </div>
           </div>
         </div>
-        
+
         <div className="mt-8 space-y-4">
           <p className="text-sm text-gray-600 text-center">
             Our service professional will reach out to you 24 hours before the scheduled time to confirm the appointment.
           </p>
-          
+
           <div className="flex flex-col md:flex-row gap-4 justify-center">
             <Link href="/services">
               <Button variant="outline">Browse More Services</Button>

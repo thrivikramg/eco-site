@@ -152,7 +152,7 @@ export default function AuthModal({ open, onOpenChange, defaultTab = "login", on
       if (success) {
         toast({
           title: "Login successful",
-          description: "Welcome back to EcoGrow!",
+          description: "Welcome back to EcoSaro!",
         })
         onOpenChange(false)
         // Call onSuccess callback if provided
@@ -190,7 +190,7 @@ export default function AuthModal({ open, onOpenChange, defaultTab = "login", on
       if (success) {
         toast({
           title: "Registration successful",
-          description: "Welcome to EcoGrow!",
+          description: "Welcome to EcoSaro!",
         })
         onOpenChange(false)
         // Call onSuccess callback if provided

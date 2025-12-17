@@ -53,7 +53,7 @@ export default function OrderDetails() {
 
     try {
       // In a real app, this would be an API call
-      const orders = JSON.parse(localStorage.getItem("ecoGrowOrders") || "[]")
+      const orders = JSON.parse(localStorage.getItem("ecoSaroOrders") || "[]")
       const foundOrder = orders.find((o: Order) => o.id === orderId)
 
       if (foundOrder) {
@@ -154,13 +154,13 @@ export default function OrderDetails() {
               >
                 <Package className="h-4 w-4" />
               </Step>
-              <Step 
+              <Step
                 label="Shipped"
                 status="incomplete"
               >
                 <Truck className="h-4 w-4" />
               </Step>
-              <Step 
+              <Step
                 label="Delivered"
                 status="incomplete"
               >

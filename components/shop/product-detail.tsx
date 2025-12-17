@@ -2,7 +2,8 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import { ShoppingCart, CheckCircle } from "lucide-react"
+import { ShoppingCart, CheckCircle, Zap } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 import type { Product } from "@/lib/products"
 import { useCart } from "@/components/cart-provider"
@@ -14,6 +15,7 @@ interface ProductDetailProps {
 }
 
 export default function ProductDetail({ product }: ProductDetailProps) {
+  const router = useRouter()
   const [selectedImage, setSelectedImage] = useState(product.images?.[0] || "/placeholder.svg")
   const { addToCart } = useCart()
   const { toast } = useToast()
@@ -26,6 +28,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       price: product.price,
       quantity: 1,
       image: product.images?.[0] || "/placeholder.svg",
+      category: product.category,
     })
     toast({
       title: "Added to cart",
@@ -53,9 +56,8 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               <button
                 key={index}
                 onClick={() => setSelectedImage(img)}
-                className={`relative h-20 w-20 overflow-hidden rounded-md border-2 ${
-                  selectedImage === img ? "border-emerald-500" : "border-transparent"
-                }`}
+                className={`relative h-20 w-20 overflow-hidden rounded-md border-2 ${selectedImage === img ? "border-emerald-500" : "border-transparent"
+                  }`}
               >
                 <Image
                   src={img}
@@ -83,13 +85,23 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               size="lg"
               className="w-full bg-emerald-600 hover:bg-emerald-700 sm:w-auto"
               onClick={handleAddToCart}
-              disabled={product.stock === 0}
+              disabled={(product.stock || 0) === 0}
             >
               <ShoppingCart className="mr-2 h-5 w-5" />
-              {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
+              {(product.stock || 0) > 0 ? "Add to Cart" : "Out of Stock"}
             </Button>
-            {product.stock > 0 && (
-              <p className="mt-2 text-sm text-green-600">In Stock ({product.stock} available)</p>
+            <Button
+              size="lg"
+              variant="secondary"
+              className="w-full sm:w-auto ml-0 sm:ml-4 mt-4 sm:mt-0 bg-orange-500 hover:bg-orange-600 text-white"
+              onClick={() => router.push("/coming-soon")}
+              disabled={(product.stock || 0) === 0}
+            >
+              <Zap className="mr-2 h-5 w-5" />
+              Buy Now
+            </Button>
+            {(product.stock || 0) > 0 && (
+              <p className="mt-2 text-sm text-green-600">In Stock ({product.stock || 0} available)</p>
             )}
           </div>
         </div>

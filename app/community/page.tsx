@@ -6,7 +6,7 @@ import ActiveMembers from "@/components/community/active-members"
 import JoinCommunity from "@/components/community/join-community"
 
 export const metadata: Metadata = {
-  title: "Community | EcoGrow",
+  title: "Community | EcoSaro",
   description: "Connect with like-minded individuals passionate about sustainable living and eco-friendly practices.",
 }
 

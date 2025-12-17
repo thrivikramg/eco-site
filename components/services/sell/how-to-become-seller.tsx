@@ -5,25 +5,25 @@ import Link from "next/link"
 import { ClipboardList, ShoppingBag, BarChart, CheckCircle, ArrowRight } from "lucide-react"
 
 export default function HowToBecomeSeller() {
-  
+
   const steps = [
-    { 
-      id: 1, 
-      name: 'Register', 
+    {
+      id: 1,
+      name: 'Register',
       description: 'Create your seller account',
-      icon: ClipboardList 
+      icon: ClipboardList
     },
-    { 
-      id: 2, 
-      name: 'List Products', 
+    {
+      id: 2,
+      name: 'List Products',
       description: 'Add your eco-friendly products',
-      icon: ShoppingBag 
+      icon: ShoppingBag
     },
-    { 
-      id: 3, 
-      name: 'Grow Business', 
+    {
+      id: 3,
+      name: 'Grow Business',
       description: 'Reach more customers and scale',
-      icon: BarChart 
+      icon: BarChart
     },
   ]
 
@@ -36,7 +36,7 @@ export default function HowToBecomeSeller() {
             How to Become a Seller
           </p>
           <p className="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
-            Follow these simple steps to start selling your eco-friendly products on EcoGrow.
+            Follow these simple steps to start selling your eco-friendly products on EcoSaro.
           </p>
         </div>
 
@@ -53,9 +53,8 @@ export default function HowToBecomeSeller() {
                       ) : null}
                       <div className="relative flex space-x-5">
                         <div>
-                          <span className={`flex h-9 w-9 items-center justify-center rounded-full ${
-                            step.id === 1 ? 'bg-green-600' : 'bg-green-200'
-                          }`}>
+                          <span className={`flex h-9 w-9 items-center justify-center rounded-full ${step.id === 1 ? 'bg-green-600' : 'bg-green-200'
+                            }`}>
                             <step.icon className="h-5 w-5 text-white" aria-hidden="true" />
                           </span>
                         </div>
@@ -97,7 +96,7 @@ export default function HowToBecomeSeller() {
             <p className="text-gray-600 mb-8 text-center max-w-md">
               Join our community of eco-conscious sellers and reach customers who value sustainability. Complete our simple registration process to get started.
             </p>
-            
+
             <Link href="/sell/register">
               <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 py-6 text-lg font-semibold flex items-center gap-2 transition-all transform hover:scale-105">
                 Register as a Seller

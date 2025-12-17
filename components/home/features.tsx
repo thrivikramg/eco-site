@@ -28,7 +28,7 @@ export default function Features() {
     <section className="py-16 bg-white">
       <div className="container">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Why Choose EcoGrow?</h2>
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Why Choose EcoSaro?</h2>
           <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
             We're committed to sustainable practices at every step of the journey.
           </p>

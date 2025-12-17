@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import CartPage from "@/components/cart/cart-page"
 
 export const metadata: Metadata = {
-  title: "Shopping Cart | EcoGrow",
+  title: "Shopping Cart | EcoSaro",
   description: "View and manage items in your shopping cart",
 }
 

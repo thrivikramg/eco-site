@@ -4,7 +4,7 @@ import { Button } from "../../../../components/ui/button"
 import { CheckCircle } from "lucide-react"
 
 export const metadata: Metadata = {
-  title: "Registration Successful | EcoGrow Seller",
+  title: "Registration Successful | EcoSaro Seller",
   description: "Your seller registration has been submitted successfully.",
 }
 
@@ -25,17 +25,17 @@ export default function RegistrationSuccessPage() {
                 Your seller application has been submitted
               </p>
             </div>
-            
+
             <div className="px-6 py-8">
               <div className="text-center mb-8">
                 <p className="text-lg text-gray-700">
-                  Thank you for registering as a seller on EcoGrow!
+                  Thank you for registering as a seller on EcoSaro!
                 </p>
                 <p className="mt-2 text-gray-500">
                   Your application is now being reviewed by our team. This process typically takes 1-2 business days.
                 </p>
               </div>
-              
+
               <div className="border-t border-b border-gray-200 py-6 my-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">
                   What happens next?
@@ -83,7 +83,7 @@ export default function RegistrationSuccessPage() {
                   </li>
                 </ul>
               </div>
-              
+
               <div className="text-center space-y-4">
                 <p className="text-sm text-gray-500">
                   We've sent a confirmation email to the address you provided with all these details.
@@ -96,18 +96,18 @@ export default function RegistrationSuccessPage() {
                   </Link>
                   <Link href="/">
                     <Button className="bg-green-600 hover:bg-green-700 text-white">
-                      Explore EcoGrow
+                      Explore EcoSaro
                     </Button>
                   </Link>
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-gray-50 px-6 py-4 text-center text-sm text-gray-500">
               <p>
                 Have questions? Contact our seller support team at{" "}
-                <a href="mailto:sellers@ecogrow.com" className="text-green-600 hover:underline">
-                  sellers@ecogrow.com
+                <a href="mailto:sellers@ecosaro.com" className="text-green-600 hover:underline">
+                  sellers@ecosaro.com
                 </a>
               </p>
             </div>

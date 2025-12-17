@@ -7,11 +7,11 @@ import { Input } from "../../../components/ui/input"
 import { Label } from "../../../components/ui/label"
 import { Textarea } from "../../../components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../components/ui/tabs"
-import { 
-  User, 
-  Save, 
-  Lock, 
-  Unlock, 
+import {
+  User,
+  Save,
+  Lock,
+  Unlock,
   HelpCircle,
   MessageSquare,
   CheckCircle2,
@@ -71,15 +71,15 @@ export default function ProfilePage() {
       createdAt: "2025-06-01T10:30:00Z",
       lastUpdated: "2025-06-01T14:45:00Z",
       messages: [
-        { 
-          sender: "user", 
-          text: "I haven't received payment for order #38290 which was delivered on May 28th. Please check.", 
-          timestamp: "2025-06-01T10:30:00Z" 
+        {
+          sender: "user",
+          text: "I haven't received payment for order #38290 which was delivered on May 28th. Please check.",
+          timestamp: "2025-06-01T10:30:00Z"
         },
-        { 
-          sender: "support", 
-          text: "Thank you for bringing this to our attention. We'll investigate the payment status and get back to you shortly.", 
-          timestamp: "2025-06-01T14:45:00Z" 
+        {
+          sender: "support",
+          text: "Thank you for bringing this to our attention. We'll investigate the payment status and get back to you shortly.",
+          timestamp: "2025-06-01T14:45:00Z"
         }
       ]
     },
@@ -91,25 +91,25 @@ export default function ProfilePage() {
       createdAt: "2025-05-28T09:15:00Z",
       lastUpdated: "2025-05-29T11:20:00Z",
       messages: [
-        { 
-          sender: "user", 
-          text: "I'm trying to upload multiple products using the bulk upload feature but getting an error.", 
-          timestamp: "2025-05-28T09:15:00Z" 
+        {
+          sender: "user",
+          text: "I'm trying to upload multiple products using the bulk upload feature but getting an error.",
+          timestamp: "2025-05-28T09:15:00Z"
         },
-        { 
-          sender: "support", 
-          text: "Could you please share the error message you're seeing? Also, make sure your CSV file follows the template format.", 
-          timestamp: "2025-05-28T15:30:00Z" 
+        {
+          sender: "support",
+          text: "Could you please share the error message you're seeing? Also, make sure your CSV file follows the template format.",
+          timestamp: "2025-05-28T15:30:00Z"
         },
-        { 
-          sender: "user", 
-          text: "The error says 'Invalid column format'. I'll check the template and try again.", 
-          timestamp: "2025-05-29T08:45:00Z" 
+        {
+          sender: "user",
+          text: "The error says 'Invalid column format'. I'll check the template and try again.",
+          timestamp: "2025-05-29T08:45:00Z"
         },
-        { 
-          sender: "support", 
-          text: "Great! Let us know if you continue to have issues after reviewing the template format.", 
-          timestamp: "2025-05-29T11:20:00Z" 
+        {
+          sender: "support",
+          text: "Great! Let us know if you continue to have issues after reviewing the template format.",
+          timestamp: "2025-05-29T11:20:00Z"
         }
       ]
     }
@@ -194,7 +194,7 @@ export default function ProfilePage() {
           <TabsTrigger value="support" className="flex-1">Support</TabsTrigger>
           <TabsTrigger value="faq" className="flex-1">FAQ</TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="profile">
           <div className="grid gap-5 md:grid-cols-3">
             <Card className="md:col-span-1">
@@ -219,7 +219,7 @@ export default function ProfilePage() {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card className="md:col-span-2">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -258,7 +258,7 @@ export default function ProfilePage() {
                       <Input id="website" value={profile.website} />
                     </div>
                   </div>
-                  
+
                   <div>
                     <Label className="mb-2 block">Social Media Links</Label>
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -285,7 +285,7 @@ export default function ProfilePage() {
                 </Button>
               </CardFooter>
             </Card>
-            
+
             <Card className="md:col-span-3">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -313,7 +313,7 @@ export default function ProfilePage() {
                       <Input id="confirm-password" type="password" placeholder="••••••••" />
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-2 pt-2">
                     <div className="flex-1">
                       <h4 className="font-medium">Two-Factor Authentication</h4>
@@ -335,7 +335,7 @@ export default function ProfilePage() {
             </Card>
           </div>
         </TabsContent>
-        
+
         <TabsContent value="verification">
           <Card>
             <CardHeader>
@@ -360,7 +360,7 @@ export default function ProfilePage() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="grid gap-4">
                   <div className="flex items-center justify-between py-3 border-b">
                     <div className="flex items-center gap-2">
@@ -371,7 +371,7 @@ export default function ProfilePage() {
                       {getVerificationBadge(verificationStatus.email)}
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between py-3 border-b">
                     <div className="flex items-center gap-2">
                       <CheckCircle2 className="h-5 w-5 text-green-600" />
@@ -381,7 +381,7 @@ export default function ProfilePage() {
                       {getVerificationBadge(verificationStatus.phone)}
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between py-3 border-b">
                     <div className="flex items-center gap-2">
                       <CheckCircle2 className="h-5 w-5 text-green-600" />
@@ -394,7 +394,7 @@ export default function ProfilePage() {
                       </Button>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between py-3 border-b">
                     <div className="flex items-center gap-2">
                       <CheckCircle2 className="h-5 w-5 text-green-600" />
@@ -407,7 +407,7 @@ export default function ProfilePage() {
                       </Button>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between py-3 border-b">
                     <div className="flex items-center gap-2">
                       <CheckCircle2 className="h-5 w-5 text-green-600" />
@@ -417,7 +417,7 @@ export default function ProfilePage() {
                       {getVerificationBadge(verificationStatus.bankAccount)}
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between py-3">
                     <div className="flex items-center gap-2">
                       <CheckCircle2 className="h-5 w-5 text-green-600" />
@@ -435,7 +435,7 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="support">
           <div className="grid gap-5 md:grid-cols-3">
             <Card className="md:col-span-1">
@@ -450,11 +450,11 @@ export default function ProfilePage() {
                   <MessageSquare className="h-4 w-4 mr-2" />
                   Create New Ticket
                 </Button>
-                
+
                 <div className="space-y-2 pt-2">
                   <h3 className="text-sm font-medium">Contact Us</h3>
                   <p className="text-sm">
-                    Email: support@ecogrow.com
+                    Email: support@ecosaro.com
                   </p>
                   <p className="text-sm">
                     Phone: +1 (800) 123-4567
@@ -463,7 +463,7 @@ export default function ProfilePage() {
                     Hours: Mon-Fri, 9am-6pm IST
                   </p>
                 </div>
-                
+
                 <div className="space-y-2 pt-2">
                   <h3 className="text-sm font-medium">Help Resources</h3>
                   <ul className="space-y-1">
@@ -486,7 +486,7 @@ export default function ProfilePage() {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card className="md:col-span-2">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -520,7 +520,7 @@ export default function ProfilePage() {
                     ))}
                   </TableBody>
                 </Table>
-                
+
                 {supportTickets.length > 0 && (
                   <Accordion type="single" collapsible className="mt-6">
                     <AccordionItem value={supportTickets[0].id}>
@@ -533,16 +533,15 @@ export default function ProfilePage() {
                       <AccordionContent>
                         <div className="space-y-4 px-1 py-2">
                           {supportTickets[0].messages.map((message, index) => (
-                            <div 
-                              key={index} 
+                            <div
+                              key={index}
                               className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                             >
-                              <div 
-                                className={`max-w-[80%] rounded-lg p-3 ${
-                                  message.sender === 'user' 
-                                    ? 'bg-green-50 border border-green-100' 
+                              <div
+                                className={`max-w-[80%] rounded-lg p-3 ${message.sender === 'user'
+                                    ? 'bg-green-50 border border-green-100'
                                     : 'bg-gray-50 border border-gray-100'
-                                }`}
+                                  }`}
                               >
                                 <p className="text-sm">{message.text}</p>
                                 <p className="text-xs text-gray-500 mt-1">
@@ -551,12 +550,12 @@ export default function ProfilePage() {
                               </div>
                             </div>
                           ))}
-                          
+
                           <div className="mt-4 pt-4 border-t">
                             <Label htmlFor="reply">Reply</Label>
-                            <Textarea 
-                              id="reply" 
-                              placeholder="Type your response here..." 
+                            <Textarea
+                              id="reply"
+                              placeholder="Type your response here..."
                               className="mt-2"
                             />
                             <div className="flex justify-end mt-2">
@@ -574,7 +573,7 @@ export default function ProfilePage() {
             </Card>
           </div>
         </TabsContent>
-        
+
         <TabsContent value="faq">
           <Card>
             <CardHeader>
@@ -597,7 +596,7 @@ export default function ProfilePage() {
                   </AccordionItem>
                 ))}
               </Accordion>
-              
+
               <div className="mt-6 pt-4 border-t">
                 <h3 className="font-medium mb-2">Can't find what you're looking for?</h3>
                 <p className="text-gray-600 text-sm mb-4">

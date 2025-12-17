@@ -2,8 +2,8 @@ import type { Metadata } from "next"
 import ServiceCheckoutPageClient from "../../components/service-checkout/service-checkout-page"
 
 export const metadata: Metadata = {
-  title: "Service Booking Checkout | EcoGrow",
-  description: "Book eco-friendly services for your home and garden with EcoGrow.",
+  title: "Service Checkout | EcoSaro",
+  description: "Complete your service booking securely.",
 }
 
 export default function ServiceCheckoutPage() {

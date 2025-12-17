@@ -7,7 +7,7 @@ import FAQ from "../../../components/services/waste-management/faq"
 import CallToAction from "../../../components/services/call-to-action"
 
 export const metadata: Metadata = {
-  title: "Waste Management Services | EcoGrow",
+  title: "Waste Management Services | EcoSaro",
   description: "Sustainable waste management solutions for homes and businesses to reduce, reuse, recycle, and compost waste effectively.",
 }
 

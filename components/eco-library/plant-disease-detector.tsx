@@ -66,16 +66,16 @@ export default function PlantDiseaseDetector() {
 
     try {
       console.log('Starting image analysis...')
-      
+
       // Debug: Log all environment variables (in development only)
       if (process.env.NODE_ENV === 'development') {
         console.log('Environment variables:', Object.keys(process.env).filter(key => key.includes('OPENROUTER') || key.includes('NEXT_PUBLIC')));
       }
-      
+
       // Check if API key is available
       const apiKey = process.env.OPENROUTER_API_KEY;
       console.log('API Key found:', !!apiKey);
-      
+
       if (!apiKey) {
         console.error('API Key not found in environment variables. Make sure to set OPENROUTER_API_KEY in your .env.local file.');
         throw new Error('OpenRouter API key is not configured. Please check your environment variables.');
@@ -87,14 +87,14 @@ export default function PlantDiseaseDetector() {
       }
 
       console.log('Sending request to OpenRouter API...')
-      
+
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
           'HTTP-Referer': window.location.href,
-          'X-Title': 'EcoGrow Plant Disease Detector',
+          'X-Title': 'EcoSaro Plant Disease Detector',
         },
         body: JSON.stringify({
           model: 'google/gemini-pro-vision',
@@ -121,7 +121,7 @@ export default function PlantDiseaseDetector() {
       })
 
       console.log('API Response Status:', response.status)
-      
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
         console.error('API Error:', errorData)
@@ -130,9 +130,9 @@ export default function PlantDiseaseDetector() {
 
       const data = await response.json()
       console.log('API Response Data:', data)
-      
+
       const content = data.choices?.[0]?.message?.content
-      
+
       if (!content) {
         throw new Error('No content in API response')
       }
@@ -142,7 +142,7 @@ export default function PlantDiseaseDetector() {
       try {
         // Try to parse as direct JSON first
         resultData = JSON.parse(content)
-        
+
         // If the response is a string that contains JSON, try to extract it
         if (typeof resultData === 'string') {
           const jsonMatch = resultData.match(/\{[\s\S]*\}/)
@@ -154,7 +154,7 @@ export default function PlantDiseaseDetector() {
         console.error('Error parsing API response:', parseError)
         throw new Error('Could not parse the analysis results. Please try again.')
       }
-      
+
       setResult({
         disease: resultData.disease || 'Unknown Disease',
         confidence: resultData.confidence || 0,
@@ -169,7 +169,7 @@ export default function PlantDiseaseDetector() {
     } catch (error) {
       console.error('Error analyzing image:', error)
       let errorMessage = 'Failed to analyze the image. Please try again.'
-      
+
       if (error instanceof Error) {
         if (error.message.includes('API key')) {
           errorMessage = 'API key is not configured. Please check your environment variables.'
@@ -183,7 +183,7 @@ export default function PlantDiseaseDetector() {
           errorMessage = error.message || errorMessage
         }
       }
-      
+
       toast({
         title: 'Error',
         description: errorMessage,

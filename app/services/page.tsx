@@ -8,7 +8,7 @@ import ServiceFAQ from "@/components/services/faq"
 import CallToAction from "@/components/services/call-to-action"
 
 export const metadata: Metadata = {
-  title: "Eco-Friendly Services | EcoGrow",
+  title: "Eco-Friendly Services | EcoSaro",
   description: "Book professional eco-friendly services for your home and garden.",
 }
 

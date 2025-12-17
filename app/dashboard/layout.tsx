@@ -7,14 +7,14 @@ import { usePathname, useRouter } from "next/navigation"
 import { useAuth } from "../../components/auth-provider"
 import { AlertTriangle } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "../../components/ui/alert"
-import { 
-  LayoutDashboard, 
-  ShoppingBag, 
-  Package, 
-  Boxes, 
-  CreditCard, 
-  Store, 
-  BarChart, 
+import {
+  LayoutDashboard,
+  ShoppingBag,
+  Package,
+  Boxes,
+  CreditCard,
+  Store,
+  BarChart,
   UserCircle,
   Menu,
   X
@@ -32,17 +32,15 @@ export default function DashboardLayout({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const [authorized, setAuthorized] = useState(false)
-  
+
   useEffect(() => {
-    // TEMPORARY FOR DEVELOPMENT: Allow all users to access the dashboard
-    // Once development is complete, uncomment the role check below
     const checkAuthorization = () => {
       if (status === 'loading') {
         // Still checking auth status, do nothing yet.
         return;
       }
 
-      // PRODUCTION MODE: Uncomment this code when ready
+      // Check if user is authenticated
       if (!isAuthenticated) {
         // User is not logged in, redirect to login
         router.push('/')
@@ -59,56 +57,56 @@ export default function DashboardLayout({
 
       setLoading(false)
     }
-    
+
     checkAuthorization()
   }, [isAuthenticated, user, router, status])
-  
+
   const navigation = [
-    { 
-      name: 'Dashboard', 
-      href: '/dashboard', 
+    {
+      name: 'Dashboard',
+      href: '/dashboard',
       icon: LayoutDashboard,
       current: pathname === '/dashboard'
     },
-    { 
-      name: 'Orders', 
-      href: '/dashboard/orders', 
+    {
+      name: 'Orders',
+      href: '/dashboard/orders',
       icon: ShoppingBag,
       current: pathname === '/dashboard/orders'
     },
-    { 
-      name: 'Products', 
-      href: '/dashboard/products', 
+    {
+      name: 'Products',
+      href: '/dashboard/products',
       icon: Package,
       current: pathname === '/dashboard/products'
     },
-    { 
-      name: 'Inventory', 
-      href: '/dashboard/inventory', 
+    {
+      name: 'Inventory',
+      href: '/dashboard/inventory',
       icon: Boxes,
       current: pathname === '/dashboard/inventory'
     },
-    { 
-      name: 'Payments', 
-      href: '/dashboard/payments', 
+    {
+      name: 'Payments',
+      href: '/dashboard/payments',
       icon: CreditCard,
       current: pathname === '/dashboard/payments'
     },
-    { 
-      name: 'Store Settings', 
-      href: '/dashboard/store', 
+    {
+      name: 'Store Settings',
+      href: '/dashboard/store',
       icon: Store,
       current: pathname === '/dashboard/store'
     },
-    { 
-      name: 'Analytics', 
-      href: '/dashboard/analytics', 
+    {
+      name: 'Analytics',
+      href: '/dashboard/analytics',
       icon: BarChart,
       current: pathname === '/dashboard/analytics'
     },
-    { 
-      name: 'Profile', 
-      href: '/dashboard/profile', 
+    {
+      name: 'Profile',
+      href: '/dashboard/profile',
       icon: UserCircle,
       current: pathname === '/dashboard/profile'
     },
@@ -127,13 +125,13 @@ export default function DashboardLayout({
             </AlertDescription>
           </Alert>
           <div className="text-center mt-6">
-            <Link 
+            <Link
               href="/sell"
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
             >
               Become a Vendor
             </Link>
-            <Link 
+            <Link
               href="/"
               className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 ml-3"
             >
@@ -144,7 +142,7 @@ export default function DashboardLayout({
       </div>
     )
   }
-  
+
   // If loading, show loading state
   if (loading) {
     return (
@@ -177,7 +175,7 @@ export default function DashboardLayout({
 
       {/* Mobile sidebar backdrop */}
       {isSidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-20 bg-black bg-opacity-50 lg:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
@@ -191,18 +189,17 @@ export default function DashboardLayout({
             <span className="ml-2 text-sm text-gray-600">Vendor Portal</span>
           </Link>
         </div>
-        
+
         <div className="px-3 py-6">
           <nav className="space-y-1">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
-                  item.current
-                    ? 'bg-green-50 text-green-700'
-                    : 'text-gray-700 hover:bg-green-50 hover:text-green-700'
-                }`}
+                className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${item.current
+                  ? 'bg-green-50 text-green-700'
+                  : 'text-gray-700 hover:bg-green-50 hover:text-green-700'
+                  }`}
                 onClick={() => setIsSidebarOpen(false)}
               >
                 <item.icon className="mr-3 h-5 w-5" />

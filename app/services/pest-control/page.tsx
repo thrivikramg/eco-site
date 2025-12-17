@@ -7,7 +7,7 @@ import FAQ from "@/components/services/pest-control/faq"
 import CallToAction from "@/components/services/call-to-action"
 
 export const metadata: Metadata = {
-  title: "Organic Pest Control Services | EcoGrow",
+  title: "Organic Pest Control Services | EcoSaro",
   description: "Eco-friendly pest management solutions using natural ingredients and biological controls.",
 }
 

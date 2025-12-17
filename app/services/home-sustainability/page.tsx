@@ -7,7 +7,7 @@ import FAQ from "../../../components/services/home-sustainability/faq"
 import CallToAction from "../../../components/services/call-to-action"
 
 export const metadata: Metadata = {
-  title: "Home Sustainability Services | EcoGrow",
+  title: "Home Sustainability Services | EcoSaro",
   description: "Transform your home with eco-friendly solutions that reduce your environmental footprint and save on energy costs.",
 }
 

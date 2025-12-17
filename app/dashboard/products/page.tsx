@@ -5,11 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui
 import { Button } from "../../../components/ui/button"
 import { Input } from "../../../components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../components/ui/tabs"
-import { 
-  Search, 
-  Plus, 
-  Filter, 
-  Upload, 
+import {
+  Search,
+  Plus,
+  Filter,
+  Upload,
   MoreHorizontal,
   Edit,
   Trash2,
@@ -37,6 +37,7 @@ import {
   PaginationNext,
   PaginationPrevious
 } from "../../../components/ui/pagination"
+import { AddProductDialog } from "../../../components/dashboard/AddProductDialog"
 
 import { useEffect } from "react";
 
@@ -68,9 +69,9 @@ export default function ProductsPage() {
 
     fetchProducts();
   }, []);
-  
+
   const toggleProductSelection = (productId: string) => {
-    setSelectedProducts(prev => 
+    setSelectedProducts(prev =>
       prev.includes(productId)
         ? prev.filter(id => id !== productId)
         : [...prev, productId]
@@ -89,17 +90,17 @@ export default function ProductsPage() {
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product._id.toLowerCase().includes(searchTerm.toLowerCase())
-    
+
     const matchesCategory = categoryFilter === "all" || product.category === categoryFilter
-    
+
     const matchesStatus = statusFilter === "all" || product.status === statusFilter
-    
-    const matchesTab = activeTab === "all" || 
+
+    const matchesTab = activeTab === "all" ||
       (activeTab === "in_stock" && product.status === "active") ||
       (activeTab === "low_stock" && product.status === "low_stock") ||
       (activeTab === "out_of_stock" && product.status === "out_of_stock") ||
       (activeTab === "hidden" && product.status === "hidden")
-    
+
     return matchesSearch && matchesCategory && matchesStatus && matchesTab
   })
 
@@ -133,10 +134,23 @@ export default function ProductsPage() {
             <Upload className="h-4 w-4" />
             Bulk Upload
           </Button>
-          <Button className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-1">
-            <Plus className="h-4 w-4" />
-            Add New Product
-          </Button>
+          <AddProductDialog onProductAdded={() => {
+            // Refresh products list
+            const fetchProducts = async () => {
+              try {
+                setLoading(true);
+                const response = await fetch("/api/products?role=vendor");
+                if (!response.ok) throw new Error("Failed to fetch products");
+                const data = await response.json();
+                setProducts(data);
+              } catch (error: any) {
+                setError(error.message);
+              } finally {
+                setLoading(false);
+              }
+            };
+            fetchProducts();
+          }} />
         </div>
       </div>
 
@@ -151,7 +165,7 @@ export default function ProductsPage() {
                 <TabsTrigger value="out_of_stock">Out of Stock</TabsTrigger>
                 <TabsTrigger value="hidden">Hidden</TabsTrigger>
               </TabsList>
-              
+
               <div className="flex gap-2">
                 <div className="relative flex-1">
                   <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
@@ -162,7 +176,7 @@ export default function ProductsPage() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
-                
+
                 <Select
                   value={categoryFilter}
                   onValueChange={setCategoryFilter}
@@ -197,7 +211,7 @@ export default function ProductsPage() {
             <TableHeader>
               <TableRow>
                 <TableHead className="w-12">
-                  <Checkbox 
+                  <Checkbox
                     checked={selectedProducts.length === filteredProducts.length && filteredProducts.length > 0}
                     onCheckedChange={toggleSelectAll}
                     aria-label="Select all products"
@@ -217,7 +231,7 @@ export default function ProductsPage() {
                 filteredProducts.map((product) => (
                   <TableRow key={product._id}>
                     <TableCell>
-                      <Checkbox 
+                      <Checkbox
                         checked={selectedProducts.includes(product._id)}
                         onCheckedChange={() => toggleProductSelection(product._id)}
                         aria-label={`Select ${product.name}`}
@@ -297,7 +311,7 @@ export default function ProductsPage() {
               )}
             </TableBody>
           </Table>
-          
+
           <Pagination className="mt-4">
             <PaginationContent>
               <PaginationItem>

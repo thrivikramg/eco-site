@@ -11,6 +11,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Trash2, Edit, RefreshCcw, AlertTriangle, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
+import { AddProductDialog } from "@/components/dashboard/AddProductDialog";
 
 interface Product {
   _id: string;
@@ -85,7 +86,7 @@ export default function VendorInventoryPage() {
   useEffect(() => {
     fetchProducts();
   }, []);
-  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -176,6 +177,9 @@ export default function VendorInventoryPage() {
           <Button variant="outline" onClick={fetchProducts}>
             <RefreshCcw className="w-4 h-4 mr-2" /> Refresh
           </Button>
+
+          <AddProductDialog onProductAdded={fetchProducts} />
+
           <Dialog open={isDialogOpen} onOpenChange={(open) => {
             if (!open) {
               resetFormAndCloseDialog();
@@ -183,14 +187,9 @@ export default function VendorInventoryPage() {
               setIsDialogOpen(true);
             }
           }}>
-            <DialogTrigger asChild>
-              <Button className="bg-green-600 hover:bg-green-700 text-white" /* disabled={!hasCompleteBankDetails} */>
-                <Plus className="w-4 h-4 mr-2" /> Add Product
-              </Button>
-            </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>{editingProduct ? "Edit Product" : "Add New Product"}</DialogTitle>
+                <DialogTitle>{editingProduct ? "Edit Product" : "Product Details"}</DialogTitle>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 {["name", "description", "price", "category", "stock", "images"].map((field) => (
@@ -207,7 +206,7 @@ export default function VendorInventoryPage() {
                   </div>
                 ))}
               </div>
-              <Button onClick={handleSubmit} className="w-full" /* disabled={!hasCompleteBankDetails} */>{editingProduct ? "Update Product" : "Create Product"}</Button>
+              <Button onClick={handleSubmit} className="w-full" /* disabled={!hasCompleteBankDetails} */>{editingProduct ? "Update Product" : "Save"}</Button>
             </DialogContent>
           </Dialog>
         </div>

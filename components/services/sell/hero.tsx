@@ -14,7 +14,7 @@ export default function SellHero() {
           <div className="flex flex-col justify-center">
             <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
               <span className="block xl:inline">Grow Your Business With</span>{" "}
-              <span className="block text-green-600 xl:inline">EcoGrow</span>
+              <span className="block text-green-600 xl:inline">EcoSaro</span>
             </h1>
             <p className="mt-3 max-w-md text-base text-gray-500 sm:text-lg md:mt-5 md:max-w-3xl md:text-xl">
               Join our thriving marketplace of eco-conscious sellers and reach millions of customers who value sustainability. Start selling your eco-friendly products today.
@@ -69,7 +69,7 @@ export default function SellHero() {
               <div className="absolute inset-0 bg-gradient-to-br from-green-600/20 to-green-600/0 z-10" />
               <img
                 src={`https://res.cloudinary.com/dc2mzcoqr/image/upload/c_fill,q_90/Grow-Your-Business_lxpd01`}
-                
+
                 alt="Sustainable products"
                 className="absolute inset-0 w-full h-full object-cover"
               />

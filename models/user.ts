@@ -36,6 +36,8 @@ export interface IUser extends Document {
   dateOfBirth?: Date
   gender?: "male" | "female" | "other"
   bio?: string
+  otp?: string
+  otpExpires?: Date
   createdAt: Date
   updatedAt: Date
 }
@@ -108,6 +110,12 @@ const UserSchema: Schema<IUser> = new Schema(
     },
     bio: {
       type: String,
+    },
+    otp: {
+      type: String,
+    },
+    otpExpires: {
+      type: Date,
     },
   },
   {

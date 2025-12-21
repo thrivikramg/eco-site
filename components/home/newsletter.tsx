@@ -1,12 +1,13 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import ShinyText from "@/components/ShinyText"
 
 export default function Newsletter() {
   return (
     <section className="py-16 bg-primary">
       <div className="container">
         <div className="mx-auto max-w-2xl text-center text-white">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Stay up to date</h2>
+          <ShinyText text="Stay up to date" className="text-3xl font-bold tracking-tight sm:text-4xl" speed={3} shineColor="rgba(255, 255, 255, 0.8)" />
           <p className="mt-4 text-lg">
             Subscribe to our newsletter for eco-tips, exclusive offers, and updates on new products.
           </p>

@@ -1,5 +1,4 @@
-"use client"
-
+"use client";
 import type React from "react"
 
 import { useEffect, useRef, useState } from "react"
@@ -94,14 +93,14 @@ export default function Hero() {
               { left: "52.54229217739198%", top: "78.22657793091152%" },
               { left: "84.44781138482696%", top: "79.36980062833896%" }
             ];
-            
+
             // Get the position for this element from our fixed positions array
             const position = fixedPositions[i];
-            
+
             // Use fixed durations and delays based on index
             const fixedDuration = 3 + (i % 5);
             const fixedDelay = i % 5;
-            
+
             return (
               <motion.div
                 key={i}
@@ -145,30 +144,29 @@ export default function Hero() {
             animate={mainControls}
             variants={{
               hidden: { opacity: 0 },
-              visible: { 
-                opacity: 1, 
-                transition: { 
+              visible: {
+                opacity: 1,
+                transition: {
                   staggerChildren: 0.2,
                   when: "beforeChildren",
                   staggerDirection: 1
-                } 
+                }
               },
             }}
           >
             <motion.div
-              className="relative inline-block"
               variants={{
-                hidden: { opacity: 0, y: 20 },
-                visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
+                hidden: { opacity: 0 },
+                visible: { opacity: 1, transition: { duration: 0.5 } },
               }}
             >
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight">
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6">
                 <span className="relative inline-block">
                   <span className="relative z-10 bg-clip-text text-transparent bg-gradient-to-r from-emerald-700 to-primary">
                     SOIL
                   </span>
                   <motion.span
-                    className="absolute -bottom-2 left-0 h-3 w-full bg-emerald-200 rounded-full"
+                    className="absolute -bottom-2 left-0 h-3 w-full bg-emerald-200 rounded-full -z-10"
                     initial={{ width: 0 }}
                     animate={{ width: "100%" }}
                     transition={{ delay: 1, duration: 0.8 }}
@@ -180,22 +178,13 @@ export default function Hero() {
                     SOUL
                   </span>
                   <motion.span
-                    className="absolute -bottom-2 left-0 h-3 w-full bg-emerald-200 rounded-full"
+                    className="absolute -bottom-2 left-0 h-3 w-full bg-emerald-200 rounded-full -z-10"
                     initial={{ width: 0 }}
                     animate={{ width: "100%" }}
                     transition={{ delay: 0.8, duration: 0.8, ease: "easeOut" }}
                   />
                 </span>
               </h1>
-            </motion.div>
-
-            <motion.div
-              className="overflow-hidden"
-              variants={{
-                hidden: { opacity: 0 },
-                visible: { opacity: 1, transition: { duration: 0.5 } },
-              }}
-            >
               <motion.p
                 className="text-xl md:text-2xl text-emerald-800 font-medium"
                 initial={{ y: 40 }}

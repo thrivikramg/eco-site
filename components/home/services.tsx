@@ -6,6 +6,7 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Calendar } from "lucide-react"
+import ShinyText from "@/components/ShinyText"
 
 // Mock services data
 const services = [
@@ -44,7 +45,7 @@ export default function Services() {
       <div className="container">
         <div className="flex flex-col md:flex-row justify-between items-center mb-12">
           <div>
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Our Services</h2>
+            <ShinyText text="Our Services" className="text-3xl font-bold tracking-tight text-emerald-900 sm:text-4xl" speed={3} />
             <p className="mt-4 text-lg text-gray-600">Professional eco-friendly services for your home and garden</p>
           </div>
           <Link href="/services">
@@ -67,7 +68,7 @@ export default function Services() {
               </div>
 
               <CardContent className="pt-6 flex-grow">
-                <h3 className="font-medium text-lg">{service.name}</h3>
+                <ShinyText text={service.name} className="font-medium text-lg" speed={3} />
                 <p className="mt-2 text-gray-600">{service.description}</p>
                 <p className="font-semibold mt-4 text-primary">{service.price}</p>
               </CardContent>

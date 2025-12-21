@@ -28,8 +28,14 @@ export async function POST(req: Request) {
             return NextResponse.json({ message: "Invalid OTP. Please try again." }, { status: 400 });
         }
 
-        // Clear OTP after success
-        await User.updateOne({ email: session.user.email }, { $unset: { otp: 1, otpExpires: 1 } });
+        // Clear OTP after success and mark email as verified
+        await User.updateOne(
+            { email: session.user.email },
+            {
+                $unset: { otp: 1, otpExpires: 1 },
+                $set: { isEmailVerified: true }
+            }
+        );
 
         return NextResponse.json({ message: "OTP verified successfully" });
     } catch (error) {

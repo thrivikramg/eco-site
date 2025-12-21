@@ -44,8 +44,8 @@ export default function SimpleSellerRegistration() {
 
   // Send OTP
   const sendOtp = async () => {
-    if (!form.phoneNumber) {
-      setErrors({ phoneNumber: "Phone number is required" })
+    if (!form.businessEmail) {
+      setErrors({ businessEmail: "Business email is required" })
       return
     }
     setErrors({})
@@ -54,7 +54,7 @@ export default function SimpleSellerRegistration() {
       const res = await fetch("/api/otp/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phoneNumber: form.phoneNumber }),
+        body: JSON.stringify({}),
       })
 
       if (!res.ok) {
@@ -67,7 +67,7 @@ export default function SimpleSellerRegistration() {
       console.log("OTP sent! Check server console for the code.")
     } catch (error) {
       console.error("Error sending OTP:", error)
-      setErrors({ phoneNumber: "Failed to send OTP. Please try again." })
+      setErrors({ businessEmail: "Failed to send OTP. Please try again." })
     }
   }
 
@@ -120,7 +120,7 @@ export default function SimpleSellerRegistration() {
     if (!form.businessName) newErrors.businessName = "Business name is required"
     if (!form.businessEmail) newErrors.businessEmail = "Business email is required"
     if (!form.phoneNumber) newErrors.phoneNumber = "Phone number is required"
-    if (!form.otpVerified) newErrors.otp = "Please verify your phone number"
+    if (!form.otpVerified) newErrors.otp = "Please verify your email"
 
     setErrors(newErrors)
     if (Object.keys(newErrors).length > 0) return
@@ -176,17 +176,11 @@ export default function SimpleSellerRegistration() {
 
             <div className="space-y-2">
               <Label htmlFor="businessEmail">Business Email</Label>
-              <Input id="businessEmail" name="businessEmail" type="email" value={form.businessEmail} onChange={handleChange} placeholder="you@example.com" disabled={isSubmitting} />
-              {errors.businessEmail && <p className="text-sm text-red-500">{errors.businessEmail}</p>}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="phoneNumber">Phone Number</Label>
               <div className="flex items-center space-x-2">
-                <Input id="phoneNumber" name="phoneNumber" type="tel" value={form.phoneNumber} onChange={handleChange} placeholder="Your phone number" disabled={isOtpSent || isSubmitting} />
-                {!isOtpSent && (
+                <Input id="businessEmail" name="businessEmail" type="email" value={form.businessEmail} onChange={handleChange} placeholder="you@example.com" disabled={isSubmitting} />
+                {!isOtpSent && !form.otpVerified && (
                   <Button onClick={sendOtp} variant="outline" className="flex-shrink-0" disabled={isSubmitting}>
-                    Send OTP
+                    Verify Email
                   </Button>
                 )}
                 {form.otpVerified && (
@@ -196,6 +190,12 @@ export default function SimpleSellerRegistration() {
                   </div>
                 )}
               </div>
+              {errors.businessEmail && <p className="text-sm text-red-500">{errors.businessEmail}</p>}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="phoneNumber">Phone Number</Label>
+              <Input id="phoneNumber" name="phoneNumber" type="tel" value={form.phoneNumber} onChange={handleChange} placeholder="Your phone number" disabled={isSubmitting} />
               {errors.phoneNumber && <p className="text-sm text-red-500">{errors.phoneNumber}</p>}
             </div>
 
@@ -203,7 +203,7 @@ export default function SimpleSellerRegistration() {
               <div className="space-y-4 text-center p-4 bg-gray-50 rounded-md border">
                 <Label htmlFor="otp" className="font-semibold">Enter Verification Code</Label>
                 <p className="text-sm text-gray-500">
-                  We've sent a 6-digit code to {form.phoneNumber}.
+                  We've sent a 6-digit code to your registered email.
                 </p>
                 <div className="flex justify-center">
                   <InputOTP maxLength={6} value={form.otp} onChange={handleOtpChange}>
@@ -220,7 +220,7 @@ export default function SimpleSellerRegistration() {
 
                 <Button onClick={verifyOtp} disabled={isVerifying || form.otp.length < 6} className="w-full">
                   {isVerifying && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {isVerifying ? "Verifying..." : "Verify Phone Number"}
+                  {isVerifying ? "Verifying..." : "Verify Email"}
                 </Button>
 
                 <div className="text-sm text-gray-500">

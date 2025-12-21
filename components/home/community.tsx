@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { MessageSquare, ThumbsUp, Share2 } from "lucide-react"
+import ShinyText from "@/components/ShinyText"
 
 // Mock community posts data
 const communityPosts = [
@@ -69,7 +70,7 @@ export default function Community() {
       <div className="container">
         <div className="flex flex-col md:flex-row justify-between items-center mb-12">
           <div>
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Community Highlights</h2>
+            <ShinyText text="Community Highlights" className="text-3xl font-bold tracking-tight text-emerald-900 sm:text-4xl" speed={3} />
             <p className="mt-4 text-lg text-gray-600">
               Join our growing community of eco-enthusiasts sharing their sustainable living journeys
             </p>
@@ -95,7 +96,7 @@ export default function Community() {
                   <span className="text-sm font-medium">{post.author.name}</span>
                 </div>
 
-                <h3 className="font-medium text-lg mb-2">{post.title}</h3>
+                <ShinyText text={post.title} className="font-medium text-lg mb-2" speed={3} />
                 <p className="text-gray-600 mb-4">{post.excerpt}</p>
 
                 <div className="flex justify-between items-center text-gray-500 text-sm mb-4">

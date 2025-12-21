@@ -17,10 +17,10 @@ export default function CommunityPage() {
       <div className="container px-4 md:px-6 py-8 md:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8">
           <div className="space-y-8">
-            <TrendingTopics />
             <Feed />
           </div>
           <div className="space-y-8">
+            <TrendingTopics />
             <ActiveMembers />
             <JoinCommunity />
           </div>

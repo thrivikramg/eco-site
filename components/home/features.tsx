@@ -1,4 +1,5 @@
 import { Leaf, Truck, Shield, RefreshCw } from "lucide-react"
+import ShinyText from "@/components/ShinyText"
 
 const features = [
   {
@@ -28,7 +29,7 @@ export default function Features() {
     <section className="py-16 bg-white">
       <div className="container">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Why Choose EcoSaro?</h2>
+          <ShinyText text="Why Choose EcoSaro?" className="text-3xl font-bold tracking-tight text-emerald-900 sm:text-4xl" speed={3} />
           <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
             We're committed to sustainable practices at every step of the journey.
           </p>
@@ -44,7 +45,7 @@ export default function Features() {
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary mb-4">
                 <feature.icon className="h-6 w-6" />
               </div>
-              <h3 className="text-lg font-semibold">{feature.name}</h3>
+              <ShinyText text={feature.name} className="text-lg font-semibold" speed={3} />
               <p className="mt-2 text-gray-600">{feature.description}</p>
             </div>
           ))}

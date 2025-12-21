@@ -3,6 +3,7 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { ArrowRight } from "lucide-react"
+import ShinyText from "@/components/ShinyText"
 
 // Mock knowledge resources
 const resources = [
@@ -31,7 +32,7 @@ export default function KnowledgeHub() {
     <section className="py-16 bg-gray-50">
       <div className="container">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Knowledge Hub</h2>
+          <ShinyText text="Knowledge Hub" className="text-3xl font-bold tracking-tight text-emerald-900 sm:text-4xl" speed={3} />
           <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
             Discover resources to help you live more sustainably and care for your plants
           </p>
@@ -51,7 +52,7 @@ export default function KnowledgeHub() {
 
               <CardContent className="pt-6">
                 <div className="text-sm text-primary mb-1">{resource.category}</div>
-                <h3 className="font-medium text-lg">{resource.title}</h3>
+                <ShinyText text={resource.title} className="font-medium text-lg" speed={3} />
                 <Link
                   href={`/eco-library/${resource.id}`}
                   className="inline-flex items-center mt-4 text-primary hover:underline"

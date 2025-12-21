@@ -8,6 +8,7 @@ import { Menu, X, ShoppingCart, User, Bot } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
+import Image from "next/image"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -121,9 +122,14 @@ export default function Header() {
         {/* Logo */}
         <div className="absolute left-1/2 transform -translate-x-1/2 md:static md:translate-x-0">
           <Link href="/" className="flex-shrink-0">
-            <span className="text-xl font-bold text-primary">
-              Eco<span className="text-green-700">Grow</span>
-            </span>
+            <Image
+              src="/logo.svg"
+              alt="EcoSaro Logo"
+              width={150}
+              height={40}
+              className="h-10 w-auto"
+              priority
+            />
           </Link>
         </div>
 

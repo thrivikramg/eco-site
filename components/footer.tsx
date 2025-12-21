@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import { Facebook, Instagram, Twitter } from "lucide-react"
 
 const footerLinks = {
@@ -39,9 +40,13 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           <div className="lg:col-span-1">
             <Link href="/" className="inline-block">
-              <span className="text-xl font-bold text-primary">
-                Eco<span className="text-green-700">Grow</span>
-              </span>
+              <Image
+                src="/logo.svg"
+                alt="EcoSaro Logo"
+                width={120}
+                height={40}
+                className="h-10 w-auto"
+              />
             </Link>
             <p className="mt-4 text-sm text-muted-foreground max-w-xs">
               Your one-stop destination for eco-friendly products, services, and knowledge. Save nature, grow nature,

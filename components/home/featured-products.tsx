@@ -11,6 +11,7 @@ import { ShoppingCart, ArrowRight } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { useCart } from "@/components/cart-provider"
 import { useToast } from "@/hooks/use-toast"
+import ShinyText from "@/components/ShinyText"
 
 interface Product {
   _id: string;
@@ -109,7 +110,7 @@ export default function FeaturedProducts() {
       <div className="container">
         <div className="flex flex-col md:flex-row justify-between items-center mb-12">
           <div>
-            <h2 className="text-3xl font-bold tracking-tight text-emerald-900 sm:text-4xl">Our Best Sellers</h2>
+            <ShinyText text="Our Best Sellers" className="text-3xl font-bold tracking-tight sm:text-4xl text-emerald-900" speed={3} />
             <p className="mt-4 text-lg text-emerald-800">Discover our most popular eco-friendly products</p>
           </div>
           <Link href="/shop">

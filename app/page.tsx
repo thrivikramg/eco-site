@@ -1,4 +1,5 @@
 import Hero from "../components/home/hero"
+import About from "../components/home/about"
 import Features from "../components/home/features"
 import FeaturedProducts from "../components/home/featured-products"
 import Services from "../components/home/services"
@@ -11,6 +12,7 @@ export default function Home() {
   return (
     <>
       <Hero />
+      <About />
       <DailyTips />
       <Features />
       <FeaturedProducts />

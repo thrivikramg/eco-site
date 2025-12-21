@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { useSession } from "next-auth/react"
 import { usePathname, useRouter } from "next/navigation"
 import { useAuth } from "../../components/auth-provider"
-import { AlertTriangle } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "../../components/ui/alert"
 import {
+  AlertTriangle,
   LayoutDashboard,
   ShoppingBag,
   Package,
@@ -185,7 +186,13 @@ export default function DashboardLayout({
       <div className={`fixed inset-y-0 left-0 z-30 w-64 bg-white border-r transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-300 ease-in-out`}>
         <div className="h-16 flex items-center px-6 border-b">
           <Link href="/" className="flex items-center">
-            <span className="text-xl font-bold text-green-600">EcoGrow</span>
+            <Image
+              src="/logo.svg"
+              alt="EcoSaro Logo"
+              width={120}
+              height={32}
+              className="h-8 w-auto"
+            />
             <span className="ml-2 text-sm text-gray-600">Vendor Portal</span>
           </Link>
         </div>

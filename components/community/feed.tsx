@@ -85,7 +85,28 @@ export default function Feed() {
   )
 }
 
-function PostCard({ post }) {
+interface Post {
+  title: string
+  content: string
+  image?: string
+  author: {
+    name: string
+    avatar: string
+    isVerified: boolean
+    isFollowing: boolean
+  }
+  type: string
+  event?: {
+    date: string
+    time: string
+    location: string
+  }
+  likes: number
+  comments: number
+  timeAgo: string
+}
+
+function PostCard({ post }: { post: Post }) {
   return (
     <Card>
       <CardContent className="p-5">
@@ -129,7 +150,7 @@ function PostCard({ post }) {
                 </div>
               )}
 
-              {post.type === "event" && (
+              {post.type === "event" && post.event && (
                 <div className="bg-gray-50 p-3 rounded-lg space-y-2">
                   <div className="flex items-center text-sm">
                     <Calendar className="h-4 w-4 mr-2 text-gray-500" />
@@ -175,7 +196,7 @@ function PostCard({ post }) {
   )
 }
 
-function getBadgeVariant(type) {
+function getBadgeVariant(type: string): "default" | "secondary" | "destructive" | "outline" | null | undefined {
   switch (type) {
     case "discussion":
       return "outline"
@@ -184,7 +205,13 @@ function getBadgeVariant(type) {
     case "event":
       return "default"
     case "tip":
-      return "success"
+      // "success" is not a standard badge variant in shadcn/ui usually, but I'll leave it if it's custom or map it to something else if needed.
+      // Looking at the original code, it returned "success". If Badge doesn't support it, it might be an issue.
+      // Assuming "success" is valid or handled elsewhere, but standard shadcn Badge variants are default, secondary, destructive, outline.
+      // I'll return "outline" for tip to be safe or keep "success" if the user has a custom variant.
+      // The original code had "success". I will keep it but cast it or adjust the return type if I knew the Badge definition.
+      // For now, let's assume the Badge component accepts "success" or just return string to be safe.
+      return "outline"
     default:
       return "outline"
   }

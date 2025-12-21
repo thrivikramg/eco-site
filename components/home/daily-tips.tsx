@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useRouter } from "next/navigation"
+import ShinyText from "@/components/ShinyText"
 
 const tips = [
   {
@@ -69,7 +70,7 @@ export default function DailyTips() {
           >
             <div className="flex items-center gap-2">
               <Leaf className="h-6 w-6 text-emerald-700" />
-              <h2 className="text-2xl md:text-3xl font-bold text-emerald-900">Daily Green Tips</h2>
+              <ShinyText text="Daily Green Tips" className="text-2xl md:text-3xl font-bold text-emerald-900" speed={3} />
             </div>
             <p className="text-emerald-800 mt-1">Eco-friendly advice to incorporate into your daily routine</p>
           </motion.div>
@@ -132,7 +133,7 @@ export default function DailyTips() {
                     </div>
                   </div>
                   <CardContent className="pt-4">
-                    <h3 className="font-semibold text-lg line-clamp-1 text-emerald-900">{tip.title}</h3>
+                    <ShinyText text={tip.title} className="font-semibold text-lg line-clamp-1 text-emerald-900" speed={3} />
                     <p className="text-emerald-800 mt-1 text-sm line-clamp-2">{tip.description}</p>
                   </CardContent>
                   <CardFooter className="pt-0">

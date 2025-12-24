@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Product } from "@/lib/products"
@@ -53,7 +53,7 @@ const ProductCard = ({ product }: { product: Product }) => {
   )
 }
 
-export default function ShopPage() {
+function ShopContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [products, setProducts] = useState<Product[]>([])
@@ -237,5 +237,15 @@ export default function ShopPage() {
         </div>
       </div>
     </main>
+  )
+}
+
+export default function ShopPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+    </div>}>
+      <ShopContent />
+    </Suspense>
   )
 }

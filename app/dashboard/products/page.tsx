@@ -38,6 +38,8 @@ import {
   PaginationPrevious
 } from "../../../components/ui/pagination"
 import { AddProductDialog } from "../../../components/dashboard/AddProductDialog"
+import { EditProductDialog } from "../../../components/dashboard/EditProductDialog"
+import { toast } from "sonner"
 
 import { useEffect } from "react";
 
@@ -50,11 +52,13 @@ export default function ProductsPage() {
   const [statusFilter, setStatusFilter] = useState("all")
   const [activeTab, setActiveTab] = useState("all")
   const [selectedProducts, setSelectedProducts] = useState<string[]>([])
+  const [editingProduct, setEditingProduct] = useState<any>(null)
+  const [isEditOpen, setIsEditOpen] = useState(false)
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("/api/products?role=vendor");
+        const response = await fetch("/api/products?role=vendor", { cache: "no-store" });
         if (!response.ok) {
           throw new Error("Failed to fetch products");
         }
@@ -122,6 +126,72 @@ export default function ProductsPage() {
     }
   }
 
+  const [isBankingComplete, setIsBankingComplete] = useState(false);
+  const [checkingBanking, setCheckingBanking] = useState(true);
+
+  useEffect(() => {
+    const checkBankingDetails = async () => {
+      try {
+        const response = await fetch("/api/vendor/store");
+        if (response.ok) {
+          const data = await response.json();
+          const payout = data.payoutDetails;
+          if (payout && payout.bankName && payout.accountNumber && payout.accountHolder && payout.ifscCode) {
+            setIsBankingComplete(true);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to check banking details", error);
+      } finally {
+        setCheckingBanking(false);
+      }
+    };
+    checkBankingDetails();
+  }, []);
+
+  const handleDeleteProduct = async (productId: string) => {
+    if (!confirm("Are you sure you want to delete this product?")) return
+
+    try {
+      // Optimistic update
+      setProducts(prev => prev.filter(p => p._id !== productId))
+
+      const response = await fetch(`/api/products/${productId}`, {
+        method: "DELETE",
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to delete product")
+      }
+
+      toast.success("Product deleted successfully")
+      refreshProducts()
+    } catch (error) {
+      console.error("Delete error:", error)
+      toast.error("Failed to delete product")
+      refreshProducts() // Revert state on error
+    }
+  }
+
+  const handleEditProduct = (product: any) => {
+    setEditingProduct(product)
+    setIsEditOpen(true)
+  }
+
+  const refreshProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch("/api/products?role=vendor", { cache: "no-store" });
+      if (!response.ok) throw new Error("Failed to fetch products");
+      const data = await response.json();
+      setProducts(data);
+    } catch (error: any) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
@@ -134,23 +204,23 @@ export default function ProductsPage() {
             <Upload className="h-4 w-4" />
             Bulk Upload
           </Button>
-          <AddProductDialog onProductAdded={() => {
-            // Refresh products list
-            const fetchProducts = async () => {
-              try {
-                setLoading(true);
-                const response = await fetch("/api/products?role=vendor");
-                if (!response.ok) throw new Error("Failed to fetch products");
-                const data = await response.json();
-                setProducts(data);
-              } catch (error: any) {
-                setError(error.message);
-              } finally {
-                setLoading(false);
-              }
-            };
-            fetchProducts();
-          }} />
+          {!checkingBanking && !isBankingComplete ? (
+            <Button
+              className="bg-gray-400 cursor-not-allowed flex items-center gap-1"
+              onClick={() => alert("Please complete your banking details in Store Settings to add products.")}
+            >
+              <Plus className="h-4 w-4" />
+              Add New Product
+            </Button>
+          ) : (
+            <AddProductDialog onProductAdded={refreshProducts} />
+          )}
+          <EditProductDialog
+            product={editingProduct}
+            open={isEditOpen}
+            onOpenChange={setIsEditOpen}
+            onProductUpdated={refreshProducts}
+          />
         </div>
       </div>
 
@@ -275,7 +345,10 @@ export default function ProductsPage() {
                           <DropdownMenuItem className="flex items-center cursor-pointer">
                             <Eye className="h-4 w-4 mr-2" /> View Details
                           </DropdownMenuItem>
-                          <DropdownMenuItem className="flex items-center cursor-pointer">
+                          <DropdownMenuItem
+                            className="flex items-center cursor-pointer"
+                            onClick={() => handleEditProduct(product)}
+                          >
                             <Edit className="h-4 w-4 mr-2" /> Edit Product
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
@@ -290,7 +363,10 @@ export default function ProductsPage() {
                             </DropdownMenuItem>
                           )}
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem className="flex items-center text-red-600 cursor-pointer">
+                          <DropdownMenuItem
+                            className="flex items-center text-red-600 cursor-pointer"
+                            onClick={() => handleDeleteProduct(product._id)}
+                          >
                             <Trash2 className="h-4 w-4 mr-2" /> Delete Product
                           </DropdownMenuItem>
                         </DropdownMenuContent>

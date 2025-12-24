@@ -23,17 +23,12 @@ export default function StoreDetails({ formData, updateFormData, errors = {} }: 
   const [storeLogo, setStoreLogo] = useState<File | null>(null)
 
   // Product categories available on EcoSaro
+  // Product categories available on EcoSaro
   const productCategories: ProductCategory[] = [
-    { id: "organic-food", label: "Organic Food & Beverages" },
-    { id: "eco-fashion", label: "Eco-Friendly Fashion" },
-    { id: "sustainable-home", label: "Sustainable Home Goods" },
-    { id: "natural-beauty", label: "Natural Beauty & Personal Care" },
-    { id: "zero-waste", label: "Zero Waste Products" },
-    { id: "renewable-energy", label: "Renewable Energy Products" },
-    { id: "eco-friendly-toys", label: "Eco-Friendly Toys & Games" },
-    { id: "upcycled-products", label: "Upcycled & Recycled Products" },
-    { id: "plant-based", label: "Plant-Based Products" },
-    { id: "gardening", label: "Gardening & Outdoor Eco Products" }
+    { id: "Agro Products", label: "Agro Products" },
+    { id: "Eco Friendly", label: "Eco Friendly" },
+    { id: "Herbal Products", label: "Herbal Products" },
+    { id: "Natural Cosmetics", label: "Natural Cosmetics" }
   ]
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

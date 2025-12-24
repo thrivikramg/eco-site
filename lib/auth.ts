@@ -1,5 +1,9 @@
 import type { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
+import bcrypt from "bcryptjs"
+
+import dbConnect from "@/lib/dbconnect"
+import { User } from "@/models/user"
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -9,40 +13,51 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
-        // 🔐 Mock login — Replace this with DB lookup in production
-        if (credentials?.email === "user@example.com" && credentials?.password === "password") {
-          return {
-            id: "1",
-            name: "Rahul Sharma",
-            email: "user@example.com",
-            role: "buyer", // ✅ Added role here
-          }
-        }
 
-        return null
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) return null
+
+        await dbConnect()
+
+        const user = await User.findOne({ email: credentials.email }).select("+password")
+        if (!user) return null
+
+        const isMatch = await bcrypt.compare(credentials.password, user.password)
+        if (!isMatch) return null
+
+        return {
+          id: user._id.toString(),
+          name: user.name,
+          email: user.email,
+          image: user.image,
+          role: user.role,
+        } as any // 👈 REQUIRED for CredentialsProvider
       },
     }),
   ],
+
   session: {
     strategy: "jwt",
   },
+
   pages: {
     signIn: "/login",
   },
+
   callbacks: {
     async jwt({ token, user }) {
-      // On login, attach user info to the token
       if (user) {
-        token.role = (user as any).role // 👈 Explicit cast
+        token.role = (user as any).role
       }
       return token
     },
+
     async session({ session, token }) {
-      if (session.user && token) {
-        session.user.id = token.sub as string
-        session.user.role = token.role as string // ✅ Add role to session
-      }
+      if (!session.user || !token.sub) return session
+
+      session.user.id = token.sub
+      session.user.role = token.role as string
+
       return session
     },
   },

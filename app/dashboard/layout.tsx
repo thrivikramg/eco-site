@@ -16,16 +16,15 @@ import {
   CreditCard,
   Store,
   BarChart,
-  UserCircle,
   Menu,
   X
 } from "lucide-react"
 
 export default function DashboardLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode
-}) {
+}>) {
   const pathname = usePathname()
   const router = useRouter()
   const { isAuthenticated, user } = useAuth()
@@ -42,18 +41,23 @@ export default function DashboardLayout({
       }
 
       // Check if user is authenticated
-      if (!isAuthenticated) {
+      if (status === 'unauthenticated') {
         // User is not logged in, redirect to login
         router.push('/')
         return
       }
 
+      // If authenticated but user data not yet loaded from AuthProvider
+      if (status === 'authenticated' && !user) {
+        return;
+      }
+
       // Check if user has vendor role
-      if (!user || user.role !== 'vendor') {
+      if (user?.role === 'vendor') {
+        setAuthorized(true)
+      } else {
         // User is not a vendor, redirect to home with message
         setAuthorized(false)
-      } else {
-        setAuthorized(true)
       }
 
       setLoading(false)
@@ -105,12 +109,7 @@ export default function DashboardLayout({
       icon: BarChart,
       current: pathname === '/dashboard/analytics'
     },
-    {
-      name: 'Profile',
-      href: '/dashboard/profile',
-      icon: UserCircle,
-      current: pathname === '/dashboard/profile'
-    },
+
   ]
 
   // If not authorized, show unauthorized message
@@ -179,6 +178,14 @@ export default function DashboardLayout({
         <div
           className="fixed inset-0 z-20 bg-black bg-opacity-50 lg:hidden"
           onClick={() => setIsSidebarOpen(false)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              setIsSidebarOpen(false)
+            }
+          }}
+          aria-label="Close sidebar"
         />
       )}
 

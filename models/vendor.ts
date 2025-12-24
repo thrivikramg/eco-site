@@ -19,6 +19,33 @@ export interface IPayoutDetails {
   ifscCode: string
 }
 
+export interface IOpeningHours {
+  open: string
+  close: string
+  closed: boolean
+}
+
+export interface IWeeklyHours {
+  monday: IOpeningHours
+  tuesday: IOpeningHours
+  wednesday: IOpeningHours
+  thursday: IOpeningHours
+  friday: IOpeningHours
+  saturday: IOpeningHours
+  sunday: IOpeningHours
+}
+
+export interface IShippingOption {
+  name: string
+  price: number
+  days: string
+}
+
+export interface ITaxInfo {
+  gstin: string
+  pan: string
+}
+
 /**
  * Vendor Application Status
  */
@@ -37,6 +64,10 @@ export interface IVendor extends Document {
   status: VendorStatus
   products: Types.ObjectId[] // Product references
   payoutDetails?: IPayoutDetails
+  openingHours?: IWeeklyHours
+  returnPolicy?: string
+  shippingOptions?: IShippingOption[]
+  taxInfo?: ITaxInfo
   createdAt: Date
   updatedAt: Date
 }
@@ -60,6 +91,32 @@ const PayoutDetailsSchema: Schema<IPayoutDetails> = new Schema({
   ifscCode: { type: String },
 }, { _id: false });
 
+const OpeningHoursSchema: Schema<IOpeningHours> = new Schema({
+  open: { type: String },
+  close: { type: String },
+  closed: { type: Boolean, default: false },
+}, { _id: false });
+
+const WeeklyHoursSchema: Schema<IWeeklyHours> = new Schema({
+  monday: { type: OpeningHoursSchema },
+  tuesday: { type: OpeningHoursSchema },
+  wednesday: { type: OpeningHoursSchema },
+  thursday: { type: OpeningHoursSchema },
+  friday: { type: OpeningHoursSchema },
+  saturday: { type: OpeningHoursSchema },
+  sunday: { type: OpeningHoursSchema },
+}, { _id: false });
+
+const ShippingOptionSchema: Schema<IShippingOption> = new Schema({
+  name: { type: String },
+  price: { type: Number },
+  days: { type: String },
+}, { _id: false });
+
+const TaxInfoSchema: Schema<ITaxInfo> = new Schema({
+  gstin: { type: String },
+  pan: { type: String },
+}, { _id: false });
 
 const VendorSchema: Schema<IVendor> = new Schema(
   {
@@ -101,6 +158,19 @@ const VendorSchema: Schema<IVendor> = new Schema(
     products: [{ type: Schema.Types.ObjectId, ref: "Product" }],
     payoutDetails: {
       type: PayoutDetailsSchema,
+      required: false,
+    },
+    openingHours: {
+      type: WeeklyHoursSchema,
+      required: false,
+    },
+    returnPolicy: {
+      type: String,
+      trim: true,
+    },
+    shippingOptions: [ShippingOptionSchema],
+    taxInfo: {
+      type: TaxInfoSchema,
       required: false,
     }
   },

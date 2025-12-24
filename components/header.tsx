@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react"
 import { useSession, signIn, signOut } from "next-auth/react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Menu, X, ShoppingCart, User, Bot } from "lucide-react"
+import { usePathname, useRouter } from "next/navigation"
+import { Menu, X, ShoppingCart, User, Bot, LayoutDashboard } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
@@ -43,9 +43,11 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [showMobileSearch, setShowMobileSearch] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
   const pathname = usePathname()
+  const router = useRouter()
   const { data: session, status } = useSession()
-  const user = session?.user
+  const user = session?.user as { name?: string | null; email?: string | null; image?: string | null; role?: string; avatar?: string | null } | undefined
   const isAuthenticated = status === "authenticated"
   const isVendor = user?.role === "vendor" || false
   const cart = useCart()
@@ -63,6 +65,14 @@ export default function Header() {
   }, [])
 
   const toggleMobileSearch = () => setShowMobileSearch(!showMobileSearch)
+
+  const handleSearch = (e?: React.FormEvent) => {
+    e?.preventDefault()
+    if (searchQuery.trim()) {
+      router.push(`/shop?search=${encodeURIComponent(searchQuery.trim())}`)
+      setShowMobileSearch(false)
+    }
+  }
 
   return (
     <header
@@ -114,6 +124,19 @@ export default function Header() {
                     {item.name}
                   </Link>
                 ))}
+                {isVendor && (
+                  <Link
+                    href="/dashboard"
+                    className={`flex items-center px-4 py-3 text-sm font-medium hover:bg-gray-50 ${pathname === "/dashboard"
+                      ? "text-primary bg-gray-50"
+                      : "text-gray-700"
+                      }`}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <LayoutDashboard className="mr-3 h-4 w-4" />
+                    Dashboard
+                  </Link>
+                )}
               </nav>
             </div>
           )}
@@ -140,8 +163,14 @@ export default function Header() {
               type="text"
               placeholder="Search for products, services, more"
               className="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             />
-            <button className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+            <button
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              onClick={() => handleSearch()}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-5 w-5"
@@ -169,6 +198,9 @@ export default function Header() {
                 placeholder="Search for products, services, more"
                 className="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                 autoFocus
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               />
             </div>
           </div>

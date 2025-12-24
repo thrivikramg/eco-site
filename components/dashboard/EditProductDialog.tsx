@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { Button } from "../ui/button"
 import {
@@ -10,7 +10,6 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from "../ui/dialog"
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
@@ -20,16 +19,17 @@ import { Plus, Upload, X, Loader2 } from "lucide-react"
 import Image from "next/image"
 import { toast } from "sonner"
 
-interface AddProductDialogProps {
-    onProductAdded: () => void
+interface EditProductDialogProps {
+    product: any
+    open: boolean
+    onOpenChange: (open: boolean) => void
+    onProductUpdated: () => void
 }
 
-export function AddProductDialog({ onProductAdded }: AddProductDialogProps) {
-    const [open, setOpen] = useState(false)
+export function EditProductDialog({ product, open, onOpenChange, onProductUpdated }: EditProductDialogProps) {
     const [loading, setLoading] = useState(false)
     const [uploading, setUploading] = useState(false)
     const { data: session } = useSession()
-    const [lastError, setLastError] = useState<string | null>(null)
 
     const [formData, setFormData] = useState({
         name: "",
@@ -39,6 +39,19 @@ export function AddProductDialog({ onProductAdded }: AddProductDialogProps) {
         stock: "",
         images: [] as string[],
     })
+
+    useEffect(() => {
+        if (product) {
+            setFormData({
+                name: product.name,
+                description: product.description,
+                price: product.price.toString(),
+                category: product.category,
+                stock: product.stock.toString(),
+                images: product.images || [],
+            })
+        }
+    }, [product])
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target
@@ -64,12 +77,7 @@ export function AddProductDialog({ onProductAdded }: AddProductDialogProps) {
             })
 
             if (!response.ok) {
-                if (response.status === 401) {
-                    throw new Error("Unauthorized: Please ensure you are logged in as a vendor.")
-                }
-                const errorData = await response.json().catch(() => ({ message: response.statusText }))
-                console.error("Upload failed details:", errorData)
-                throw new Error(errorData.message || `Upload failed with status: ${response.status}`)
+                throw new Error("Upload failed")
             }
 
             const data = await response.json()
@@ -80,9 +88,7 @@ export function AddProductDialog({ onProductAdded }: AddProductDialogProps) {
             toast.success("Image uploaded successfully")
         } catch (error) {
             console.error("Upload error:", error)
-            const errorMessage = error instanceof Error ? error.message : "Failed to upload image"
-            setLastError(errorMessage)
-            toast.error(errorMessage)
+            toast.error("Failed to upload image")
         } finally {
             setUploading(false)
         }
@@ -101,11 +107,12 @@ export function AddProductDialog({ onProductAdded }: AddProductDialogProps) {
 
         try {
             const response = await fetch("/api/products", {
-                method: "POST",
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
+                    _id: product._id,
                     ...formData,
                     price: parseFloat(formData.price),
                     stock: parseInt(formData.stock),
@@ -113,48 +120,34 @@ export function AddProductDialog({ onProductAdded }: AddProductDialogProps) {
             })
 
             if (!response.ok) {
-                throw new Error("Failed to create product")
+                throw new Error("Failed to update product")
             }
 
-            toast.success("Product created successfully")
-            setFormData({
-                name: "",
-                description: "",
-                price: "",
-                category: "",
-                stock: "",
-                images: [],
-            })
-            setOpen(false)
-            onProductAdded()
+            toast.success("Product updated successfully")
+            onOpenChange(false)
+            onProductUpdated()
         } catch (error) {
-            console.error("Create product error:", error)
-            toast.error("Failed to create product")
+            console.error("Update product error:", error)
+            toast.error("Failed to update product")
         } finally {
             setLoading(false)
         }
     }
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-                <Button className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-1">
-                    <Plus className="h-4 w-4" />
-                    Add New Product
-                </Button>
-            </DialogTrigger>
+        <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>Add New Product</DialogTitle>
+                    <DialogTitle>Edit Product</DialogTitle>
                     <DialogDescription>
-                        Fill in the details below to add a new product to your store.
+                        Update the details of your product below.
                     </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="grid gap-4 py-4">
                     <div className="grid gap-2">
-                        <Label htmlFor="name">Product Name</Label>
+                        <Label htmlFor="edit-name">Product Name</Label>
                         <Input
-                            id="name"
+                            id="edit-name"
                             name="name"
                             value={formData.name}
                             onChange={handleChange}
@@ -164,9 +157,9 @@ export function AddProductDialog({ onProductAdded }: AddProductDialogProps) {
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="description">Description</Label>
+                        <Label htmlFor="edit-description">Description</Label>
                         <Textarea
-                            id="description"
+                            id="edit-description"
                             name="description"
                             value={formData.description}
                             onChange={handleChange}
@@ -177,9 +170,9 @@ export function AddProductDialog({ onProductAdded }: AddProductDialogProps) {
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="price">Price ($)</Label>
+                            <Label htmlFor="edit-price">Price ($)</Label>
                             <Input
-                                id="price"
+                                id="edit-price"
                                 name="price"
                                 type="number"
                                 min="0"
@@ -188,23 +181,11 @@ export function AddProductDialog({ onProductAdded }: AddProductDialogProps) {
                                 onChange={handleChange}
                                 required
                             />
-                            {formData.price && !isNaN(parseFloat(formData.price)) && (
-                                <div className="text-xs text-gray-500 mt-1 space-y-1 bg-gray-50 p-2 rounded-md border">
-                                    <div className="flex justify-between">
-                                        <span>Platform Fee (5%):</span>
-                                        <span className="font-medium text-amber-600">-${(parseFloat(formData.price) * 0.05).toFixed(2)}</span>
-                                    </div>
-                                    <div className="flex justify-between border-t border-gray-200 pt-1 mt-1">
-                                        <span className="font-medium text-gray-700">Your Earnings:</span>
-                                        <span className="font-bold text-green-600">${(parseFloat(formData.price) * 0.95).toFixed(2)}</span>
-                                    </div>
-                                </div>
-                            )}
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="stock">Stock</Label>
+                            <Label htmlFor="edit-stock">Stock</Label>
                             <Input
-                                id="stock"
+                                id="edit-stock"
                                 name="stock"
                                 type="number"
                                 min="0"
@@ -216,7 +197,7 @@ export function AddProductDialog({ onProductAdded }: AddProductDialogProps) {
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="category">Category</Label>
+                        <Label htmlFor="edit-category">Category</Label>
                         <Select onValueChange={handleCategoryChange} value={formData.category} required>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select a category" />
@@ -273,17 +254,9 @@ export function AddProductDialog({ onProductAdded }: AddProductDialogProps) {
                     <DialogFooter>
                         <Button type="submit" disabled={loading || uploading} className="bg-green-600 hover:bg-green-700">
                             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Create Product
+                            Update Product
                         </Button>
                     </DialogFooter>
-
-                    {/* Debug Info */}
-                    <div className="mt-4 p-2 bg-gray-100 rounded text-xs text-gray-500">
-                        <p><strong>Debug Info:</strong></p>
-                        <p>User Role: {(session?.user as any)?.role || 'Unknown'}</p>
-                        <p>Authenticated: {session ? 'Yes' : 'No'}</p>
-                        {lastError && <p className="text-red-500">Last Error: {lastError}</p>}
-                    </div>
                 </form>
             </DialogContent>
         </Dialog>

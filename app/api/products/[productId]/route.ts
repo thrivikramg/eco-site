@@ -7,7 +7,7 @@ import { Product } from "@/models/product.model";
 import { Vendor } from "../../../../models/vendor";
 
 interface IParams {
-  params: { id: string };
+  params: { productId: string };
 }
 
 export async function GET(req: Request, { params }: IParams) {
@@ -16,7 +16,7 @@ export async function GET(req: Request, { params }: IParams) {
   try {
     // This endpoint is public for customers to view product details.
     // We find the product directly by its ID.
-    const product = await Product.findById(params.id);
+    const product = await Product.findById(params.productId);
 
     if (!product) {
       return NextResponse.json({ message: "Product not found" }, { status: 404 });
@@ -46,22 +46,11 @@ export async function PUT(req: Request, { params }: IParams) {
       return NextResponse.json({ message: "Vendor not found" }, { status: 404 });
     }
 
-    // const { payoutDetails } = vendor;
-    // if (
-    //   !payoutDetails ||
-    //   !payoutDetails.accountHolder ||
-    //   !payoutDetails.accountNumber ||
-    //   !payoutDetails.bankName ||
-    //   !payoutDetails.ifscCode
-    // ) {
-    //   return NextResponse.json({ message: 'Please complete your banking information in the store settings before updating products.' }, { status: 403 });
-    // }
-
     const body = await req.json();
     const { name, description, price, category, stock, images } = body;
 
     const product = await Product.findOneAndUpdate(
-      { _id: params.id, vendor: vendor._id },
+      { _id: params.productId, vendor: vendor._id },
       { name, description, price, category, stock, images },
       { new: true }
     );
@@ -94,19 +83,8 @@ export async function DELETE(req: Request, { params }: IParams) {
       return NextResponse.json({ message: "Vendor not found" }, { status: 404 });
     }
 
-    // const { payoutDetails } = vendor;
-    // if (
-    //   !payoutDetails ||
-    //   !payoutDetails.accountHolder ||
-    //   !payoutDetails.accountNumber ||
-    //   !payoutDetails.bankName ||
-    //   !payoutDetails.ifscCode
-    // ) {
-    //   return NextResponse.json({ message: 'Please complete your banking information in the store settings before deleting products.' }, { status: 403 });
-    // }
-
     const product = await Product.findOneAndDelete({
-      _id: params.id,
+      _id: params.productId,
       vendor: vendor._id,
     });
 

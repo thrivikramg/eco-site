@@ -9,11 +9,11 @@ import { Input } from "../../../components/ui/input"
 import { Label } from "../../../components/ui/label"
 import { Textarea } from "../../../components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../components/ui/tabs"
-import { 
-  Store, 
-  Save, 
-  Clock, 
-  ImageIcon, 
+import {
+  Store,
+  Save,
+  Clock,
+  ImageIcon,
   Truck,
   CircleHelp,
   CreditCard,
@@ -55,7 +55,13 @@ export default function StoreSettingsPage() {
     gstDetails: {
       gstNumber: "29ABCDE1234F1Z5",
       businessPan: "ABCDE1234F",
-      businessAddress: "123 Green Street, Eco City, EC 12345",
+    },
+    businessAddress: {
+      street: "123 Green Street",
+      city: "Eco City",
+      state: "Karnataka",
+      pincode: "560001",
+      country: "India"
     }
   })
 
@@ -71,7 +77,7 @@ export default function StoreSettingsPage() {
             name: data.businessName || prev.name,
             description: data.storeDescription || prev.description,
             contactEmail: data.businessEmail || prev.contactEmail,
-            contactPhone: data.contact?.phone || prev.contactPhone,
+            contactPhone: data.businessPhone || prev.contactPhone,
             bankInfo: {
               accountName: data.payoutDetails?.accountHolder || prev.bankInfo.accountName,
               accountNumber: data.payoutDetails?.accountNumber || prev.bankInfo.accountNumber,
@@ -81,8 +87,15 @@ export default function StoreSettingsPage() {
             gstDetails: {
               gstNumber: data.taxInfo?.gstin || prev.gstDetails.gstNumber,
               businessPan: data.taxInfo?.pan || prev.gstDetails.businessPan,
-              businessAddress: data.businessAddress?.street || prev.gstDetails.businessAddress,
             },
+            businessAddress: {
+              street: data.businessAddress?.street || prev.businessAddress.street,
+              city: data.businessAddress?.city || prev.businessAddress.city,
+              state: data.businessAddress?.state || prev.businessAddress.state,
+              pincode: data.businessAddress?.pincode || prev.businessAddress.pincode,
+              country: data.businessAddress?.country || prev.businessAddress.country,
+            },
+            openingHours: data.openingHours || prev.openingHours,
             returnPolicy: data.returnPolicy || prev.returnPolicy,
             shippingOptions: data.shippingOptions && data.shippingOptions.length > 0 ? data.shippingOptions : prev.shippingOptions,
           }));
@@ -98,12 +111,12 @@ export default function StoreSettingsPage() {
   }, []);
 
   const handleBankChange = (bankCode: string) => {
-    setStoreData(prev => ({ 
-      ...prev, 
-      bankInfo: { 
-        ...prev.bankInfo, 
-        bankName: bankCode 
-      } 
+    setStoreData(prev => ({
+      ...prev,
+      bankInfo: {
+        ...prev.bankInfo,
+        bankName: bankCode
+      }
     }));
   };
 
@@ -167,13 +180,24 @@ export default function StoreSettingsPage() {
     }));
   };
 
+  const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setStoreData(prev => ({
+      ...prev,
+      businessAddress: {
+        ...prev.businessAddress,
+        [name]: value
+      }
+    }));
+  };
+
 
   const handleSave = async () => {
     const payload = {
       businessName: storeData.name,
       storeDescription: storeData.description,
       businessEmail: storeData.contactEmail,
-      contact: { phone: storeData.contactPhone },
+      businessPhone: storeData.contactPhone,
       payoutDetails: {
         accountHolder: storeData.bankInfo.accountName,
         accountNumber: storeData.bankInfo.accountNumber,
@@ -184,14 +208,8 @@ export default function StoreSettingsPage() {
         gstin: storeData.gstDetails.gstNumber,
         pan: storeData.gstDetails.businessPan,
       },
-      businessAddress: { 
-        street: storeData.gstDetails.businessAddress,
-        // Assuming city, state, pincode are part of the address string for now.
-        // For a long-term fix, you should have separate fields for these.
-        city: "City", // Placeholder
-        state: "State", // Placeholder
-        pincode: "000000" // Placeholder
-      },
+      businessAddress: storeData.businessAddress,
+      openingHours: storeData.openingHours,
       returnPolicy: storeData.returnPolicy,
       shippingOptions: storeData.shippingOptions,
     };
@@ -232,7 +250,7 @@ export default function StoreSettingsPage() {
           <TabsTrigger value="policies" className="flex-1">Policies</TabsTrigger>
           <TabsTrigger value="banking" className="flex-1">Banking</TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="general">
           <Card>
             <CardHeader>
@@ -248,15 +266,15 @@ export default function StoreSettingsPage() {
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="store-name">Store Name</Label>
-                  <Input 
-                    id="store-name" 
+                  <Input
+                    id="store-name"
                     name="name"
-                    value={storeData.name} 
-                    onChange={handleGeneralInfoChange} 
+                    value={storeData.name}
+                    onChange={handleGeneralInfoChange}
                     placeholder="Your store name"
                   />
                 </div>
-                
+
                 <div>
                   <Label htmlFor="store-logo">Store Logo</Label>
                   <div className="flex items-center gap-4 mt-2">
@@ -269,36 +287,36 @@ export default function StoreSettingsPage() {
                   </div>
                   <p className="text-xs text-gray-500 mt-1">Recommended size: 500x500px, max 1MB</p>
                 </div>
-                
+
                 <div>
                   <Label htmlFor="store-description">Store Description</Label>
-                  <Textarea 
-                    id="store-description" 
+                  <Textarea
+                    id="store-description"
                     name="description"
-                    value={storeData.description} 
+                    value={storeData.description}
                     onChange={handleGeneralInfoChange}
                     placeholder="Describe your store and what you sell..."
                     className="min-h-[100px]"
                   />
                 </div>
-                
+
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
                     <Label htmlFor="contact-email">Contact Email</Label>
-                    <Input 
-                      id="contact-email" 
-                      type="email" 
+                    <Input
+                      id="contact-email"
+                      type="email"
                       name="contactEmail"
-                      value={storeData.contactEmail} 
+                      value={storeData.contactEmail}
                       onChange={handleGeneralInfoChange}
                     />
                   </div>
                   <div>
                     <Label htmlFor="contact-phone">Contact Phone</Label>
-                    <Input 
-                      id="contact-phone" 
+                    <Input
+                      id="contact-phone"
                       name="contactPhone"
-                      value={storeData.contactPhone} 
+                      value={storeData.contactPhone}
                       onChange={handleGeneralInfoChange}
                     />
                   </div>
@@ -307,7 +325,7 @@ export default function StoreSettingsPage() {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="hours">
           <Card>
             <CardHeader>
@@ -327,14 +345,14 @@ export default function StoreSettingsPage() {
                       {day}
                     </div>
                     <div className="flex items-center gap-6 ml-auto">
-                      <Switch 
-                        id={`${day}-open`} 
+                      <Switch
+                        id={`${day}-open`}
                         checked={!hours.closed}
                         onCheckedChange={(checked) => handleHoursChange(day, 'closed', !checked)}
                       />
                       <div className="flex items-center gap-2">
-                        <Select 
-                          disabled={hours.closed} 
+                        <Select
+                          disabled={hours.closed}
                           value={hours.open}
                           onValueChange={(value) => handleHoursChange(day, 'open', value)}
                         >
@@ -349,7 +367,7 @@ export default function StoreSettingsPage() {
                           </SelectContent>
                         </Select>
                         <span>to</span>
-                        <Select 
+                        <Select
                           disabled={hours.closed}
                           value={hours.close}
                           onValueChange={(value) => handleHoursChange(day, 'close', value)}
@@ -372,7 +390,7 @@ export default function StoreSettingsPage() {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="policies">
           <Card>
             <CardHeader>
@@ -387,26 +405,26 @@ export default function StoreSettingsPage() {
             <CardContent className="space-y-6">
               <div>
                 <Label htmlFor="return-policy">Return & Refund Policy</Label>
-                <Textarea 
-                  id="return-policy" 
+                <Textarea
+                  id="return-policy"
                   name="returnPolicy"
-                  value={storeData.returnPolicy} 
+                  value={storeData.returnPolicy}
                   onChange={handleGeneralInfoChange}
                   placeholder="Describe your return and refund policy..."
                   className="min-h-[100px]"
                 />
               </div>
-              
+
               <div>
                 <Label className="mb-2 block">Shipping Options</Label>
-                
+
                 {storeData.shippingOptions.map((option, index) => (
                   <div key={index} className="flex flex-wrap items-center gap-3 p-3 border rounded-md mb-3">
                     <div className="w-full sm:w-auto flex-1">
                       <Label htmlFor={`shipping-name-${index}`} className="text-xs">Option Name</Label>
-                      <Input 
-                        id={`shipping-name-${index}`} 
-                        value={option.name} 
+                      <Input
+                        id={`shipping-name-${index}`}
+                        value={option.name}
                         onChange={(e) => handleShippingChange(index, 'name', e.target.value)}
                         className="mt-1"
                       />
@@ -415,22 +433,22 @@ export default function StoreSettingsPage() {
                       <Label htmlFor={`shipping-price-${index}`} className="text-xs">Price</Label>
                       <div className="relative mt-1">
                         <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">$</span>
-                        <Input 
-                          id={`shipping-price-${index}`} 
+                        <Input
+                          id={`shipping-price-${index}`}
                           value={option.price}
                           onChange={(e) => handleShippingChange(index, 'price', parseFloat(e.target.value))}
                           className="pl-7"
-                          type="number" 
-                          min="0" 
+                          type="number"
+                          min="0"
                           step="0.01"
                         />
                       </div>
                     </div>
                     <div className="w-full sm:w-auto sm:flex-initial">
                       <Label htmlFor={`shipping-days-${index}`} className="text-xs">Delivery Time (days)</Label>
-                      <Input 
-                        id={`shipping-days-${index}`} 
-                        value={option.days} 
+                      <Input
+                        id={`shipping-days-${index}`}
+                        value={option.days}
                         onChange={(e) => handleShippingChange(index, 'days', e.target.value)}
                         className="mt-1"
                       />
@@ -442,7 +460,7 @@ export default function StoreSettingsPage() {
                     </div>
                   </div>
                 ))}
-                
+
                 <Button onClick={addShippingOption} variant="outline" size="sm" className="mt-2">
                   + Add Shipping Option
                 </Button>
@@ -450,7 +468,7 @@ export default function StoreSettingsPage() {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="banking">
           <Card>
             <CardHeader>
@@ -493,22 +511,22 @@ export default function StoreSettingsPage() {
                   </div>
                   <div>
                     <Label htmlFor="account-name">Account Holder Name</Label>
-                    <Input 
-                      id="account-name" 
+                    <Input
+                      id="account-name"
                       name="accountName"
-                      value={storeData.bankInfo.accountName} 
+                      value={storeData.bankInfo.accountName}
                       placeholder="Enter account holder's name"
                       onChange={handleBankInfoChange}
                     />
                   </div>
                   <div>
                     <Label htmlFor="account-number">Account Number</Label>
-                    <Input 
-                      id="account-number" 
+                    <Input
+                      id="account-number"
                       name="accountNumber"
-                      value={storeData.bankInfo.accountNumber} 
+                      value={storeData.bankInfo.accountNumber}
                       placeholder="Enter account number"
-                      type="password" 
+                      type="password"
                       onChange={handleBankInfoChange}
                     />
                   </div>
@@ -524,36 +542,73 @@ export default function StoreSettingsPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="space-y-4 pt-4 border-t">
                 <h3 className="font-medium">Tax Information</h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
                     <Label htmlFor="gst-number">GST Number</Label>
-                    <Input 
+                    <Input
                       id="gst-number"
                       name="gstNumber"
-                      value={storeData.gstDetails.gstNumber} 
+                      value={storeData.gstDetails.gstNumber}
                       onChange={handleGstDetailsChange}
                     />
                   </div>
                   <div>
                     <Label htmlFor="business-pan">Business PAN</Label>
-                    <Input 
+                    <Input
                       id="business-pan"
                       name="businessPan"
-                      value={storeData.gstDetails.businessPan} 
+                      value={storeData.gstDetails.businessPan}
                       onChange={handleGstDetailsChange}
                     />
                   </div>
                   <div className="sm:col-span-2">
-                    <Label htmlFor="business-address">Registered Business Address</Label>
-                    <Textarea 
-                      id="business-address"
-                      name="businessAddress"
-                      value={storeData.gstDetails.businessAddress} 
+                    <Label htmlFor="street">Street Address</Label>
+                    <Textarea
+                      id="street"
+                      name="street"
+                      value={storeData.businessAddress.street}
                       className="min-h-[80px]"
-                      onChange={handleGstDetailsChange}
+                      onChange={handleAddressChange}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="city">City</Label>
+                    <Input
+                      id="city"
+                      name="city"
+                      value={storeData.businessAddress.city}
+                      onChange={handleAddressChange}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="state">State</Label>
+                    <Input
+                      id="state"
+                      name="state"
+                      value={storeData.businessAddress.state}
+                      onChange={handleAddressChange}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="pincode">Pincode</Label>
+                    <Input
+                      id="pincode"
+                      name="pincode"
+                      value={storeData.businessAddress.pincode}
+                      onChange={handleAddressChange}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="country">Country</Label>
+                    <Input
+                      id="country"
+                      name="country"
+                      value={storeData.businessAddress.country}
+                      onChange={handleAddressChange}
+                      disabled
                     />
                   </div>
                 </div>

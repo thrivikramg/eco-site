@@ -48,7 +48,7 @@ type Order = {
   }[]
 }
 export default function ProfilePage() {
-  
+
   const { user, logout, updateUser } = useAuth();
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('overview');
@@ -70,70 +70,18 @@ export default function ProfilePage() {
     country: 'India'
   });
 
+  const [stats, setStats] = useState({
+    totalOrders: 0,
+    upcomingBookings: 0,
+    loyaltyPoints: 0
+  })
+
   // Initialize form data
 
 
-  useEffect(() => {
-  if (user) {
-    setName(user.name || '');
-    setEmail(user.email || '');
-    setPhone(user.phone || '');
-    setProfilePic(user.image || null);
-
-    const defaultAddress = user.addresses?.find(addr => addr.isDefault) || user.addresses?.[0];
-
-    const formattedAddress = defaultAddress
-      ? {
-          street: defaultAddress.street,
-          city: defaultAddress.city,
-          state: defaultAddress.state,
-          postalCode: defaultAddress.pincode || '', // map pincode → postalCode
-          country: defaultAddress.country,
-        }
-      : {
-          street: '',
-          city: '',
-          state: '',
-          postalCode: '',
-          country: 'India',
-        };
-
-    setAddress(formattedAddress); // ✅ This is now a single Address, not array
-    setIsLoading(false);
-  }
-  }, [user]);
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Validate image type and size
-    if (!file.type.startsWith('image/')) {
-      toast({
-        title: 'Invalid File',
-        description: 'Please upload an image file',
-        variant: 'destructive'
-      });
-      return;
-    }
-
-    if (file.size > 2 * 1024 * 1024) { // 2MB limit
-      toast({
-        title: 'File Too Large',
-        description: 'Please upload an image smaller than 2MB',
-        variant: 'destructive'
-      });
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => setProfilePic(reader.result as string);
-    reader.readAsDataURL(file);
-  };
-
   const handleSave = useCallback(async () => {
     setIsSaving(true);
-    
+
     try {
       // Validate phone number
       const phoneRegex = /^[6-9]\d{9}$/;
@@ -151,13 +99,26 @@ export default function ProfilePage() {
         name,
         email,
         phone,
-        image: profilePic??undefined ,
+        image: profilePic ?? undefined,
         address
       };
 
-      // Simulate API call to update user data
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      updateUser(updatedData);
+      // Call API to update user data
+      const res = await fetch('/api/user/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updatedData)
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to update profile')
+      }
+
+      updateUser(data.user);
 
       toast({
         title: 'Profile Updated',
@@ -166,7 +127,7 @@ export default function ProfilePage() {
     } catch (error) {
       toast({
         title: 'Update Failed',
-        description: 'Failed to save your changes. Please try again.',
+        description: error instanceof Error ? error.message : 'Failed to save your changes. Please try again.',
         variant: 'destructive'
       });
     } finally {
@@ -175,7 +136,7 @@ export default function ProfilePage() {
   }, [name, email, phone, profilePic, address, updateUser, toast]);
 
   //fetch orders
- useEffect(() => {
+  useEffect(() => {
     if (!user) return
     const fetchOrders = async () => {
       try {
@@ -193,7 +154,49 @@ export default function ProfilePage() {
     fetchOrders()
   }, [user])
 
-  
+  useEffect(() => {
+    if (!user) return
+    const fetchProfileData = async () => {
+      try {
+        const res = await fetch('/api/user/profile')
+        const data = await res.json()
+
+        if (data.success) {
+          setStats(data.stats)
+
+          // Update form fields with fetched data
+          const fetchedUser = data.user
+          setName(fetchedUser.name || '')
+          setEmail(fetchedUser.email || '')
+          setPhone(fetchedUser.phone || '')
+          setProfilePic(fetchedUser.image || null)
+
+          // Update address
+          const defaultAddress = fetchedUser.addresses?.find((addr: any) => addr.isDefault) || fetchedUser.addresses?.[0]
+
+          if (defaultAddress) {
+            setAddress({
+              street: defaultAddress.street || '',
+              city: defaultAddress.city || '',
+              state: defaultAddress.state || '',
+              postalCode: defaultAddress.pincode || '',
+              country: defaultAddress.country || 'India',
+            })
+          }
+
+          // Sync with auth context
+          updateUser(fetchedUser)
+        }
+      } catch (error) {
+        console.error('Failed to fetch profile data:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchProfileData()
+  }, [user?.id])
+
+
   if (isLoading) {
     return (
       <div className="flex min-h-screen bg-gray-50">
@@ -213,7 +216,7 @@ export default function ProfilePage() {
                 ))}
               </div>
             </div>
-            
+
             {/* Main content skeleton */}
             <div className="md:col-span-3">
               <div className="bg-white rounded-xl shadow-sm p-6">
@@ -240,7 +243,7 @@ export default function ProfilePage() {
           <ChevronRight className="mx-2 h-4 w-4" />
           <span>My Account</span>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {/* Sidebar */}
           <div className="md:col-span-1 bg-white rounded-xl shadow-sm p-6 h-fit">
@@ -261,15 +264,15 @@ export default function ProfilePage() {
               </div>
               <h2 className="text-lg font-semibold">{name}</h2>
             </div>
-            
+
             <nav className="space-y-2">
               {SIDEBAR_ITEMS.map(item => (
                 <button
                   key={item.key}
                   className={cn(
                     'flex items-center w-full px-4 py-3 text-left text-sm font-medium rounded-lg transition-colors',
-                    activeTab === item.key 
-                      ? 'bg-green-50 text-green-700' 
+                    activeTab === item.key
+                      ? 'bg-green-50 text-green-700'
                       : 'hover:bg-gray-50'
                   )}
                   onClick={() => setActiveTab(item.key)}
@@ -281,7 +284,7 @@ export default function ProfilePage() {
                   {item.label}
                 </button>
               ))}
-              
+
               <button
                 className="flex items-center w-full px-4 py-3 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors mt-4"
                 onClick={logout}
@@ -291,7 +294,7 @@ export default function ProfilePage() {
               </button>
             </nav>
           </div>
-          
+
           {/* Main Content */}
           <div className="md:col-span-3">
             {activeTab === 'overview' && (
@@ -308,7 +311,7 @@ export default function ProfilePage() {
                     </Button>
                   </div>
                 </div>
-                
+
                 {/* Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
@@ -318,11 +321,11 @@ export default function ProfilePage() {
                       </div>
                       <div className="ml-4">
                         <p className="text-sm text-gray-500">Total Orders</p>
-                        <p className="text-xl font-bold mt-1">12</p>
+                        <p className="text-xl font-bold mt-1">{stats.totalOrders}</p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
                     <div className="flex items-center">
                       <div className="bg-green-50 p-3 rounded-lg">
@@ -330,11 +333,11 @@ export default function ProfilePage() {
                       </div>
                       <div className="ml-4">
                         <p className="text-sm text-gray-500">Upcoming Bookings</p>
-                        <p className="text-xl font-bold mt-1">2</p>
+                        <p className="text-xl font-bold mt-1">{stats.upcomingBookings}</p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
                     <div className="flex items-center">
                       <div className="bg-green-50 p-3 rounded-lg">
@@ -342,54 +345,53 @@ export default function ProfilePage() {
                       </div>
                       <div className="ml-4">
                         <p className="text-sm text-gray-500">Loyalty Points</p>
-                        <p className="text-xl font-bold mt-1">1,240</p>
+                        <p className="text-xl font-bold mt-1">{stats.loyaltyPoints}</p>
                       </div>
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Recent Orders */}
-                 <div className="bg-white rounded-xl shadow-sm p-6">
-  <div className="flex justify-between items-center mb-6">
-    <h2 className="text-lg font-bold">Recent Orders</h2>
-    <Button variant="outline" className="text-green-600 border-green-200">
-      View All Orders
-    </Button>
-  </div>
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-lg font-bold">Recent Orders</h2>
+                    <Button variant="outline" className="text-green-600 border-green-200">
+                      View All Orders
+                    </Button>
+                  </div>
 
-  {orders.length === 0 ? (
-    <p className="text-gray-500 text-sm">You haven’t placed any orders yet.</p>
-  ) : (
-    <div className="space-y-4">
-      {orders.slice(0, 2).map(order => (
-        <div key={order._id} className="flex flex-col md:flex-row md:items-center justify-between border-b pb-4">
-          <div>
-            <p className="font-medium">Order #{order._id.slice(-6).toUpperCase()}</p>
-            <p className="text-sm text-gray-500 mt-1">
-              {format(new Date(order.createdAt), 'dd MMM yyyy')} • {order.items.length} item{order.items.length > 1 ? 's' : ''}
-            </p>
-          </div>
-          <div className="flex items-center mt-2 md:mt-0">
-            <div className="mr-4">
-              <p className="font-medium">₹{order.totalAmount.toLocaleString()}</p>
-              <p className={`text-xs mt-1 ${
-                order.status === 'Delivered' ? 'text-green-600' : 
-                order.status === 'Processing' ? 'text-yellow-600' : 'text-gray-600'
-              }`}>
-                {order.status}
-              </p>
-            </div>
-            <Button variant="outline" size="sm">
-              View Details
-            </Button>
-          </div>
-        </div>
-      ))}
-    </div>
-  )}
-</div>
+                  {orders.length === 0 ? (
+                    <p className="text-gray-500 text-sm">You haven’t placed any orders yet.</p>
+                  ) : (
+                    <div className="space-y-4">
+                      {orders.slice(0, 2).map(order => (
+                        <div key={order._id} className="flex flex-col md:flex-row md:items-center justify-between border-b pb-4">
+                          <div>
+                            <p className="font-medium">Order #{order._id.slice(-6).toUpperCase()}</p>
+                            <p className="text-sm text-gray-500 mt-1">
+                              {format(new Date(order.createdAt), 'dd MMM yyyy')} • {order.items.length} item{order.items.length > 1 ? 's' : ''}
+                            </p>
+                          </div>
+                          <div className="flex items-center mt-2 md:mt-0">
+                            <div className="mr-4">
+                              <p className="font-medium">₹{order.totalAmount.toLocaleString()}</p>
+                              <p className={`text-xs mt-1 ${order.status === 'Delivered' ? 'text-green-600' :
+                                order.status === 'Processing' ? 'text-yellow-600' : 'text-gray-600'
+                                }`}>
+                                {order.status}
+                              </p>
+                            </div>
+                            <Button variant="outline" size="sm">
+                              View Details
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
 
-                
+
                 {/* Recent Bookings */}
                 <div className="bg-white rounded-xl shadow-sm p-6">
                   <div className="flex justify-between items-center mb-6">
@@ -398,7 +400,7 @@ export default function ProfilePage() {
                       View All Bookings
                     </Button>
                   </div>
-                  
+
                   <div className="space-y-4">
                     {BOOKINGS.filter(b => b.status === 'Scheduled' || b.status === 'Confirmed').map(booking => (
                       <div key={booking.id} className="flex flex-col md:flex-row md:items-center justify-between border-b pb-4">
@@ -410,10 +412,10 @@ export default function ProfilePage() {
                         </div>
                         <div className="flex items-center mt-2 md:mt-0">
                           <div className="mr-4">
-                            <p className={`text-xs ${
-                              booking.status === 'Confirmed' ? 'text-green-600' : 
-                              booking.status === 'Scheduled' ? 'text-blue-600' : 'text-gray-600'
-                            }`}>
+                            <p className={`text-xs ${booking.status === 'Confirmed' ? 'text-green-600' :
+                              booking.status === 'Completed' ? 'text-gray-600' :
+                                booking.status === 'Scheduled' ? 'text-blue-600' : 'text-gray-600'
+                              }`}>
                               {booking.status}
                             </p>
                           </div>
@@ -428,127 +430,63 @@ export default function ProfilePage() {
               </div>
             )}
 
-{activeTab === 'orders' && (
-  <div className="bg-white rounded-xl shadow-sm p-6">
-    <div className="flex justify-between items-center mb-6">
-      <h1 className="text-xl font-bold">My Orders</h1>
-      <div className="flex space-x-2">
-        <Input placeholder="Search orders..." className="max-w-xs" />
-        <Button variant="outline">Filter</Button>
-      </div>
-    </div>
-
-    {orders.length === 0 ? (
-      <div className="text-center py-12">
-        <Package className="mx-auto h-12 w-12 text-gray-400" />
-        <h3 className="mt-4 font-medium text-gray-900">No orders yet</h3>
-        <p className="mt-1 text-gray-500">Your orders will appear here once you make a purchase.</p>
-        <Button className="mt-4 bg-green-600 hover:bg-green-700">Start Shopping</Button>
-      </div>
-    ) : (
-      <div className="space-y-4">
-        {orders.map(order => (
-          <div key={order._id} className="border rounded-lg p-4 hover:border-green-300 transition-colors">
-            <div className="flex justify-between items-center">
-              <div>
-                <p className="font-medium">Order #{order._id.slice(-6).toUpperCase()}</p>
-                <p className="text-sm text-gray-500">
-                  {format(new Date(order.createdAt), 'dd MMM yyyy')} • {order.items.length} item{order.items.length > 1 ? 's' : ''}
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="font-medium">₹{order.totalAmount.toLocaleString()}</p>
-                <p
-                  className={`text-xs mt-1 ${
-                    order.status === 'Delivered'
-                      ? 'text-green-600'
-                      : order.status === 'Processing'
-                      ? 'text-yellow-600'
-                      : 'text-gray-600'
-                  }`}
-                >
-                  {order.status}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex mt-4 justify-between">
-              <div className="flex space-x-2">
-                <Button variant="outline" size="sm">
-                  View Details
-                </Button>
-                {order.status === 'Delivered' && (
-                  <Button variant="outline" size="sm">
-                    Rate Product
-                  </Button>
-                )}
-              </div>
-              {order.status === 'Processing' && (
-                <Button size="sm" className="bg-green-600 hover:bg-green-700">
-                  Track Order
-                </Button>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-    )}
-  </div>
-)}
-
-
-            {activeTab === 'bookings' && (
+            {activeTab === 'orders' && (
               <div className="bg-white rounded-xl shadow-sm p-6">
                 <div className="flex justify-between items-center mb-6">
-                  <h1 className="text-xl font-bold">My Bookings</h1>
-                  <Button className="bg-green-600 hover:bg-green-700">
-                    Book New Service
-                  </Button>
+                  <h1 className="text-xl font-bold">My Orders</h1>
+                  <div className="flex space-x-2">
+                    <Input placeholder="Search orders..." className="max-w-xs" />
+                    <Button variant="outline">Filter</Button>
+                  </div>
                 </div>
-                
-                {BOOKINGS.length === 0 ? (
+
+                {orders.length === 0 ? (
                   <div className="text-center py-12">
-                    <Calendar className="mx-auto h-12 w-12 text-gray-400" />
-                    <h3 className="mt-4 font-medium text-gray-900">No bookings yet</h3>
-                    <p className="mt-1 text-gray-500">Your service bookings will appear here</p>
+                    <Package className="mx-auto h-12 w-12 text-gray-400" />
+                    <h3 className="mt-4 font-medium text-gray-900">No orders yet</h3>
+                    <p className="mt-1 text-gray-500">Your orders will appear here once you make a purchase.</p>
+                    <Button className="mt-4 bg-green-600 hover:bg-green-700">Start Shopping</Button>
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {BOOKINGS.map(booking => (
-                      <div key={booking.id} className="border rounded-lg p-4 hover:border-green-300 transition-colors">
-                        <div className="flex justify-between items-start">
+                    {orders.map(order => (
+                      <div key={order._id} className="border rounded-lg p-4 hover:border-green-300 transition-colors">
+                        <div className="flex justify-between items-center">
                           <div>
-                            <p className="font-medium">{booking.service}</p>
-                            <p className="text-sm text-gray-500 mt-1">
-                              {format(booking.date, 'EEE, d MMM yyyy, h:mm a')} • {booking.duration}
+                            <p className="font-medium">Order #{order._id.slice(-6).toUpperCase()}</p>
+                            <p className="text-sm text-gray-500">
+                              {format(new Date(order.createdAt), 'dd MMM yyyy')} • {order.items.length} item{order.items.length > 1 ? 's' : ''}
                             </p>
                           </div>
                           <div className="text-right">
-                            <p className={`text-sm ${
-                              booking.status === 'Confirmed' ? 'text-green-600' : 
-                              booking.status === 'Completed' ? 'text-gray-600' : 
-                              booking.status === 'Scheduled' ? 'text-blue-600' : 'text-gray-600'
-                            }`}>
-                              {booking.status}
+                            <p className="font-medium">₹{order.totalAmount.toLocaleString()}</p>
+                            <p
+                              className={`text-xs mt-1 ${order.status === 'Delivered'
+                                ? 'text-green-600'
+                                : order.status === 'Processing'
+                                  ? 'text-yellow-600'
+                                  : 'text-gray-600'
+                                }`}
+                            >
+                              {order.status}
                             </p>
-                            <p className="text-xs text-gray-500 mt-1">Booking #{booking.id}</p>
                           </div>
                         </div>
-                        
+
                         <div className="flex mt-4 justify-between">
                           <div className="flex space-x-2">
                             <Button variant="outline" size="sm">
                               View Details
                             </Button>
-                            {booking.status === 'Completed' && (
+                            {order.status === 'Delivered' && (
                               <Button variant="outline" size="sm">
-                                Rate Service
+                                Rate Product
                               </Button>
                             )}
                           </div>
-                          {booking.status !== 'Completed' && (
-                            <Button variant="outline" size="sm" className="text-red-500 border-red-200 hover:bg-red-50">
-                              Cancel Booking
+                          {order.status === 'Processing' && (
+                            <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                              Track Order
                             </Button>
                           )}
                         </div>
@@ -562,37 +500,37 @@ export default function ProfilePage() {
             {activeTab === 'settings' && (
               <div className="bg-white rounded-xl shadow-sm p-6">
                 <h1 className="text-xl font-bold mb-6">Account Settings</h1>
-                
+
                 <div className="space-y-8">
                   <div>
                     <h2 className="text-lg font-semibold mb-4">Personal Information</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <Label>Name</Label>
-                        <Input 
-                          value={name} 
-                          onChange={(e) => setName(e.target.value)} 
+                        <Input
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
                           placeholder="Enter your full name"
                         />
                       </div>
-                      
+
                       <div>
                         <Label>Email</Label>
-                        <Input 
-                          type="email" 
-                          value={email} 
-                          onChange={(e) => setEmail(e.target.value)} 
+                        <Input
+                          type="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
                           placeholder="Enter your email"
                           disabled
                         />
                         <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
                       </div>
-                      
+
                       <div>
                         <Label>Phone</Label>
-                        <Input 
-                          value={phone} 
-                          onChange={(e) => setPhone(e.target.value)} 
+                        <Input
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
                           placeholder="Enter your phone number"
                           maxLength={10}
                         />
@@ -602,7 +540,7 @@ export default function ProfilePage() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div>
                     <h2 className="text-lg font-semibold mb-4">Profile Picture</h2>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-6">
@@ -620,32 +558,9 @@ export default function ProfilePage() {
                           </div>
                         )}
                       </div>
-                      <div className="flex-1">
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                          <div>
-                            <Input 
-                              id="profile-upload"
-                              type="file" 
-                              accept="image/*" 
-                              onChange={handleImageUpload}
-                              className="hidden"
-                            />
-                            <Label 
-                              htmlFor="profile-upload"
-                              className="cursor-pointer border border-green-300 rounded-md px-4 py-2 text-sm font-medium text-green-700 bg-green-50 hover:bg-green-100 transition-colors"
-                            >
-                              Change Photo
-                            </Label>
-                          </div>
-                          <Button variant="outline" className="border-gray-300">
-                            Remove
-                          </Button>
-                        </div>
-                        <p className="text-xs text-gray-500 mt-2">JPG, PNG or GIF. Max size 2MB</p>
-                      </div>
                     </div>
                   </div>
-                  
+
                   <div>
                     <div className="flex justify-between items-center mb-4">
                       <h2 className="text-lg font-semibold">Address</h2>
@@ -654,7 +569,7 @@ export default function ProfilePage() {
                         Add New Address
                       </Button>
                     </div>
-                    
+
                     <div className="border rounded-lg p-5 bg-green-50 border-green-200">
                       <div className="flex justify-between">
                         <h3 className="font-medium">Primary Address</h3>
@@ -662,13 +577,13 @@ export default function ProfilePage() {
                           Edit
                         </Button>
                       </div>
-                      
+
                       <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <Label>Street Address</Label>
-                          <Textarea 
-                            value={address.street} 
-                            onChange={(e) => setAddress({...address, street: e.target.value})} 
+                          <Textarea
+                            value={address.street}
+                            onChange={(e) => setAddress({ ...address, street: e.target.value })}
                             placeholder="House number, street, area"
                             className="bg-white"
                           />
@@ -676,9 +591,9 @@ export default function ProfilePage() {
 
                         <div>
                           <Label>City</Label>
-                          <Input 
-                            value={address.city} 
-                            onChange={(e) => setAddress({...address, city: e.target.value})} 
+                          <Input
+                            value={address.city}
+                            onChange={(e) => setAddress({ ...address, city: e.target.value })}
                             placeholder="Enter your city"
                             className="bg-white"
                           />
@@ -686,9 +601,9 @@ export default function ProfilePage() {
 
                         <div>
                           <Label>State</Label>
-                          <Input 
-                            value={address.state} 
-                            onChange={(e) => setAddress({...address, state: e.target.value})} 
+                          <Input
+                            value={address.state}
+                            onChange={(e) => setAddress({ ...address, state: e.target.value })}
                             placeholder="Enter your state"
                             className="bg-white"
                           />
@@ -696,9 +611,9 @@ export default function ProfilePage() {
 
                         <div>
                           <Label>Postal Code</Label>
-                          <Input 
-                            value={address.postalCode} 
-                            onChange={(e) => setAddress({...address, postalCode: e.target.value})} 
+                          <Input
+                            value={address.postalCode}
+                            onChange={(e) => setAddress({ ...address, postalCode: e.target.value })}
                             placeholder="Enter postal code"
                             maxLength={6}
                             className="bg-white"
@@ -707,9 +622,9 @@ export default function ProfilePage() {
 
                         <div>
                           <Label>Country</Label>
-                          <Input 
-                            value={address.country} 
-                            onChange={(e) => setAddress({...address, country: e.target.value})} 
+                          <Input
+                            value={address.country}
+                            onChange={(e) => setAddress({ ...address, country: e.target.value })}
                             placeholder="Enter country"
                             className="bg-white"
                           />
@@ -717,39 +632,39 @@ export default function ProfilePage() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex justify-end gap-3 pt-4">
-<Button 
-  variant="outline" 
-  onClick={() => {
-    setName(user?.name || '');
-    setPhone(user?.phone || '');
-    setProfilePic(user?.image || null);
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setName(user?.name || '');
+                        setPhone(user?.phone || '');
+                        setProfilePic(user?.image || null);
 
-    const defaultAddress = user?.addresses?.find(addr => addr.isDefault) || user?.addresses?.[0];
+                        const defaultAddress = user?.addresses?.find(addr => addr.isDefault) || user?.addresses?.[0];
 
-    setAddress(defaultAddress
-      ? {
-          street: defaultAddress.street,
-          city: defaultAddress.city,
-          state: defaultAddress.state,
-          postalCode: defaultAddress.pincode || '',
-          country: defaultAddress.country,
-        }
-      : {
-          street: '',
-          city: '',
-          state: '',
-          postalCode: '',
-          country: 'India'
-        });
-  }}
->
-  Discard Changes
-</Button>
+                        setAddress(defaultAddress
+                          ? {
+                            street: defaultAddress.street,
+                            city: defaultAddress.city,
+                            state: defaultAddress.state,
+                            postalCode: defaultAddress.pincode || '',
+                            country: defaultAddress.country,
+                          }
+                          : {
+                            street: '',
+                            city: '',
+                            state: '',
+                            postalCode: '',
+                            country: 'India'
+                          });
+                      }}
+                    >
+                      Discard Changes
+                    </Button>
 
-                    <Button 
-                      onClick={handleSave} 
+                    <Button
+                      onClick={handleSave}
                       disabled={isSaving}
                       className="bg-green-600 hover:bg-green-700"
                     >

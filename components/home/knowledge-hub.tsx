@@ -5,29 +5,12 @@ import { Card, CardContent } from "@/components/ui/card"
 import { ArrowRight } from "lucide-react"
 import ShinyText from "@/components/ShinyText"
 
-// Mock knowledge resources
-const resources = [
-  {
-    id: "1",
-    title: "Guide to Organic Gardening",
-    category: "Gardening Tips",
-    image: "/organic guide.jpg?height=300&width=500",
-  },
-  {
-    id: "2",
-    title: "Identifying Common Plant Diseases",
-    category: "Plant Care",
-    image: "/plant diseasses.png?height=300&width=500",
-  },
-  {
-    id: "3",
-    title: "Home Composting 101",
-    category: "Waste Management",
-    image: "/home composting.webp?height=300&width=500",
-  },
-]
+import { getLatestArticles } from "../../lib/eco-data";
 
 export default function KnowledgeHub() {
+  // Select latest articles to feature on home page
+  const resources = getLatestArticles(3);
+
   return (
     <section className="py-16 bg-gray-50">
       <div className="container">

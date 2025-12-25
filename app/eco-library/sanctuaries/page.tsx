@@ -14,141 +14,9 @@ export const metadata: Metadata = {
   description: "Explore wildlife sanctuaries and conservation areas around the world.",
 }
 
-const sanctuariesArticles = [
-  {
-    id: "s1",
-    title: "Bandipur Tiger Reserve: A Conservation Success Story",
-    excerpt: "How careful management has helped tiger populations rebound in this Indian sanctuary.",
-    category: "Tiger Conservation",
-    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750014294/112845083_wdxvhi.png`,
-    author: "Rahul Sharma",
-    date: "May 23, 2025",
-    readTime: "15 min read",
-    externalLink: "https://www.bandipurtigerreserve.in/"
-  },
-  {
-    id: "s2",
-    title: "Serengeti National Park: The Great Migration",
-    excerpt: "Tracking the annual wildebeest migration across Tanzania and Kenya.",
-    category: "African Wildlife",
-    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750014035/Elephant_family_at_jim_corbett_national_park_uzvlby.jpg`,
-    author: "Dr. Jane Goodall",
-    date: "May 20, 2025",
-    readTime: "14 min read",
-    externalLink: "https://www.nationalgeographic.com/animals/article/serengeti-migration-safari-guide"
-  },
-  {
-    id: "s3",
-    title: "The Amazon Rainforest: Protecting Earth's Biodiversity Hotspot",
-    excerpt: "Conservation efforts in the world's largest tropical rainforest.",
-    category: "Rainforest Conservation",
-    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750013753/1725031216118_xxs6ad.jpg`,
-    author: "Dr. Carlos Nobre",
-    date: "May 17, 2025",
-    readTime: "12 min read",
-    externalLink: "https://www.worldwildlife.org/places/amazon"
-  },
-  {
-    id: "s4",
-    title: "Great Barrier Reef Marine Park: Ocean Conservation",
-    excerpt: "Efforts to protect the world's largest coral reef system from climate change.",
-    category: "Marine Conservation",
-    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750013980/jim-corbett-national_wwtfqp.jpg`,
-    author: "Dr. Ove Hoegh-Guldberg",
-    date: "May 14, 2025",
-    readTime: "11 min read",
-    externalLink: "https://greatbarrierreef.org/"
-  },
-  {
-    id: "s5",
-    title: "Yellowstone National Park: America's First National Park",
-    excerpt: "The history and ecological significance of this pioneer in conservation.",
-    category: "National Parks",
-    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750014294/112845083_wdxvhi.png`,
-    author: "Dr. Robert Smith",
-    date: "May 11, 2025",
-    readTime: "13 min read",
-    externalLink: "https://www.nps.gov/yell/index.htm"
-  },
-  {
-    id: "s6",
-    title: "Galápagos Marine Reserve: Protecting Darwin's Laboratory",
-    excerpt: "Conservation efforts in the waters surrounding the iconic Galápagos Islands.",
-    category: "Marine Conservation",
-    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750013952/Master_q6wqeb.jpg`,
-    author: "Dr. Patricia Parker",
-    date: "May 8, 2025",
-    readTime: "10 min read",
-    externalLink: "https://www.darwinfoundation.org/en/"
-  },
-  {
-    id: "s7",
-    title: "Kruger National Park: Big Five Conservation",
-    excerpt: "Efforts to protect lions, elephants, rhinos, leopards and buffalo in South Africa.",
-    category: "African Wildlife",
-    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750013984/Longtailed-broadbill-Bird-in-Corbett_xn4lfi.jpg`,
-    author: "Dr. Sam Ferreira",
-    date: "May 5, 2025",
-    readTime: "9 min read",
-    externalLink: "https://www.sanparks.org/parks/kruger/"
-  },
-  {
-    id: "s8",
-    title: "Sundarbans National Park: Protecting the Bengal Tiger",
-    excerpt: "Conservation challenges in the world's largest mangrove forest.",
-    category: "Tiger Conservation",
-    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750014294/112845083_wdxvhi.png`,
-    author: "Dr. Priya Mondal",
-    date: "May 2, 2025",
-    readTime: "11 min read",
-    externalLink: "https://whc.unesco.org/en/list/798/"
-  }
-];
+import { getArticlesByCategory } from "../../../lib/eco-data";
 
-// Generate more articles to reach the required count of 24
-const generateMoreArticles = () => {
-  const baseArticles = [...sanctuariesArticles];
-  const result = [...baseArticles];
-
-  const titles = [
-    "Everglades National Park: America's River of Grass",
-    "Komodo National Park: Protecting the World's Largest Lizards",
-    "Kaziranga National Park: Rhino Conservation Success",
-    "Borneo Rainforest: Orangutan Sanctuaries",
-    "Monarch Butterfly Biosphere Reserve in Mexico",
-    "Arctic National Wildlife Refuge: Protecting the Last Frontier",
-    "Okavango Delta: Africa's Last Eden",
-    "Bwindi Impenetrable National Park: Mountain Gorilla Sanctuary",
-    "Pantanal Conservation Area: South America's Wetland Wonder",
-    "Białowieża Forest: Europe's Last Primeval Forest",
-    "Coral Triangle: The Amazon of the Seas",
-    "Virunga National Park: Conservation Amid Conflict",
-    "Corcovado National Park: Costa Rica's Crown Jewel",
-    "Etosha National Park: Namibia's Wildlife Haven",
-    "Daintree Rainforest: Ancient Ecosystem Protection",
-    "Yosemite National Park: Conservation Pioneer"
-  ];
-
-  // Generate additional articles to reach 24 total
-  for (let i = 0; result.length < 24; i++) {
-    const title = titles[i % titles.length];
-    result.push({
-      id: `s${result.length + 1}`,
-      title: title,
-      excerpt: `Conservation strategies and wildlife protection in ${title.split(":")[0]}.`,
-      category: ["National Parks", "Marine Conservation", "Tiger Conservation", "African Wildlife", "Rainforest Conservation", "Endangered Species"][Math.floor(Math.random() * 6)],
-      image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750014035/Elephant_family_at_jim_corbett_national_park_uzvlby.jpg`,
-      author: baseArticles[i % baseArticles.length].author,
-      date: `May ${Math.floor(Math.random() * 25) + 1}, 2025`,
-      readTime: `${Math.floor(Math.random() * 10) + 5} min read`,
-      externalLink: baseArticles[i % baseArticles.length].externalLink
-    });
-  }
-
-  return result;
-};
-
-const allArticles = generateMoreArticles();
+const allArticles = getArticlesByCategory("sanctuaries", 24);
 
 export default function SanctuariesPage() {
   return (
@@ -192,14 +60,12 @@ export default function SanctuariesPage() {
                   <span className="mx-2">•</span>
                   <span>By Dr. Jane Goodall</span>
                 </div>
-                <a
-                  href="https://www.nationalgeographic.com/animals/article/serengeti-migration-safari-guide"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  href="/eco-library/s2"
                   className="inline-flex items-center justify-center px-6 py-3 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors w-fit"
                 >
                   Read Full Article <ArrowUpRight className="ml-2 h-4 w-4" />
-                </a>
+                </Link>
               </div>
             </div>
           </Card>
@@ -232,14 +98,12 @@ export default function SanctuariesPage() {
                 <p className="text-gray-600 mb-4 line-clamp-3">{article.excerpt}</p>
                 <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
                   <span className="text-sm font-medium">By {article.author}</span>
-                  <a
-                    href={article.externalLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <Link
+                    href={`/eco-library/${article.id}`}
                     className="inline-flex items-center justify-center px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors"
                   >
                     Read <ArrowUpRight className="ml-1 h-4 w-4" />
-                  </a>
+                  </Link>
                 </div>
               </CardContent>
             </Card>

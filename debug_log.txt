@@ -1,0 +1,1 @@
+POST body: {"title":"hu","content":"jkhkhkj","type":"discussion","image":"","communityId":"694cdf8ed979035d80daa445"}

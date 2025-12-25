@@ -6,173 +6,9 @@ import { Input } from "../../../components/ui/input"
 import { Button } from "../../../components/ui/button"
 import { Search, Filter, ArrowUpRight } from "lucide-react"
 
-const gardeningArticles = [
-  {
-    id: "gt1",
-    title: "Companion Planting: Nature's Pest Control",
-    excerpt: "Which plants work well together to boost growth and naturally deter pests.",
-    category: "Organic Gardening",
-    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750016659/Container-Garden-1024x1024_gkeb6g.jpg`,
-    author: "Jessica Walliser",
-    date: "May 24, 2025",
-    readTime: "10 min read",
-    externalLink: "https://savvygardening.com/companion-planting-chart/"
-  },
-  {
-    id: "gt2",
-    title: "No-Dig Gardening: Better Results with Less Work",
-    excerpt: "How to build fertile soil and grow healthier plants by disturbing the soil less.",
-    category: "Sustainable Techniques",
-    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750016659/Container-Garden-1024x1024_gkeb6g.jpg`,
-    author: "Charles Dowding",
-    date: "May 22, 2025",
-    readTime: "8 min read",
-    externalLink: "https://charlesdowding.co.uk/no-dig-growing/how-to-start-no-dig/"
-  },
-  {
-    id: "gt3",
-    title: "Composting Masterclass: From Kitchen Scraps to Garden Gold",
-    excerpt: "A comprehensive guide to creating nutrient-rich compost for your garden.",
-    category: "Composting",
-    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750016659/Container-Garden-1024x1024_gkeb6g.jpg`,
-    author: "Dr. Elaine Ingham",
-    date: "May 20, 2025",
-    readTime: "12 min read",
-    externalLink: "https://www.permaculturenews.org/2018/09/12/the-art-and-science-of-making-a-hot-compost-pile/"
-  },
-  {
-    id: "gt4",
-    title: "Rainwater Harvesting for Garden Irrigation",
-    excerpt: "Simple systems to collect and use rainwater in your garden.",
-    category: "Water Conservation",
-    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750016659/Container-Garden-1024x1024_gkeb6g.jpg`,
-    author: "Brad Lancaster",
-    date: "May 18, 2025",
-    readTime: "9 min read",
-    externalLink: "https://www.harvestingrainwater.com/rainwater-harvesting-inforesources/rainwater-harvesting-online-resources/"
-  },
-  {
-    id: "gt5",
-    title: "Permaculture Principles for Home Gardens",
-    excerpt: "How to apply permaculture ethics and principles to create a sustainable garden ecosystem.",
-    category: "Permaculture",
-    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750016659/Container-Garden-1024x1024_gkeb6g.jpg`,
-    author: "Geoff Lawton",
-    date: "May 16, 2025",
-    readTime: "14 min read",
-    externalLink: "https://www.permaculturenews.org/what-is-permaculture/"
-  },
-  {
-    id: "gt6",
-    title: "Growing Food in Small Spaces: Urban Gardening Solutions",
-    excerpt: "Innovative techniques for growing vegetables in limited spaces.",
-    category: "Urban Gardening",
-    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750016659/Container-Garden-1024x1024_gkeb6g.jpg`,
-    author: "Kevin Lee Jacobs",
-    date: "May 14, 2025",
-    readTime: "7 min read",
-    externalLink: "https://www.urbanfarmonline.com/urban-gardening/backyard-gardening/container-gardening.aspx"
-  },
-  {
-    id: "gt7",
-    title: "Natural Pest Management: Beyond Chemicals",
-    excerpt: "Effective strategies to manage garden pests without synthetic pesticides.",
-    category: "Pest Control",
-    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750016659/Container-Garden-1024x1024_gkeb6g.jpg`,
-    author: "Dr. Jessica Shade",
-    date: "May 12, 2025",
-    readTime: "11 min read",
-    externalLink: "https://www.gardensalive.com/product/natural-pest-control"
-  },
-  {
-    id: "gt8",
-    title: "Seed Saving: Preserving Biodiversity in Your Garden",
-    excerpt: "How to collect, process, and store seeds from your garden for future planting.",
-    category: "Seed Saving",
-    image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750016659/Container-Garden-1024x1024_gkeb6g.jpg`,
-    author: "Vandana Shiva",
-    date: "May 10, 2025",
-    readTime: "9 min read",
-    externalLink: "https://www.seedsavers.org/learn#save"
-  }
-];
+import { getArticlesByCategory } from "../../../lib/eco-data";
 
-// Generate more articles to reach the required count of 56
-const generateMoreArticles = () => {
-  const baseArticles = [...gardeningArticles];
-  const result = [...baseArticles];
-  
-  const titles = [
-    "Soil Testing and Amendment Guide",
-    "Vertical Gardening: Growing Up Instead of Out",
-    "Heirloom Vegetables: Preserving Food Heritage",
-    "Season Extension Techniques for Year-Round Harvests",
-    "Medicinal Herb Garden: Growing Your Own Pharmacy",
-    "Drought-Resistant Gardening Strategies",
-    "Attracting Beneficial Insects to Your Garden",
-    "Cover Crops: Improving Soil Health Naturally",
-    "Native Plant Gardening for Wildlife Support",
-    "Raised Bed Construction and Maintenance",
-    "Pruning Techniques for Healthier Plants",
-    "Garden Planning for Maximum Yield",
-    "Food Forests: Mimicking Natural Ecosystems",
-    "Hydroponics Basics for Home Gardeners",
-    "Container Gardening for Beginners",
-    "Lasagna Gardening: No-Dig Bed Preparation",
-    "Greywater Systems for Garden Irrigation",
-    "Intensive Gardening Methods for Small Spaces",
-    "Preventing and Managing Plant Diseases Naturally",
-    "Mulching Guide: Types, Benefits, and Application",
-    "Biochar: Improving Soil and Sequestering Carbon",
-    "Winter Garden Preparation and Protection",
-    "Succession Planting for Continuous Harvests",
-    "Mycorrhizal Fungi: The Underground Garden Allies",
-    "Vermicomposting: Worm Composting Basics",
-    "Greenhouse Gardening Fundamentals",
-    "Water-Wise Gardening Techniques",
-    "Bokashi Composting for Urban Gardeners",
-    "Pollinator Gardens: Supporting Bees and Butterflies",
-    "Hugelkultur Beds: Self-Sustaining Garden Mounds",
-    "Integrated Pest Management for Home Gardeners",
-    "Edible Landscaping: Beautiful and Productive Gardens",
-    "Moon Phase Gardening: Ancient Wisdom or Myth?",
-    "Japanese Gardening Principles for Western Gardens",
-    "Kids Gardening Projects: Growing Future Gardeners",
-    "Agroforestry Techniques for Home Gardens",
-    "Aquaponics: Combining Fish and Plant Cultivation",
-    "Garden Recordkeeping and Journaling",
-    "Indoor Gardening Under Grow Lights",
-    "Preserving Your Harvest: Canning, Drying, and Freezing",
-    "Microgreens: Quick and Nutritious Indoor Crops",
-    "Seed Starting Indoors: Timing and Techniques",
-    "Garden Tool Maintenance and Care",
-    "Humus-Rich Soil: The Foundation of Garden Health",
-    "Rooftop and Balcony Gardening Solutions",
-    "Biodynamic Gardening Principles and Practices",
-    "Winter Sowing: Cold-Weather Seed Starting",
-    "Keyhole Gardens: Water-Efficient Raised Beds"
-  ];
-  
-  // Generate additional articles to reach 56 total
-  for (let i = 0; result.length < 56; i++) {
-    const title = titles[i % titles.length];
-    result.push({
-      id: `gt${result.length + 1}`,
-      title: title,
-      excerpt: `Expert advice on ${title.toLowerCase()} for your sustainable garden.`,
-      category: ["Organic Gardening", "Sustainable Techniques", "Water Conservation", "Permaculture", "Urban Gardening", "Pest Control", "Soil Health"][Math.floor(Math.random() * 7)],
-      image: `https://res.cloudinary.com/dc2mzcoqr/image/upload/v1750016659/Container-Garden-1024x1024_gkeb6g.jpg`,
-      author: baseArticles[i % baseArticles.length].author,
-      date: `May ${Math.floor(Math.random() * 25) + 1}, 2025`,
-      readTime: `${Math.floor(Math.random() * 10) + 5} min read`,
-      externalLink: baseArticles[i % baseArticles.length].externalLink
-    });
-  }
-  
-  return result;
-};
-
-const allArticles = generateMoreArticles();
+const allArticles = getArticlesByCategory("gardening-tips", 56);
 
 export default function GardeningTipsPage() {
   return (
@@ -249,14 +85,12 @@ export default function GardeningTipsPage() {
               <p className="text-gray-600 mb-6">Learn how to design your garden as a self-sustaining ecosystem that works with nature rather than against it. This comprehensive guide covers the core ethics and principles of permaculture and provides practical examples for implementation in your home garden.</p>
               <div className="mt-auto flex items-center justify-between pt-4 border-t border-gray-100">
                 <span className="text-sm font-medium">By Geoff Lawton</span>
-                <a
-                  href="https://www.permaculturenews.org/what-is-permaculture/"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  href="/eco-library/gt5"
                   className="inline-flex items-center justify-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
                 >
                   Read Article <ArrowUpRight className="ml-1 h-4 w-4" />
-                </a>
+                </Link>
               </div>
             </div>
           </Card>
@@ -283,14 +117,12 @@ export default function GardeningTipsPage() {
               <p className="text-gray-600 mb-6">Discover how strategic plant combinations can help you create a healthier garden ecosystem. Learn which plants enhance each other's growth, repel pests, and attract beneficial insects for a more productive organic garden.</p>
               <div className="mt-auto flex items-center justify-between pt-4 border-t border-gray-100">
                 <span className="text-sm font-medium">By Jessica Walliser</span>
-                <a
-                  href="https://savvygardening.com/companion-planting-chart/"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  href="/eco-library/gt1"
                   className="inline-flex items-center justify-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
                 >
                   Read Article <ArrowUpRight className="ml-1 h-4 w-4" />
-                </a>
+                </Link>
               </div>
             </div>
           </Card>
@@ -324,14 +156,12 @@ export default function GardeningTipsPage() {
                 <p className="text-gray-600 mb-4 line-clamp-3">{article.excerpt}</p>
                 <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
                   <span className="text-sm font-medium">By {article.author}</span>
-                  <a
-                    href={article.externalLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <Link
+                    href={`/eco-library/${article.id}`}
                     className="inline-flex items-center justify-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
                   >
                     Read <ArrowUpRight className="ml-1 h-4 w-4" />
-                  </a>
+                  </Link>
                 </div>
               </CardContent>
             </Card>

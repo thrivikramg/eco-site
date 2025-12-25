@@ -1,8 +1,49 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
+import { Loader2 } from "lucide-react"
+
+interface TrendingTopic {
+  title: string
+  category: string
+  posts: number
+  views: number
+  id: string
+}
 
 export default function TrendingTopics() {
+  const [trendingTopics, setTrendingTopics] = useState<TrendingTopic[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchTrending = async () => {
+      try {
+        const res = await fetch("/api/community/trending")
+        const data = await res.json()
+        if (res.ok) {
+          setTrendingTopics(data.trendingTopics)
+        }
+      } catch (error) {
+        console.error("Error fetching trending topics:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchTrending()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-8">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -23,8 +64,8 @@ export default function TrendingTopics() {
 
         <TabsContent value="all" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {trendingTopics.map((topic, index) => (
-              <TopicCard key={index} {...topic} />
+            {trendingTopics.map((topic) => (
+              <TopicCard key={topic.id} {...topic} />
             ))}
           </div>
         </TabsContent>
@@ -33,8 +74,8 @@ export default function TrendingTopics() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {trendingTopics
               .filter((topic) => topic.category === "Gardening")
-              .map((topic, index) => (
-                <TopicCard key={index} {...topic} />
+              .map((topic) => (
+                <TopicCard key={topic.id} {...topic} />
               ))}
           </div>
         </TabsContent>
@@ -43,8 +84,8 @@ export default function TrendingTopics() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {trendingTopics
               .filter((topic) => topic.category === "Sustainable Living")
-              .map((topic, index) => (
-                <TopicCard key={index} {...topic} />
+              .map((topic) => (
+                <TopicCard key={topic.id} {...topic} />
               ))}
           </div>
         </TabsContent>
@@ -53,8 +94,8 @@ export default function TrendingTopics() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {trendingTopics
               .filter((topic) => topic.category === "Zero Waste")
-              .map((topic, index) => (
-                <TopicCard key={index} {...topic} />
+              .map((topic) => (
+                <TopicCard key={topic.id} {...topic} />
               ))}
           </div>
         </TabsContent>
@@ -63,8 +104,8 @@ export default function TrendingTopics() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {trendingTopics
               .filter((topic) => topic.category === "Eco Tips")
-              .map((topic, index) => (
-                <TopicCard key={index} {...topic} />
+              .map((topic) => (
+                <TopicCard key={topic.id} {...topic} />
               ))}
           </div>
         </TabsContent>
@@ -107,53 +148,4 @@ function TopicCard({ title, category, posts, views }) {
   )
 }
 
-const trendingTopics = [
-  {
-    title: "Best practices for organic vegetable gardening",
-    category: "Gardening",
-    posts: 128,
-    views: 3240,
-  },
-  {
-    title: "How to start composting in small spaces",
-    category: "Zero Waste",
-    posts: 94,
-    views: 2180,
-  },
-  {
-    title: "DIY natural cleaning products that actually work",
-    category: "Sustainable Living",
-    posts: 156,
-    views: 4120,
-  },
-  {
-    title: "Water conservation techniques for home gardens",
-    category: "Gardening",
-    posts: 87,
-    views: 1950,
-  },
-  {
-    title: "Plastic-free kitchen: Tips and alternatives",
-    category: "Zero Waste",
-    posts: 112,
-    views: 2760,
-  },
-  {
-    title: "Seasonal planting guide for beginners",
-    category: "Gardening",
-    posts: 73,
-    views: 1840,
-  },
-  {
-    title: "Energy-saving habits that reduce your carbon footprint",
-    category: "Eco Tips",
-    posts: 104,
-    views: 2490,
-  },
-  {
-    title: "Sustainable fashion: Building an eco-friendly wardrobe",
-    category: "Sustainable Living",
-    posts: 89,
-    views: 2150,
-  },
-]
+

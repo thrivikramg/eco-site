@@ -123,8 +123,7 @@ export async function PUT(req: Request) {
     } catch (error: any) {
         console.error("Error updating profile:", error)
         return NextResponse.json({
-            error: error.message || "Internal Server Error",
-            details: error.errors // Mongoose validation errors
+            error: "Failed to update profile. Please check your input."
         }, { status: 500 })
     }
 }

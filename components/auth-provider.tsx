@@ -7,7 +7,7 @@ import {
   useEffect,
   type ReactNode,
 } from "react"
-import { useSession, signIn, signOut } from "next-auth/react"
+import { useSession, signOut } from "next-auth/react"
 
 export interface Address {
   _id?: string
@@ -64,7 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email: session.user.email || '',
         image: session.user.image || undefined,
         // You might need to fetch role and addresses from your backend here
-        role: (session.user as any).role || 'buyer', 
+        role: (session.user as any).role || 'buyer',
       }
       setUser(appUser)
       setIsAuthenticated(true)
@@ -111,6 +111,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const logout = () => {
+    signOut({ callbackUrl: '/' })
     setUser(null)
     setIsAuthenticated(false)
     localStorage.removeItem("user")

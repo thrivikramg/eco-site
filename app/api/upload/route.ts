@@ -25,7 +25,7 @@ export async function POST(req: Request) {
 
             console.error("Missing Cloudinary Env Vars:", missing);
             return NextResponse.json(
-                { message: `Server Configuration Error: Missing environment variables: ${missing.join(", ")}` },
+                { message: "Server Configuration Error" },
                 { status: 500 }
             );
         }
@@ -93,6 +93,11 @@ export async function POST(req: Request) {
 
         if (!file) {
             return NextResponse.json({ message: "No file provided" }, { status: 400 });
+        }
+
+        // 5MB limit
+        if (file.size > 5 * 1024 * 1024) {
+            return NextResponse.json({ message: "File too large (max 5MB)" }, { status: 400 });
         }
 
         // 3. Convert File to Buffer

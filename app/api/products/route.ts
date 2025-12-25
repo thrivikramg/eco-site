@@ -5,6 +5,16 @@ import { authOptions } from "../auth/[...nextauth]/route";
 import db from "../../../lib/mongodb";
 import { Product } from "../../../models/product.model";
 import { Vendor } from "../../../models/vendor";
+import { z } from "zod";
+
+const productSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  description: z.string().min(1, "Description is required"),
+  price: z.number().positive("Price must be positive"),
+  category: z.string().min(1, "Category is required"),
+  stock: z.number().int().nonnegative("Stock must be a non-negative integer"),
+  images: z.array(z.string().url()).optional(),
+});
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -25,7 +35,13 @@ export async function POST(req: Request) {
 
 
     const body = await req.json();
-    const { name, description, price, category, stock, images } = body;
+
+    const validationResult = productSchema.safeParse(body);
+    if (!validationResult.success) {
+      return NextResponse.json({ message: "Validation Error", errors: validationResult.error.format() }, { status: 400 });
+    }
+
+    const { name, description, price, category, stock, images } = validationResult.data;
 
     const product = await Product.create({
       vendor: vendor._id,

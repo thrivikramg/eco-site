@@ -17,6 +17,13 @@ import { Textarea } from "../ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { toast } from "../ui/use-toast"
 import { formatDistanceToNow } from "date-fns"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu"
+import { MoreHorizontal } from "lucide-react"
 
 interface Post {
   _id: string
@@ -24,6 +31,7 @@ interface Post {
   content: string
   image?: string
   author: {
+    id: string
     name: string
     avatar: string
     isVerified: boolean
@@ -310,6 +318,41 @@ function PostCard({ post, onLikeUpdate }: { post: Post, onLikeUpdate: (id: strin
     }
   }
 
+  const handleDelete = async () => {
+    if (!confirm("Are you sure you want to delete this post?")) return
+
+    try {
+      const res = await fetch(`/api/community/posts/${post._id}`, {
+        method: "DELETE",
+      })
+
+      if (res.ok) {
+        toast({
+          title: "Success",
+          description: "Post deleted successfully",
+        })
+        // We need to refresh the feed. Since Feed is the parent, we might need a callback.
+        // For now, let's just refresh the page or rely on the user to refresh.
+        // Better: add a onDelete callback to PostCard.
+        window.location.reload()
+      } else {
+        const data = await res.json()
+        toast({
+          title: "Error",
+          description: data.error || "Failed to delete post",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      console.error("Error deleting post:", error)
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      })
+    }
+  }
+
   const handleComment = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!session) {
@@ -379,7 +422,7 @@ function PostCard({ post, onLikeUpdate }: { post: Post, onLikeUpdate: (id: strin
                   {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
                 </span>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 items-center">
                 {post.community && (
                   <Badge variant="secondary" className="hover:bg-gray-200 cursor-pointer" onClick={(e) => {
                     e.stopPropagation()
@@ -389,6 +432,27 @@ function PostCard({ post, onLikeUpdate }: { post: Post, onLikeUpdate: (id: strin
                   </Badge>
                 )}
                 <Badge variant={getBadgeVariant(post.type)}>{post.type}</Badge>
+
+                {session?.user?.id === post.author.id && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        className="text-red-600 focus:text-red-600 cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleDelete()
+                        }}
+                      >
+                        Delete Post
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
               </div>
             </div>
 

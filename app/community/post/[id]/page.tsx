@@ -39,6 +39,7 @@ interface PostDetails {
     content: string
     image?: string
     author: {
+        id: string
         name: string
         avatar: string
     }
@@ -108,6 +109,38 @@ export default function PostPage() {
             }
         } catch (error) {
             console.error("Error liking post:", error)
+        }
+    }
+
+    const handleDelete = async () => {
+        if (!confirm("Are you sure you want to delete this post?")) return
+
+        try {
+            const res = await fetch(`/api/community/posts/${post?._id}`, {
+                method: "DELETE",
+            })
+
+            if (res.ok) {
+                toast({
+                    title: "Success",
+                    description: "Post deleted successfully",
+                })
+                router.push("/community")
+            } else {
+                const data = await res.json()
+                toast({
+                    title: "Error",
+                    description: data.error || "Failed to delete post",
+                    variant: "destructive",
+                })
+            }
+        } catch (error) {
+            console.error("Error deleting post:", error)
+            toast({
+                title: "Error",
+                description: "An unexpected error occurred",
+                variant: "destructive",
+            })
         }
     }
 
@@ -288,18 +321,38 @@ export default function PostPage() {
                         </div>
 
                         <div className="flex-1 space-y-4">
-                            <div className="flex items-center gap-2 text-sm text-gray-500">
-                                {post.community && (
-                                    <>
-                                        <Link href={`/community/${post.community.slug}`} className="font-bold text-black hover:underline">
-                                            c/{post.community.name}
-                                        </Link>
-                                        <span>•</span>
-                                    </>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2 text-sm text-gray-500">
+                                    {post.community && (
+                                        <>
+                                            <Link href={`/community/${post.community.slug}`} className="font-bold text-black hover:underline">
+                                                c/{post.community.name}
+                                            </Link>
+                                            <span>•</span>
+                                        </>
+                                    )}
+                                    <span>Posted by {post.author.name}</span>
+                                    <span>•</span>
+                                    <span>{formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}</span>
+                                </div>
+
+                                {session?.user?.id === post.author.id && (
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                                <MoreHorizontal className="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem
+                                                className="text-red-600 focus:text-red-600 cursor-pointer"
+                                                onClick={handleDelete}
+                                            >
+                                                Delete Post
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 )}
-                                <span>Posted by {post.author.name}</span>
-                                <span>•</span>
-                                <span>{formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}</span>
                             </div>
 
                             <h1 className="text-2xl font-bold">{post.title}</h1>

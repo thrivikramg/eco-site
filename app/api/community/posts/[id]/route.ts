@@ -36,6 +36,7 @@ export async function GET(
             content: post.content,
             image: post.image,
             author: {
+                id: post.author?._id,
                 name: post.author?.name || "Unknown User",
                 avatar: post.author?.image || "",
             },
@@ -64,6 +65,45 @@ export async function GET(
         console.error("Error fetching post:", error)
         return NextResponse.json(
             { error: "Failed to fetch post" },
+            { status: 500 }
+        )
+    }
+}
+
+export async function DELETE(
+    req: NextRequest,
+    { params }: { params: { id: string } }
+) {
+    try {
+        const session = await getServerSession(authOptions)
+
+        if (!session || !session.user) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        }
+
+        await db()
+
+        const { id } = params
+        const userId = session.user.id
+
+        const post = await Post.findById(id)
+
+        if (!post) {
+            return NextResponse.json({ error: "Post not found" }, { status: 404 })
+        }
+
+        // Check if the user is the author
+        if (post.author.toString() !== userId) {
+            return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+        }
+
+        await Post.findByIdAndDelete(id)
+
+        return NextResponse.json({ message: "Post deleted successfully" })
+    } catch (error) {
+        console.error("Error deleting post:", error)
+        return NextResponse.json(
+            { error: "Failed to delete post" },
             { status: 500 }
         )
     }

@@ -9,6 +9,7 @@ import NextAuthProvider from "@/components/AuthProvider" // Renamed to avoid con
 import { AuthProvider } from "@/components/auth-provider" // Your custom auth provider
 import { CartProvider } from "@/components/cart-provider"
 import Script from "next/script"
+import { Toaster } from "sonner"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -40,6 +41,7 @@ export default function RootLayout({
                   <main className="flex-1">{children}</main>
                   <Footer />
                 </div>
+                <Toaster position="top-center" richColors />
               </CartProvider>
             </AuthProvider>
           </NextAuthProvider>

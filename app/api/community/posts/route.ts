@@ -58,6 +58,7 @@ export async function GET(req: NextRequest) {
             content: post.content,
             image: post.image,
             author: {
+                id: post.author?._id,
                 name: post.author?.name || "Unknown User",
                 avatar: post.author?.image || "",
                 isVerified: false, // You might want to add this to User model later

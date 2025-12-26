@@ -5,7 +5,7 @@ import db from "@/lib/mongodb";
 import { Vendor } from "@/models/vendor";
 import { User } from "@/models/user";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 
 export async function POST(req: Request) {
   try {

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import db from "../../../../lib/mongodb";
 import { Vendor } from "../../../../models/vendor";
 import { User } from "../../../../models/user"; // Assuming User model might be needed

@@ -1,12 +1,14 @@
 'use client';
 
+'use client';
+
 import { useRef, useState, useEffect } from 'react';
 import AvatarCanvas from '@/components/AvatarCanvas';
 import { askChatbot } from '@/utils/api';
 import { speak } from '@/utils/speak';
 
 export default function HomePage() {
-  const avatarRef = useRef<any>(null);
+  const avatarRef = useRef<{ startTalking: () => void; stopTalking: () => void }>(null);
   const [input, setInput] = useState('');
   const [reply, setReply] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -18,7 +20,7 @@ export default function HomePage() {
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
-    
+
     setIsLoading(true);
     try {
       const response = await askChatbot(input);
@@ -32,7 +34,7 @@ export default function HomePage() {
           setIsLoading(false);
         }
       );
-      
+
       setInput('');
     } catch (error) {
       console.error(error);
@@ -64,7 +66,7 @@ export default function HomePage() {
         <div className="w-full md:w-3/5 flex flex-col gap-6">
           <div className="bg-white rounded-2xl shadow-xl p-6 flex-1 flex flex-col">
             <h2 className="text-2xl font-bold text-purple-800 mb-4">Chat</h2>
-            
+
             {/* Chat Display Area */}
             <div className="flex-1 bg-gradient-to-b from-cyan-50 to-purple-50 rounded-xl p-6 min-h-[300px] max-h-[500px] overflow-y-auto flex flex-col">
               {reply ? (
@@ -85,12 +87,12 @@ export default function HomePage() {
                   </div>
                   <h3 className="text-xl font-bold text-gray-700 mb-2">Start a Conversation</h3>
                   <p className="text-gray-500 max-w-md">
-                    Ask questions about gardening, plant care, or landscape design. I'm here to help!
+                    Ask questions about gardening, plant care, or landscape design. I&apos;m here to help!
                   </p>
                 </div>
               )}
             </div>
-            
+
             {/* Input Area */}
             <div className="mt-6">
               <div className="relative flex">
@@ -107,11 +109,10 @@ export default function HomePage() {
                 <button
                   onClick={handleSend}
                   disabled={isLoading}
-                  className={`absolute right-2 top-1/2 transform -translate-y-1/2 px-6 py-3 rounded-xl transition-all flex items-center ${
-                    isLoading 
-                      ? 'bg-gray-400 cursor-not-allowed' 
+                  className={`absolute right-2 top-1/2 transform -translate-y-1/2 px-6 py-3 rounded-xl transition-all flex items-center ${isLoading
+                      ? 'bg-gray-400 cursor-not-allowed'
                       : 'bg-gradient-to-r from-cyan-500 to-purple-500 hover:opacity-90 shadow-md'
-                  }`}
+                    }`}
                 >
                   {isLoading ? (
                     <div className="flex items-center">
@@ -132,20 +133,20 @@ export default function HomePage() {
               </p>
             </div>
           </div>
-          
+
           {/* Tips Section */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white p-4 rounded-xl shadow-sm border border-cyan-100">
               <div className="text-cyan-500 font-bold mb-1">Try asking:</div>
-              <div className="text-sm text-gray-600">"How do I care for roses?"</div>
+              <div className="text-sm text-gray-600">&quot;How do I care for roses?&quot;</div>
             </div>
             <div className="bg-white p-4 rounded-xl shadow-sm border border-purple-100">
               <div className="text-purple-500 font-bold mb-1">Example:</div>
-              <div className="text-sm text-gray-600">"What plants grow well in shade?"</div>
+              <div className="text-sm text-gray-600">&quot;What plants grow well in shade?&quot;</div>
             </div>
             <div className="bg-white p-4 rounded-xl shadow-sm border border-green-100">
               <div className="text-green-500 font-bold mb-1">Suggest:</div>
-              <div className="text-sm text-gray-600">"Design ideas for a small garden"</div>
+              <div className="text-sm text-gray-600">&quot;Design ideas for a small garden&quot;</div>
             </div>
           </div>
         </div>
